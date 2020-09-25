@@ -71,6 +71,7 @@
             </div>
             <div v-show="!notRelatedPersons">
               <v-text-field
+                @input="clearData()"
                 v-model="edrpou"
                 label="ЄДРПОУ"
                 color="black">

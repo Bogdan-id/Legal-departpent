@@ -115,12 +115,12 @@
         {
           id: 1,
           text: 'Публiчнi особи', 
-          url: 'https://open-data-pep.herokuapp.com/get-public-person'
+          url: 'https://pacific-dawn-21711.herokuapp.com/get-public-person'
         },
         {
           id: 2,
           text: 'Публiчнi особи за ЄДРПОУ',
-          url: 'https://open-data-pep.herokuapp.com/get-related-persons/'
+          url: 'https://pacific-dawn-21711.herokuapp.com/get-related-persons/'
         },
         { 
           id: 3,

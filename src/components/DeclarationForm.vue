@@ -1,6 +1,6 @@
 <template>
   <v-row class="text-center justify-center">
-    <v-col cols="12" md="4" lg="3" sm="6" xs="10">
+    <v-col cols="12" xl="3" lg="4" md="4"  sm="6" xs="10">
       <v-card class="mt-8 ml-5 mr-5 mb-8">
         <v-col>
           <v-card-text class="pb-0 title">

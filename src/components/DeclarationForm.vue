@@ -32,7 +32,6 @@
             </v-card-actions>
             <v-select
               @change="goToPage()"
-              @click="test()"
               v-show="declarationsPresent"
               v-model="pageUrl"
               ref="declarationSelect"
@@ -50,25 +49,44 @@
               style="display: none;"
               target="_blank">
             </a>
-
-            <v-text-field
-              @input="clearData()"
-              v-model="lastName"
-              label="Прiзвище"
-              color="black">
-            </v-text-field>
-            <v-text-field
-              @input="clearData()"
-              v-model="firstName"
-              label="Iм`я"
-              color="black">
-            </v-text-field>
-            <v-text-field
-              @input="clearData()"
-              v-model="patronymic"
-              label="По батьковi"
-              color="black">
-            </v-text-field>
+            <div v-show="notRelatedPersons">
+              <v-text-field
+                @input="clearData()"
+                v-model="lastName"
+                label="Прiзвище"
+                color="black">
+              </v-text-field>
+              <v-text-field
+                @input="clearData()"
+                v-model="firstName"
+                label="Iм`я"
+                color="black">
+              </v-text-field>
+              <v-text-field
+                @input="clearData()"
+                v-model="patronymic"
+                label="По батьковi"
+                color="black">
+              </v-text-field>
+            </div>
+            <div v-show="!notRelatedPersons">
+              <v-text-field
+                v-model="edrpou"
+                label="ЄДРПОУ"
+                color="black">
+              </v-text-field>
+              <v-select
+                v-show="relatedPersonsLn"
+                @change="goToPage()"
+                v-model="pageUrl"
+                :items="relatedPersons"
+                item-text="full_name"
+                item-value="url"
+                label="Перелiк публiчних осiб"
+                color="black"
+                item-color="black">
+              </v-select>
+            </div>
           </v-card-text>
           <v-card-actions class="justify-center">
             <v-btn 
@@ -80,6 +98,7 @@
               :disabled="!currentDB">
               Отримати данi
             </v-btn>
+            <!-- <v-btn @click="test()">test</v-btn> -->
           </v-card-actions>
         </v-col>
       </v-card>
@@ -98,20 +117,27 @@
           text: 'Публiчнi особи', 
           url: 'https://open-data-pep.herokuapp.com/get-public-person'
         },
-        { 
+        {
           id: 2,
+          text: 'Публiчнi особи за ЄДРПОУ',
+          url: 'https://open-data-pep.herokuapp.com/get-related-persons/'
+        },
+        { 
+          id: 3,
           text: 'E-декларації', 
           url: 'https://pacific-dawn-21711.herokuapp.com/get-declarations'
-        },
+        }
       ],
       currentDB: null,
 
       lastName: null,
       firstName: null,
       patronymic: null,
+      edrpou: null,
 
 
       declarations: [],
+      relatedPersons: [],
       pep: null,
       pageUrl: null,
 
@@ -121,11 +147,16 @@
 
 
     methods: {
+      // test() {
+      //   console.log(this.currentDB)
+      // },
 
       /* Requsts */
 
       getDeclarantData () {
         this.loading = true
+
+        console.log(this.option().body)
 
         fetch(this.currentDB.url, this.option())
           .then(res => {
@@ -154,8 +185,6 @@
       /* Response handlers */
 
       declarationHandler(val) {
-        console.log('declaration handler')
-      
         let result = val.results.object_list
         this.declarations = this.filterDeclarant(result)
 
@@ -167,11 +196,16 @@
             'За вказаними даними декларацiй не знайдено') 
           : false
       },
-      // eslint-disable-next-line
+
       pepHandler(val) {
         this.pep = val
         this.getPepLink()
-        console.log('pep handler')
+      },
+
+      relatedPersonHandler(val) {
+        console.log('related handler')
+        this.relatedPersons = val.result
+        console.log(this.relatedPersons)
       },
 
       option() {
@@ -181,7 +215,7 @@
             "Content-Type": "application/json"
           },
           mode: 'cors',
-          body: JSON.stringify(this.userInitials)
+          body: this.objectController
         }
       },
 
@@ -189,7 +223,9 @@
         switch(this.currentDB.id) {
           case 1 : this.pepHandler(val);
             break;
-          case 2 : this.declarationHandler(val); 
+          case 2 : this.relatedPersonHandler(val);
+            break;
+          case 3 : this.declarationHandler(val); 
             break;
         }
       },
@@ -227,6 +263,7 @@
 
       clearData() {
         this.declarations = []
+        this.relatedPersons = []
         this.pep = null
       },
 
@@ -236,7 +273,7 @@
       goToPage() {
         setTimeout(() => {
           this.$refs.targetLink.click()
-          console.log(this.$refs.declarationSelect)
+          this.pageUrl = null
           }, 0)
       },
     },
@@ -244,12 +281,18 @@
 
     computed: {
       /* Objects */
-      userInitials() {
-        return {
-          firstName: this.firstName,
-          lastName: this.lastName,
-          patronymic: this.patronymic
-        }
+      objectController() {
+        let obj
+        this.notRelatedPersons 
+          ? obj = JSON.stringify({
+              firstName: this.firstName,
+              lastName: this.lastName,
+              patronymic: this.patronymic
+            })
+
+          : obj = JSON.stringify({edrpou: this.edrpou})
+        
+        return obj
       },
 
       /* Text */
@@ -263,6 +306,14 @@
       declarationsPresent() {
         return this.declarations.length > 0
       },
+
+      notRelatedPersons() {
+        return !this.currentDB || this.currentDB && this.currentDB.id !== 2
+      },
+
+      relatedPersonsLn() {
+        return this.relatedPersons.length > 0
+      }
     },
   }
 </script>

@@ -121,7 +121,7 @@
         {
           id: 2,
           text: 'Публiчнi особи за ЄДРПОУ',
-          url: 'https://pacific-dawn-21711.herokuapp.com/get-related-persons/'
+          url: 'https://pacific-dawn-21711.herokuapp.com/get-related-persons'
         },
         { 
           id: 3,

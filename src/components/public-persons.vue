@@ -14,7 +14,7 @@
                 v-on="on" 
                 target="_blank" 
                 icon dark color="#e85d56">
-                <v-icon v-text="'mdi-account-search'"></v-icon>
+                <v-icon>{{ searchIcon }}</v-icon>
               </v-btn>
               </template>
               <span>Переглянути в реєстрi</span>
@@ -54,6 +54,9 @@
 
 <script>
 export default {
-  props: ['item'],
+  props: [
+    'item',
+    'searchIcon'
+  ],
 }
 </script>

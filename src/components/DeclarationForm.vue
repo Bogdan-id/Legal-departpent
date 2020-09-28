@@ -17,7 +17,7 @@
               : 'rgba(255, 255, 255, 0.562)'"
             large
             icon>
-            <v-icon large v-text="'mdi-close'"></v-icon>
+            <v-icon large>{{ mdiClose }}</v-icon>
           </v-btn>
         </v-hover>
 
@@ -29,7 +29,7 @@
           <v-card-text
             class="pl-2 pr-1 pt-0 custom-table">
             <div v-if="iterableItem && iterableItem.length > 0" 
-              class="pt-2">
+              class="pt-2 pl-2">
               {{`Всього знайдено: ${iterableItem.length}` }}
             </div>
             <v-row 
@@ -44,15 +44,18 @@
                     <!-- dinamically iterable  -->
                     <public-persons
                       v-if="pepPresent" 
-                      :item="item" />
+                      :item="item"
+                      :searchIcon="mdiAccountSearch" />
 
                     <person-declarations 
                       v-if="declarationsPresent"
-                      :item="item" />
+                      :item="item"
+                      :searchIcon="mdiAccountSearch" />
 
                     <pep-by-edrpou 
                       v-if="relatedPersonPresent"
-                      :item="item" />
+                      :item="item"
+                      :searchIcon="mdiAccountSearch" />
 
                   </v-card>
                 </v-hover>
@@ -154,6 +157,10 @@
   import PersonDeclarations from './person-declarations'
   import PepByEdrpou from './pep-by-edrpou'
 
+  /* Icons */
+
+  import { mdiClose, mdiAccountSearch } from '@mdi/js'
+
   export default {
     name: 'DeclarationForm',
 
@@ -201,6 +208,11 @@
       /* Booleans */
       loading: false,
       dialog: false,
+
+      /* Icons */
+
+      mdiClose,
+      mdiAccountSearch
     }),
 
 

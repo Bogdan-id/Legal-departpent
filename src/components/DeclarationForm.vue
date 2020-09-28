@@ -35,9 +35,9 @@
               v-show="declarationsPresent"
               v-model="pageUrl"
               ref="declarationSelect"
-              label="Оберiть рiк декларації"
+              label="Оберiть декларацiю"
               :items="declarations"
-              item-text="infocard.declaration_year"
+              item-text="infocard.initials"
               item-value="infocard.url"
               color="black"
               item-color="black">
@@ -188,6 +188,12 @@
       declarationHandler(val) {
         let result = val.results.object_list
         this.declarations = this.filterDeclarant(result)
+          .map(v => {
+            let data = v.infocard
+            v.infocard.initials = `${data.last_name} ${data.first_name} ${data.patronymic} - ${data.declaration_year}`
+
+            return v
+          })
 
         console.log(this.declarations)
 
@@ -297,11 +303,8 @@
       },
 
       /* Text */
-      cardTitle() {
-        return this.declarationsPresent 
-          ? `${this.lastName} ${this.firstName} ${this.patronymic}` 
-          : 'Форма декларацiй'
-      },
+
+      //
 
       /* Booleans */
       declarationsPresent() {

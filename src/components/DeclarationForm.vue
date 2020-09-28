@@ -168,17 +168,17 @@
         {
           id: 1,
           text: 'Публiчнi особи', 
-          url: 'http://localhost:8000/get-public-person'
+          url: 'https://pacific-dawn-21711.herokuapp.com/get-public-person'
         },
         {
           id: 2,
           text: 'Публiчнi особи за ЄДРПОУ',
-          url: 'http://localhost:8000/get-related-persons'
+          url: 'https://pacific-dawn-21711.herokuapp.com/get-related-persons'
         },
         { 
           id: 3,
           text: 'E-декларації', 
-          url: 'http://localhost:8000/get-declarations'
+          url: 'https://pacific-dawn-21711.herokuapp.com/get-declarations'
         }
       ],
 

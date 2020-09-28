@@ -267,7 +267,7 @@
           this.declarations = this.filterDeclarant(result)
             .map(v => {
               let data = v.infocard
-              v.infocard.initials = `${data.last_name} ${data.first_name} ${data.patronymic} - ${data.declaration_year}`
+              v.infocard.initials = `${data.last_name} ${data.first_name} ${data.patronymic}`
 
               return v
             })

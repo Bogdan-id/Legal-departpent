@@ -27,7 +27,7 @@
           :max-height="maxCardHeight"
           :style="cardOverflow">
           <v-card-text
-            class="pl-2 pr-1 pt-0 custom-table">
+            class="pl-2 pr-1 pt-0">
             <div v-if="iterableItem && iterableItem.length > 0" 
               class="pt-2 pl-2 pr-2 d-flex justify-space-between">
               <div class="d-inline-block">

@@ -1,6 +1,6 @@
 <template>
 <div class="pep-table-wrapper">
-  <v-simple-table>
+  <v-simple-table class="custom-table">
     <template #default>
       <thead>
         <tr class="custom-header-row">
@@ -49,10 +49,10 @@
   <div class="pb-3">
 
     <!-- Reletion buttons -->
-    <v-card-actions class="justify-space-between flex-wrap pt-4">
+    <v-card-actions class="justify-center flex-wrap pt-4">
       <v-btn 
         @click="showLegalRelations()"
-        class="white--text"
+        class="white--text mt-2 mb-2"
         :style="relativeBtnStyle"
         :color="`${rltvCompaniesBtn ? '#e85d56' : 'grey darken-3'}`"
         small>
@@ -64,7 +64,7 @@
       </v-btn>
       <v-btn 
         @click="showPersonRelations()"
-        class="white--text"
+        class="white--text mt-2 mb-2"
         :style="relativeBtnStyle"
         :color="`${rltvPrsnBtn ? '#e85d56' : 'grey darken-3'}`"
         small>
@@ -221,7 +221,7 @@ export default {
 
     /* Styles */
     relativeBtnStyle() {
-      return `border-radius: 0px; border-left: 5px solid #5f6368;`
+      return `border-radius: 0px; border-left: 5px solid #5f6368; margin: 0 auto;`
     }
   },
 }

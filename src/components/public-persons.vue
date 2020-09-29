@@ -53,34 +53,12 @@
             ЗВ`ЯЗКИ З:
           </td>
           <td>
-            <div class="d-flex justify-center flex-wrap">
-              <v-btn 
-                v-show="relativePersonsPresent"
-                @click="showPersonRelations()"
-                class="white--text mt-1 mb-1"
-                :style="relativeBtnStyle"
-                :color="`${rltvPrsnBtn ? '#e85d56' : 'grey darken-3'}`"
-                x-small>
-                Фiз. особами&nbsp;
-                <v-icon 
-                  :class="personBtnIcon">
-                  {{ menuIcon }}
-                </v-icon>
-              </v-btn>
-              <v-btn 
-                v-show="relativeLegalPresent"
-                @click="showLegalRelations()"
-                class="white--text mt-1 mb-1"
-                :style="relativeBtnStyle"
-                :color="`${rltvCompaniesBtn ? '#e85d56' : 'grey darken-3'}`"
-                x-small>
-                Юр. особами&nbsp;
-                <v-icon 
-                  :class="legalBtnIcon">
-                  {{ menuIcon }}
-                </v-icon>
-              </v-btn>
-            </div>
+            <relative-btns 
+              @listenPersnsBtnState="toggleRelationBtns($event)"
+              :menuIcon="menuIcon"
+              :btnState="rltvCompaniesBtn"
+              :relvPersPresent="relativePersonsPresent"
+              :relvLegalPresent="relativeLegalPresent" />
           </td>
         </tr>
       </tbody>
@@ -88,60 +66,41 @@
   </v-simple-table>
   <div class="pb-3">
     
-    <!-- Relative persons table -->
-    <v-fab-transition>
-      <v-card v-show="rltvPrsnBtn" elevation="5" class="ml-2 mr-2 mb-3">
-        <v-card-text>
-          <v-data-table
-            v-if="relativePersonsPresent"
-            color="black"
-            :headers="relativePersonsHeader"
-            :items="relativePersons"
-            :items-per-page="10"
-            dense>
-            <template #item.person_uk="{ item }">
-              {{ item.person_uk }}
-            </template>
-            <template #item.is_pep="{ item }">
-              {{ item.is_pep ? 'Так' : 'Нi' }}
-            </template>
-          </v-data-table>
-        </v-card-text>
-      </v-card>
-    </v-fab-transition>
+    <!-- Relative tables -->
+    <pep-table 
+      v-if="relativeLegalPresent"
+      :tableHeaders="relativeLegalHeader"
+      :tableData="relativeLegals"
+      :state="rltvCompaniesBtn"/>
 
-    <!-- Relative legals table -->
-    <v-fab-transition>
-      <v-card v-show="rltvCompaniesBtn" elevation="5" class="ml-2 mr-2 mb-3">
-        <v-card-text>
-          <v-data-table
-            v-if="relativeLegalPresent"
-            color="black"
-            :headers="relativeLegalHeader"
-            :items="relativeLegals"
-            :items-per-page="10"
-            dense>
-            <template #item.person_uk="{ item }">
-              {{ item.person_uk }}
-            </template>
-            <template #item.is_pep="{ item }">
-              {{ item.is_pep ? 'Так' : 'Нi' }}
-            </template>
-          </v-data-table>
-        </v-card-text>
-      </v-card>
-    </v-fab-transition>
+    <pep-table
+      v-if="relativePersonsPresent"
+      :tableHeaders="relativePersonsHeader"
+      :personHandler="true"
+      :tableData="relativePersons"
+      :state="rltvPrsnBtn"/>
   </div>
 </div>
 </template>
 
 <script>
+import RelativeBtns from './relative-btns'
+import PepTable from './pep-table'
+
+
 export default {
   props: [
     'item',
     'searchIcon',
     'menuIcon'
   ],
+
+
+  components: {
+    RelativeBtns,
+    PepTable
+  },
+
 
   data: () => ({
     
@@ -170,10 +129,6 @@ export default {
 
 
   methods: {
-    test() {
-      console.log(this.rltvPrsnBtn)
-    },
-
     showPersonRelations() {
       this.rltvPrsnBtn = !this.rltvPrsnBtn
       this.rltvCompaniesBtn = false
@@ -183,6 +138,11 @@ export default {
     showLegalRelations() {
       this.rltvCompaniesBtn = !this.rltvCompaniesBtn
       this.rltvPrsnBtn = false
+    },
+
+    toggleRelationBtns(obj) {
+      this.rltvPrsnBtn = obj.persnsBtn
+      this.rltvCompaniesBtn = obj.legalsBtn
     }
   },
 

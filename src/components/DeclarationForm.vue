@@ -29,8 +29,14 @@
           <v-card-text
             class="pl-2 pr-1 pt-0 custom-table">
             <div v-if="iterableItem && iterableItem.length > 0" 
-              class="pt-2 pl-2">
-              {{`Всього знайдено: ${iterableItem.length}` }}
+              class="pt-2 pl-2 pr-2 d-flex justify-space-between">
+              <div class="d-inline-block">
+                {{`${currentDB.text}` }}
+              </div>
+              <br />
+              <div class="d-inline-block">
+                {{ `Всього знайдено: ${iterableItem.length}` }}
+              </div>
             </div>
             <v-row 
               v-for="(item, key) in iterableItem"
@@ -218,7 +224,7 @@
 
     methods: {
       test() {
-        console.log(this.$vuetify.breakpoint.height / 10 * 9)
+        // console.log(this.$vuetify.breakpoint.height / 10 * 9)
       },
 
       /* Requsts */

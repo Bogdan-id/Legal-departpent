@@ -62,9 +62,15 @@ export default {
 
   methods: {
     formatDate(date) {
-        return {
-          date: `${date.substring(0, 10).split('-').join('.')} р.`,
-          time: `${date.substring(11, 16)}`
+        if(date){
+          return {
+            date: `${date.substring(0, 10).split('-').join('.')} р.`,
+            time: `${date.substring(11, 16)}`
+          }
+
+        } else return {
+          date: '-',
+          time: '-'
         }
       },
   }

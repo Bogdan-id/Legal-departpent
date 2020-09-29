@@ -51,7 +51,8 @@
                     <public-persons
                       v-if="pepPresent" 
                       :item="item"
-                      :searchIcon="mdiAccountSearch" />
+                      :searchIcon="mdiAccountSearch"
+                      :menuIcon="mdiMenuDown" />
 
                     <person-declarations 
                       v-if="declarationsPresent"
@@ -61,7 +62,8 @@
                     <pep-by-edrpou 
                       v-if="relatedPersonPresent"
                       :item="item"
-                      :searchIcon="mdiAccountSearch" />
+                      :searchIcon="mdiAccountSearch"
+                      :menuIcon="mdiMenuDown" />
 
                   </v-card>
                 </v-hover>
@@ -165,7 +167,11 @@
 
   /* Icons */
 
-  import { mdiClose, mdiAccountSearch } from '@mdi/js'
+  import { 
+      mdiClose, 
+      mdiAccountSearch,
+      mdiMenuDown
+    } from '@mdi/js'
 
   export default {
     name: 'DeclarationForm',
@@ -218,7 +224,8 @@
       /* Icons */
 
       mdiClose,
-      mdiAccountSearch
+      mdiAccountSearch,
+      mdiMenuDown
     }),
 
 
@@ -375,6 +382,7 @@
       /* Objects */
       objectController() {
         let obj
+        
         this.notRelatedPersons 
           ? obj = JSON.stringify({
               firstName: this.firstName,

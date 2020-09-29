@@ -42,39 +42,46 @@
             {{ item.date_of_birth + 'p.' }}
           </td>
         </tr>
+        <tr>
+          <td>
+            ЗВ`ЯЗКИ З:
+          </td>
+          <td>
+            <div class="d-flex justify-center flex-wrap">
+              <v-btn 
+                v-show="relativePersonsPresent"
+                @click="showPersonRelations()"
+                class="white--text mt-1 mb-1"
+                :style="relativeBtnStyle"
+                :color="`${rltvPrsnBtn ? '#e85d56' : 'grey darken-3'}`"
+                x-small>
+                Фiз. особами&nbsp;
+                <v-icon 
+                  :class="personBtnIcon">
+                  {{ menuIcon }}
+                </v-icon>
+              </v-btn>
+              <v-btn 
+                v-show="relativeLegalPresent"
+                @click="showLegalRelations()"
+                class="white--text mt-1 mb-1"
+                :style="relativeBtnStyle"
+                :color="`${rltvCompaniesBtn ? '#e85d56' : 'grey darken-3'}`"
+                x-small>
+                Юр. особами&nbsp;
+                <v-icon 
+                  :class="legalBtnIcon">
+                  {{ menuIcon }}
+                </v-icon>
+              </v-btn>
+            </div>
+          </td>
+        </tr>
       </tbody>
     </template>
   </v-simple-table>
 
   <div class="pb-3">
-
-    <!-- Reletion buttons -->
-    <v-card-actions class="justify-center flex-wrap pt-4">
-      <v-btn 
-        @click="showLegalRelations()"
-        class="white--text mt-2 mb-2"
-        :style="relativeBtnStyle"
-        :color="`${rltvCompaniesBtn ? '#e85d56' : 'grey darken-3'}`"
-        small>
-        Зв`язки з юридичними особами&nbsp;
-        <v-icon 
-          :class="legalBtnIcon">
-          {{ menuIcon }}
-        </v-icon>
-      </v-btn>
-      <v-btn 
-        @click="showPersonRelations()"
-        class="white--text mt-2 mb-2"
-        :style="relativeBtnStyle"
-        :color="`${rltvPrsnBtn ? '#e85d56' : 'grey darken-3'}`"
-        small>
-        Зв`язки з фiзичними особами&nbsp;
-        <v-icon 
-          :class="personBtnIcon">
-          {{ menuIcon }}
-        </v-icon>
-      </v-btn>
-    </v-card-actions>
     
     <!-- Relative persons table -->
     <v-fab-transition>
@@ -221,7 +228,9 @@ export default {
 
     /* Styles */
     relativeBtnStyle() {
-      return `border-radius: 0px; border-left: 5px solid #5f6368; margin: 0 auto;`
+      return `
+        border-radius: 0px; border-left: 5px solid #5f6368; 
+        margin: 0 auto; min-width: 130px;`
     }
   },
 }

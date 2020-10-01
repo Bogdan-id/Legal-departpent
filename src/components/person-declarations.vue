@@ -69,8 +69,7 @@ export default {
           }
 
         } else return {
-          date: '-',
-          time: '-'
+          date: '-', time: '-'
         }
       },
   }

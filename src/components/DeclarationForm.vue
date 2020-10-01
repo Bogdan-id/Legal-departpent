@@ -65,6 +65,16 @@
                       :searchIcon="mdiAccountSearch"
                       :menuIcon="mdiMenuDown" />
 
+                    <v-card v-if="personSunctionsPresent">
+                      <v-card-text>
+                        <span>{{ item.text }}</span>
+                      </v-card-text>
+                    </v-card>
+
+                    <v-card-text v-if="legalSunctionsPresent">
+                      <span>{{ item.text }}</span>
+                    </v-card-text>
+
                   </v-card>
                 </v-hover>
               </v-col>
@@ -99,7 +109,7 @@
               style="display: none;"
               target="_blank">
             </a>
-            <div v-show="notRelatedPersons">
+            <div v-show="notRelatedPersons && !currLegalSunctions">
               <v-text-field
                 @input="clearData()"
                 v-model="lastName"
@@ -119,11 +129,11 @@
                 color="black">
               </v-text-field>
             </div>
-            <div v-show="!notRelatedPersons">
+            <div v-show="!notRelatedPersons || currLegalSunctions">
               <v-text-field
                 @input="clearData()"
                 v-model="edrpou"
-                label="ЄДРПОУ"
+                :label="currLegalSunctions? 'ЄДРПОУ або iнший реквiзит' : 'ЄДРПОУ'"
                 color="black">
               </v-text-field>
             </div>
@@ -198,6 +208,16 @@
           id: 3,
           text: 'E-декларації', 
           url: 'https://pacific-dawn-21711.herokuapp.com/get-declarations'
+        },
+        {
+          id: 4,
+          text: 'Санкцiї до юридичних осiб', 
+          url: 'https://pacific-dawn-21711.herokuapp.com/get-legal-sunctions'
+        },
+        {
+          id: 5,
+          text: 'Санкцiї до фiзичних осiб', 
+          url: 'https://pacific-dawn-21711.herokuapp.com/get-person-sunctions'
         }
       ],
 
@@ -213,6 +233,8 @@
       declarations: [],
       relatedPersons: [],
       pep: [],
+      personSunctions: [],
+      legalSunctions: [],
       pageUrl: null,
 
       resErr: 'Network response was not ok',
@@ -271,38 +293,39 @@
 
         let result = val.results.object_list
 
-        if(result.length === 0){
-          this.notify(
-            'Увага', 
-            'За вказаними даними декларацiй не знайдено'
-          )
-        } else {
-          this.declarations = this.filterDeclarant(result)
-            .map(v => {
-              let data = v.infocard
-              v.infocard.initials = `${data.last_name} ${data.first_name} ${data.patronymic}`
+        this.declarations = this.filterDeclarant(result)
+          .map(v => {
+            let data = v.infocard
+            v.infocard.initials = `${data.last_name} ${data.first_name} ${data.patronymic}`
 
-              return v
-            })
-
-          this.nextTick(
-            () => {this.dialog = !this.dialog }
-          )
-        }
+            return v
+          })
       },
 
       pepHandler(val) {
         console.log(val)
         if(val) {
           this.pep = val
-          this.dialog = !this.dialog
         }
       },
 
       relatedPersonHandler(val) {
         this.relatedPersons = val
-        console.log(this.relatedPersons)
-        this.dialog = !this.dialog
+      },
+
+      sunctionsPersonHandler(val) {
+        console.log('sunctionsPersonHandler')
+        this.personSunctions = val
+          .map(v => {
+            console.log(v)
+            console.log(v.text.lastIndexOf(this.patronymic ? v.text.lastIndexOf(this.patronymic) : this.firstName))
+            return v
+          })
+      },
+
+      sunctionsLegalHandler(val) {
+        console.log('sunctionsLegalHandler')
+        this.legalSunctions = val
       },
 
       option() {
@@ -317,12 +340,20 @@
       },
 
       switchHandler(val) {
+        setTimeout(() => {
+          this.dialog = !this.dialog
+        }, 0);
+
         switch(this.currentDB.id) {
           case 1 : this.pepHandler(val);
             break;
           case 2 : this.relatedPersonHandler(val);
             break;
           case 3 : this.declarationHandler(val); 
+            break;
+          case 4 : this.sunctionsLegalHandler(val);  
+            break;
+          case 5 : this.sunctionsPersonHandler(val);
             break;
         }
       },
@@ -357,6 +388,8 @@
       clearData() {
         this.declarations = []
         this.relatedPersons = []
+        this.legalSunctions = []
+        this.personSunctions = []
         this.pep = []
       },
 
@@ -369,12 +402,6 @@
           this.pageUrl = null
           }, 0)
       },
-
-      nextTick(callback) {
-        if(typeof callback === 'function') {
-          setTimeout(() => { callback() }, 0)
-        } else return
-      }
     },
 
 
@@ -383,7 +410,7 @@
       objectController() {
         let obj
         
-        this.notRelatedPersons 
+        this.notRelatedPersons && !this.currLegalSunctions
           ? obj = JSON.stringify({
               firstName: this.firstName,
               lastName: this.lastName,
@@ -404,7 +431,11 @@
             ? obj = this.declarations
             : this.pepPresent
               ? obj = this.pep
-              : false
+              : this.personSunctionsPresent
+                ? obj = this.personSunctions
+                : this.legalSunctionsPresent 
+                  ? obj = this.legalSunctions
+                  : false
 
         return obj
       },
@@ -427,8 +458,20 @@
         return this.pep.length > 0
       },
 
+      personSunctionsPresent() {
+        return this.personSunctions.length > 0
+      },
+
+      legalSunctionsPresent() {
+        return this.legalSunctions.length > 0
+      },
+
       result() {
         return this.declarationsPresent || this.relatedPersonPresent || this.pepPresent
+      },
+
+      currLegalSunctions() {
+        return this.currentDB && this.currentDB.id === 4
       },
 
 

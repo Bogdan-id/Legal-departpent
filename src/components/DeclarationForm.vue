@@ -467,7 +467,11 @@
       },
 
       result() {
-        return this.declarationsPresent || this.relatedPersonPresent || this.pepPresent
+        return this.declarationsPresent 
+          || this.relatedPersonPresent 
+          || this.pepPresent
+          || this.personSunctionsPresent
+          || this.legalSunctionsPresent
       },
 
       currLegalSunctions() {

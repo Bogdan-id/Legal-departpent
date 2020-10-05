@@ -67,13 +67,15 @@
 
                     <v-card v-if="personSunctionsPresent">
                       <v-card-text>
-                        <span>{{ item.text }}</span>
+                        <p v-html="item.text"></p>
                       </v-card-text>
                     </v-card>
 
-                    <v-card-text v-if="legalSunctionsPresent">
-                      <span>{{ item.text }}</span>
-                    </v-card-text>
+                    <v-card v-if="legalSunctionsPresent">
+                      <v-card-text>
+                        <p v-html="item.text"></p>
+                      </v-card-text>
+                    </v-card>
 
                   </v-card>
                 </v-hover>
@@ -257,7 +259,6 @@
       },
 
       /* Requsts */
-
       getDeclarantData () {
         this.loading = true
 
@@ -286,9 +287,7 @@
           })
       },
 
-
       /* Response handlers */
-
       declarationHandler(val) {
 
         let result = val.results.object_list
@@ -315,17 +314,15 @@
 
       sunctionsPersonHandler(val) {
         console.log('sunctionsPersonHandler')
-        this.personSunctions = val
-          .map(v => {
-            console.log(v)
-            console.log(v.text.lastIndexOf(this.patronymic ? v.text.lastIndexOf(this.patronymic) : this.firstName))
-            return v
-          })
+        let name = this.sunctionsPersonHandler.name
+        this.personSunctions = this.makrSearchedText(val, name)
+          
       },
 
       sunctionsLegalHandler(val) {
         console.log('sunctionsLegalHandler')
-        this.legalSunctions = val
+        let name = this.sunctionsLegalHandler.name
+        this.legalSunctions = this.makrSearchedText(val, name)
       },
 
       option() {
@@ -337,6 +334,83 @@
           mode: 'cors',
           body: this.objectController
         }
+      },
+
+
+      /* Data handlers */
+      filterDeclarant(data) {
+        return data
+          .filter(v => {
+            return v.infocard.last_name === this.lastName.trim()
+              && v.infocard.first_name === this.firstName.trim()
+              && v.infocard.patronymic === this.patronymic.trim()
+          })
+      },
+
+      makrSearchedText(val, funcName) {
+        return val.map(v => {
+          let arr = []
+          let text = v.text
+          let func = funcName.split(" ")[1]
+          let [start, end] = this.markText(func, text)
+
+          arr.push(text.substring(0, start))
+          arr.push('<span class="search-text">' + text.substring(start, end) + '</span>')
+          arr.push(text.substring(end, text.length))
+
+          v.text = arr.join('')
+
+          return v
+        })
+      },
+      
+      /* Notifications */
+      notify(title, text) {
+        this.$snotify.simple(text, title, {
+          timeout: 2000,
+          showProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true
+        })
+      },
+
+      /* Data clearing */
+      clearData() {
+        this.declarations = []
+        this.relatedPersons = []
+        this.legalSunctions = []
+        this.personSunctions = []
+        this.pep = []
+      },
+
+
+      /* Action handlers */
+      goToPage() {
+        setTimeout(() => {
+          this.$refs.targetLink.click()
+          this.pageUrl = null
+          }, 0)
+      },
+
+      /* Controllers */
+      markText(funcName, text) {
+        let range
+
+        switch(funcName) {
+          case 'sunctionsLegalHandler': range = [
+              text.indexOf(this.edrpou), 
+              text.indexOf(this.edrpou) + this.edrpou.length];
+            break;
+          case 'sunctionsPersonHandler': range = [
+              text.indexOf(this.lastName), 
+              this.patronymic 
+                ? text.indexOf(this.patronymic) + this.patronymic.length
+                : text.indexOf(this.firstName) + this.firstName.length 
+            ]
+            break;
+        }
+
+        return range
       },
 
       switchHandler(val) {
@@ -356,51 +430,6 @@
           case 5 : this.sunctionsPersonHandler(val);
             break;
         }
-      },
-
-
-      /* Data handlers */
-
-      filterDeclarant(data) {
-        return data
-          .filter(v => {
-            return v.infocard.last_name === this.lastName.trim()
-              && v.infocard.first_name === this.firstName.trim()
-              && v.infocard.patronymic === this.patronymic.trim()
-          })
-      },
-
-      
-      /* Notifications */
-
-      notify(title, text) {
-        this.$snotify.simple(text, title, {
-          timeout: 2000,
-          showProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true
-        })
-      },
-
-
-      /* Data clearing */
-
-      clearData() {
-        this.declarations = []
-        this.relatedPersons = []
-        this.legalSunctions = []
-        this.personSunctions = []
-        this.pep = []
-      },
-
-
-      /* Action handlers */
-
-      goToPage() {
-        setTimeout(() => {
-          this.$refs.targetLink.click()
-          this.pageUrl = null
-          }, 0)
       },
     },
 
@@ -503,6 +532,13 @@
 .api-form .v-card, .v-dialog {
   overflow: visible!important;
   /* overflow-x: hidden!important; */
+}
+
+.search-text {
+  color: #fff;
+  background: #e85d56;
+  border-radius: 0.1rem;
+  padding: 0 2px;
 }
 
 .custom-table tr th {

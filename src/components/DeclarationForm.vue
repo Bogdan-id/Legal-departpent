@@ -599,62 +599,62 @@
       edrByInitials: {
         text: 'Публiчнi особи (Фiз)', 
         desc: 'edrByInitials',
-        url: 'http://localhost:8000/get-edr-persons'
+        url: 'https://pacific-dawn-21711.herokuapp.com/get-edr-persons'
       },
       edrByEdrpou: {
         text: 'Публiчнi особи (Фiз)', 
         desc: 'edrByEdrpou',
-        url: 'http://localhost:8000/get-edr-legal'
+        url: 'https://pacific-dawn-21711.herokuapp.com/get-edr-legal'
       },
       pepByInitials: {
         text: 'Публiчнi особи (Фiз)', 
         desc: 'pepByInitials',
-        url: 'http://localhost:8000/get-public-person'
+        url: 'https://pacific-dawn-21711.herokuapp.com/get-public-person'
       },
       pepByEdrpou: {
         text: 'Публiчнi особи за ЄДРПОУ (Фiз)',
         desc: 'pepByEdrpou',
-        url: 'http://localhost:8000/get-related-persons'
+        url: 'https://pacific-dawn-21711.herokuapp.com/get-related-persons'
       },
       eDeclarations: { 
         text: 'E-декларації (Фiз)', 
         desc: 'eDeclarations',
-        url: 'http://localhost:8000/get-declarations'
+        url: 'https://pacific-dawn-21711.herokuapp.com/get-declarations'
       },
       rnboLegals: {
         text: 'Санкцiї до юридичних осiб (Юр)', 
         desc: 'rnboLegals',
-        url: 'http://localhost:8000/get-legal-sanctions'
+        url: 'https://pacific-dawn-21711.herokuapp.com/get-legal-sanctions'
       },
       rnboPersons: {
         text: 'Санкцiї до фiзичних осiб (Фiз)', 
         desc: 'rnboList',
-        url: 'http://localhost:8000/get-person-sanctions'
+        url: 'https://pacific-dawn-21711.herokuapp.com/get-person-sanctions'
       },
       unSanctions: {
         text: 'Cанкцiйний перелiк ООН (Фiз. особи)',
         desc: 'unSanctions',
-        url: 'http://localhost:8000/un-person-sanctions'
+        url: 'https://pacific-dawn-21711.herokuapp.com/un-person-sanctions'
       },
       unTerrors: {
         text: 'База терористiв (Фiз. особи)',
         desc: 'unTerrors',
-        url: 'http://localhost:8000/un-person-terror'   
+        url: 'https://pacific-dawn-21711.herokuapp.com/un-person-terror'   
       },
       usPersonSunctions: {
         text: 'USA individual Sunction list',
         desc: 'USSancions',
-        url: 'http://localhost:8000/get-us-person-sanctions/'
+        url: 'https://pacific-dawn-21711.herokuapp.com/get-us-person-sanctions/'
       },
       esPersonSunctions: { 
         text: 'Europe individual Sunction list',
         desc: 'EUSunctions',
-        url: 'http://localhost:8000/get-eu-person-sanctions/'
+        url: 'https://pacific-dawn-21711.herokuapp.com/get-eu-person-sanctions/'
       },
       esLegalSunctions: {
         text: 'Europe entity Sunction list',
         desc: 'EUSunctions',
-        url: 'http://localhost:8000/get-eu-legal-sanctions/'
+        url: 'https://pacific-dawn-21711.herokuapp.com/get-eu-legal-sanctions/'
       },
 
       EDRTH: [

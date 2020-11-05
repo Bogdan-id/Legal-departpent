@@ -536,15 +536,18 @@
           </v-card-text>
           <v-card-actions 
             class="justify-center">
-            <v-btn 
-              @click="mapResult()"
-              color="grey darken-3"
-              class="white--text"
-              small
-              :disabled="searchVariant === null"
-              :loading="loading">
-              Отримати данi
-            </v-btn>
+            <v-slide-x-transition>
+              <v-btn 
+                v-show="requisites"
+                @click="mapResult()"
+                color="grey darken-3"
+                class="white--text"
+                small
+                :disabled="searchVariant === null"
+                :loading="loading">
+                Отримати данi
+              </v-btn>
+            </v-slide-x-transition>
           </v-card-actions>
         </v-col>
       </v-card>
@@ -1183,6 +1186,14 @@
             ? arr =  this.markSearchedText(this.esSanctionList, 'unLegalHandler')
             : arr = []
         return arr
+      },
+
+      requisites() {
+        return this.choosedPerson 
+          ? this.firstName && this.lastName
+          : this.choosedLegal 
+            ? this.edrpou
+            : false
       },
 
       choosedPerson() {

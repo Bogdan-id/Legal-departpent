@@ -8,7 +8,7 @@
           v-on="on"
           class="toggle-hint-btn" 
           small>
-          <v-icon color="grey darken-3" v-text="'mdi-information'"></v-icon>
+          <v-icon color="grey darken-3">{{ mdiInformation }}</v-icon>
         </v-btn>
       </template>
       <span>Вiдобразити реквiзити запиту</span>
@@ -25,7 +25,7 @@
                 v-on="on"
                 class="change-req-info-btn" 
                 x-small icon>
-                <v-icon v-text="'mdi-axis-z-rotate-clockwise'"></v-icon>
+                <v-icon>{{ mdiAxisZRotateClockwise }}</v-icon>
               </v-btn>
             </template>
             <span>{{ ukVersion ? "Вiдобразити iнiцiали EN" : "Вiдобразити iнiцiали UK"}}</span>
@@ -37,7 +37,7 @@
                 @click="showRequisite = !showRequisite"
                 class="close-req-info-btn"
                 x-small icon>
-                <v-icon v-text="'mdi-window-minimize'"></v-icon>
+                <v-icon>{{ mdiWindowMinimize }}</v-icon>
               </v-btn>
             </template>
             <span>Згорнути</span>
@@ -104,8 +104,7 @@
             Єдиний державний реєстр&nbsp;-&nbsp;[<span :style="`color: ${edrList.length > 0 ? '#e57373;' : ''}`">{{ edrList.length }}</span>]
             <v-icon 
               :class="btnActv('EDR') ? 'active' : ''" 
-              v-text="'mdi-menu-down'" 
-              color="white"></v-icon>
+              color="white">{{ mdiMenuDown }}</v-icon>
           </v-btn>
           <v-scroll-x-transition hide-on-leave>
             <v-card v-show="btnActv('EDR')" class="mb-2 item-card">
@@ -156,8 +155,8 @@
             Публiчнi особи&nbsp;-&nbsp;[<span :style="`color: ${pepList.length > 0 ? '#e57373;' : ''}`">{{ pepList.length }}</span>]
             <v-icon 
               :class="btnActv('PEP') ? 'active' : ''" 
-              v-text="'mdi-menu-down'" 
-              color="white"></v-icon>
+              color="white">{{ mdiMenuDown }}
+            </v-icon>
           </v-btn>
           <v-scroll-x-transition hide-on-leave>
             <v-card v-show="btnActv('PEP')" class="mb-2 item-card">
@@ -195,7 +194,7 @@
                   </template>
                   <template #item.action="{ item }">
                     <v-btn small @click="goToPage(item)">
-                      <v-icon v-text="'mdi-text-box-search-outline'"></v-icon>
+                      <v-icon>{{ mdiTextBoxSearchOutline }}</v-icon>
                     </v-btn>
                   </template>
                 </v-data-table>
@@ -211,8 +210,9 @@
             Електронні декларації&nbsp;-&nbsp;[<span :style="`color: ${eDeclarationList.length > 0 ? '#e57373;' : ''}`">{{ eDeclarationList.length }}</span>]
             <v-icon 
               :class="btnActv('ED') ? 'active' : ''" 
-              v-text="'mdi-menu-down'" 
-              color="white"></v-icon>
+              color="white">
+              {{ mdiMenuDown }}
+            </v-icon>
           </v-btn>
           <v-scroll-x-transition hide-on-leave>
             <v-card v-show="btnActv('ED')" class="mb-2 item-card">
@@ -224,7 +224,7 @@
                   dense>
                   <template #item.action="{ item }">
                     <v-btn small @click="goToPage(item.infocard.url)">
-                      <v-icon v-text="'mdi-text-box-search-outline'"></v-icon>
+                      <v-icon>{{ mdiTextBoxSearchOutline }}</v-icon>
                     </v-btn>
                   </template>
                 </v-data-table>
@@ -240,8 +240,9 @@
             РНБО Санкцiї&nbsp;-&nbsp;[<span :style="`color: ${rnboList.length > 0 ? '#e57373;' : ''}`">{{ rnboList.length }}</span>]
             <v-icon 
               :class="btnActv('RNBO') ? 'active' : ''" 
-              v-text="'mdi-menu-down'" 
-              color="white"></v-icon>
+              color="white">
+              {{ mdiMenuDown }}
+            </v-icon>
           </v-btn>
           <v-scroll-x-transition hide-on-leave>
             <v-card v-show="btnActv('RNBO')" class="mb-2 item-card">
@@ -261,8 +262,9 @@
             ООН Санкцiї&nbsp;-&nbsp;[<span :style="`color: ${unSanctionList.length > 0 ? '#e57373;' : ''}`">{{ unSanctionList.length }}</span>]
             <v-icon 
               :class="btnActv('UNSanc') ? 'active' : ''" 
-              v-text="'mdi-menu-down'" 
-              color="white"></v-icon>
+              color="white">
+              {{ mdiMenuDown }}
+            </v-icon>
           </v-btn>
           <v-scroll-x-transition hide-on-leave>
             <v-card v-show="btnActv('UNSanc')" class="mb-2 item-card">
@@ -303,8 +305,9 @@
             ООН. Перелiк терористiв&nbsp;-&nbsp;[<span :style="`color: ${unTerrorList.length > 0 ? '#e57373;' : ''}`">{{ unTerrorList.length }}</span>]
             <v-icon 
               :class="btnActv('UNTerror') ? 'active' : ''" 
-              v-text="'mdi-menu-down'" 
-              color="white"></v-icon>
+              color="white">
+              {{ mdiMenuDown }}
+              </v-icon>
           </v-btn>
           <v-scroll-x-transition hide-on-leave>
             <v-card v-show="btnActv('UNTerror')" class="mb-2 item-card">
@@ -356,8 +359,7 @@
             ЄС(Європейський союз) Санкцiї&nbsp;-&nbsp;[<span :style="`color: ${esSanctionList.length > 0 ? '#e57373;' : ''}`">{{esSanctionList.length}}</span>]
             <v-icon
               :class="btnActv('EUSanc') ? 'active' : ''" 
-              v-text="'mdi-menu-down'" 
-              color="white"></v-icon>
+              color="white">{{ mdiMenuDown }}</v-icon>
           </v-btn>
           <v-scroll-x-transition hide-on-leave>
             <v-card v-show="btnActv('EUSanc')" class="mb-2 item-card">
@@ -376,8 +378,7 @@
             :color="btnActv('USSanc') ? 'grey darken-1' : 'grey darken-3'">
             Санкцiйний перелiк осiб (Юр./фiз.) США&nbsp;-&nbsp;[<span :style="`color: ${usSanctionList.length > 0 ? '#e57373;' : ''}`">{{ usSanctionList.length }}</span>]
             <v-icon :class="btnActv('USSanc') ? 'active' : ''" 
-              v-text="'mdi-menu-down'" 
-              color="white"></v-icon>
+              color="white">{{ mdiMenuDown }}</v-icon>
           </v-btn>
           <v-scroll-x-transition hide-on-leave>
             <v-card v-show="btnActv('USSanc')" class="mb-2 item-card">
@@ -555,7 +556,11 @@
   import { 
       mdiClose, 
       mdiAccountSearch,
-      mdiMenuDown
+      mdiMenuDown,
+      mdiInformation,
+      mdiAxisZRotateClockwise,
+      mdiWindowMinimize,
+      mdiTextBoxSearchOutline
     } from '@mdi/js'
 
   import { letters } from '@/utils/utils'
@@ -729,7 +734,11 @@
       /* Icons */
       mdiClose,
       mdiAccountSearch,
-      mdiMenuDown
+      mdiMenuDown,
+      mdiInformation,
+      mdiAxisZRotateClockwise,
+      mdiWindowMinimize,
+      mdiTextBoxSearchOutline
     }),
 
 

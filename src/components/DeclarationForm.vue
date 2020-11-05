@@ -1315,7 +1315,7 @@
 }
 
 table.req-info {
-  padding-top: 2px;
+  padding-top: 7px;
 }
 
 table.req-info td,th {

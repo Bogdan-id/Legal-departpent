@@ -121,7 +121,10 @@
                   <template #expanded-item="{ headers, item }">
                     <v-scroll-y-reverse-transition>
                       <td class="pa-0 custom-td" :colspan="headers.length" v-show="edrExpandedW">
-                        <v-simple-table dense mobile-breakpoint="600" v-if="item.founders.length">
+                        <v-simple-table
+                          v-if="item.founders.length" 
+                          :class="item.beneficialOwners.length ? 'half-table' : ''" 
+                          dense>
                           <template #default>
                             <thead>
                               <tr style="background: #f5f5dc!important;">
@@ -131,8 +134,27 @@
                               </tr>
                             </thead>
                             <tbody>
-                              <tr
-                                v-for="(i, k) in item.founders"
+                              <tr v-for="(i, k) in item.founders"
+                                :key="k">
+                                <td class="d-sm-table-cell">{{ k + 1 + ". " + i }}</td>
+                              </tr>
+                            </tbody>
+                          </template>
+                        </v-simple-table>
+                        <v-simple-table 
+                          v-if="item.beneficialOwners.length"
+                          :class="item.founders.length ? 'half-table' : ''"  
+                          dense>
+                          <template #default>
+                            <thead>
+                              <tr style="background: #f5f5dc!important;">
+                                <th class="text-left black--text">
+                                  Бенефiцiарнi власники:
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr v-for="(i, k) in item.beneficialOwners"
                                 :key="k">
                                 <td class="d-sm-table-cell">{{ k + 1 + ". " + i }}</td>
                               </tr>
@@ -325,7 +347,7 @@
                   <template #expanded-item="{ item, headers }">
                     <v-scroll-y-reverse-transition>
                       <td class="pa-0 custom-td" :colspan="headers.length" v-show="unTerrorExpandedW">
-                        <v-simple-table dense mobile-breakpoint="600" v-if="item.alsoKnown.length">
+                        <v-simple-table  dense v-if="item.alsoKnown.length">
                           <template #default>
                             <thead>
                               <tr>
@@ -572,66 +594,67 @@
     name: 'DeclarationForm',
     data: () => ({
       controller: new AbortController(),
-      // https://pacific-dawn-21711.herokuapp.com
+      // https:***//pacific-dawn-21711.herokuapp.com
+      // http:***//localhost:8000
       edrByInitials: {
         text: 'Публiчнi особи (Фiз)', 
         desc: 'edrByInitials',
-        url: 'https://pacific-dawn-21711.herokuapp.com/get-edr-persons'
+        url: 'http://localhost:8000/get-edr-persons'
       },
       edrByEdrpou: {
         text: 'Публiчнi особи (Фiз)', 
         desc: 'edrByEdrpou',
-        url: 'https://pacific-dawn-21711.herokuapp.com/get-edr-legal'
+        url: 'http://localhost:8000/get-edr-legal'
       },
       pepByInitials: {
         text: 'Публiчнi особи (Фiз)', 
         desc: 'pepByInitials',
-        url: 'https://pacific-dawn-21711.herokuapp.com/get-public-person'
+        url: 'http://localhost:8000/get-public-person'
       },
       pepByEdrpou: {
         text: 'Публiчнi особи за ЄДРПОУ (Фiз)',
         desc: 'pepByEdrpou',
-        url: 'https://pacific-dawn-21711.herokuapp.com/get-related-persons'
+        url: 'http://localhost:8000/get-related-persons'
       },
       eDeclarations: { 
         text: 'E-декларації (Фiз)', 
         desc: 'eDeclarations',
-        url: 'https://pacific-dawn-21711.herokuapp.com/get-declarations'
+        url: 'http://localhost:8000/get-declarations'
       },
       rnboLegals: {
         text: 'Санкцiї до юридичних осiб (Юр)', 
         desc: 'rnboLegals',
-        url: 'https://pacific-dawn-21711.herokuapp.com/get-legal-sanctions'
+        url: 'http://localhost:8000/get-legal-sanctions'
       },
       rnboPersons: {
         text: 'Санкцiї до фiзичних осiб (Фiз)', 
         desc: 'rnboList',
-        url: 'https://pacific-dawn-21711.herokuapp.com/get-person-sanctions'
+        url: 'http://localhost:8000/get-person-sanctions'
       },
       unSanctions: {
         text: 'Cанкцiйний перелiк ООН (Фiз. особи)',
         desc: 'unSanctions',
-        url: 'https://pacific-dawn-21711.herokuapp.com/un-person-sanctions'
+        url: 'http://localhost:8000/un-person-sanctions'
       },
       unTerrors: {
         text: 'База терористiв (Фiз. особи)',
         desc: 'unTerrors',
-        url: 'https://pacific-dawn-21711.herokuapp.com/un-person-terror'   
+        url: 'http://localhost:8000/un-person-terror'   
       },
       usPersonSunctions: {
         text: 'USA individual Sunction list',
         desc: 'USSancions',
-        url: 'https://pacific-dawn-21711.herokuapp.com/get-us-person-sanctions/'
+        url: 'http://localhost:8000/get-us-person-sanctions/'
       },
       esPersonSunctions: { 
         text: 'Europe individual Sunction list',
         desc: 'EUSunctions',
-        url: 'https://pacific-dawn-21711.herokuapp.com/get-eu-person-sanctions/'
+        url: 'http://localhost:8000/get-eu-person-sanctions/'
       },
       esLegalSunctions: {
         text: 'Europe entity Sunction list',
         desc: 'EUSunctions',
-        url: 'https://pacific-dawn-21711.herokuapp.com/get-eu-legal-sanctions/'
+        url: 'http://localhost:8000/get-eu-legal-sanctions/'
       },
 
       EDRTH: [
@@ -776,9 +799,8 @@
         .then(arr => Object.fromEntries(arr))
       },
 
-      async getInitials() {
-        if(this.choosedPerson) return this.initialArr
 
+      async getInitials() {
         return await this.startRequest(
           this.requestController.edrUrl,
           this.reqOption(this.objectController(), 'POST'),
@@ -787,21 +809,28 @@
             return res
           }
         ).then(res => {
+          let arr = Array.isArray(res) ? res : [res]
           return {
-            edrList: Array.isArray(res) ? res : [res],
-            edrInitials: this.uniqArr(res)
+            edrList: this.filterEdrPerson(arr),
+            edrInitials: this.choosedPerson 
+              ? this.initialArr.edrInitials 
+              : this.uniqArr(res)
           }
         })
       },
 
+      filterEdrPerson(arr) {
+        console.log({FILTEREDPERSON: arr})
+        return arr
+      },
+
       uniqArr(res) {
-        console.log({FOUNDERS: res.founders})
-        if(!res) return []
-        return res.founders
-        // return res = [...new Set(Object.values(res.beneficialOwners)
-        //     .concat(Object.values(res.founders), 
-        //     [res.boss]))
-        //   ]
+        if(!res || !res.length) return []
+        res = res[0]
+        return [
+          ...new Set(res.beneficialOwners.concat(res.founders, [res.boss]))
+        ]
+        
       },
 
       async mapResult() {
@@ -855,6 +884,7 @@
         return Promise.all(this.edrInitials.map(this.postInitials))
           .then(obj => this.objectFilter(obj))
       },
+
 
       getPersonFromLegal() {
         return this.personUrls.map(async obj => {
@@ -920,7 +950,7 @@
               firstName: firstName,
               patronymic: patronymic
             }, 'POST'),
-          ).then(v => {console.log({neededObj: v[0]}); return v[0]})
+          ).then(v => v[0])
         } catch(err) {
           this.notify(this.err(err))
         }

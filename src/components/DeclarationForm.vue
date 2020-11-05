@@ -536,7 +536,7 @@
           </v-card-text>
           <v-card-actions 
             class="justify-center">
-            <v-slide-x-transition>
+            <v-slide-x-transition hide-on-leave>
               <v-btn 
                 v-show="requisites"
                 @click="mapResult()"

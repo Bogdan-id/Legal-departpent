@@ -193,7 +193,7 @@
                     </v-scroll-y-reverse-transition>
                   </template>
                   <template #item.action="{ item }">
-                    <v-btn small @click="goToPage(item)">
+                    <v-btn small @click="goToPage(item.url)">
                       <v-icon>{{ mdiTextBoxSearchOutline }}</v-icon>
                     </v-btn>
                   </template>

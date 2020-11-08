@@ -2,17 +2,58 @@
   <v-row class="api-form text-center justify-center">
     <v-tooltip bottom>
       <template v-slot:activator="{ on }">
-        <v-btn 
-          v-show="dialog && !showRequisite"
-          @click="showRequisite = !showRequisite"
-          v-on="on"
-          class="toggle-hint-btn" 
-          small>
-          <v-icon color="grey darken-3">{{ mdiInformation }}</v-icon>
-        </v-btn>
+        <v-fade-transition hide-on-leave>
+          <v-btn 
+            v-show="dialog && !showRequisite"
+            @click="showRequisite = !showRequisite"
+            v-on="on"
+            class="toggle-hint-btn" 
+            small>
+            <v-icon color="grey darken-3">{{ mdiInformation }}</v-icon>
+          </v-btn>
+        </v-fade-transition>
       </template>
       <span>Вiдобразити реквiзити запиту</span>
     </v-tooltip>
+    <v-tooltip bottom>
+      <template v-slot:activator="{ on }">
+        <v-scroll-x-transition hide-on-leave>
+          <v-btn 
+            v-show="!dialog && !showRule && (choosedPerson || choosedLegal)"
+            @click="showRule = !showRule"
+            v-on="on"
+            class="toggle-hint-btn white--text"
+            color="#424242" 
+            small>
+            <v-icon color="grey lighten-4">{{ mdiSortAlphabeticalAscendingVariant }}</v-icon>
+          </v-btn>
+        </v-scroll-x-transition>
+      </template>
+      <span>Переглянути правила за якими здiйснюється транслiтерацiя</span>
+    </v-tooltip>
+    <v-dialog v-model="showRule"
+      :max-width="800">
+      <v-card style="max-height: 600px; overflow-x: hidden; overflow-y: scroll; border-radius: 0px;">
+        <v-card-text class="pa-0 pb-9" style="position: relative;">
+          <v-btn 
+            @click="showRule = !showRule"
+            style="position: absolute; right: 2px; top: 0px;" 
+            icon><v-icon color="grey lighten-3">{{ mdiClose }}</v-icon></v-btn>
+          <v-data-table
+            :headers="transliteRuleTH"
+            :items="transliteRule"
+            :items-per-page="100"
+            class="alphabet-table"
+            hide-default-footer
+            dense>
+            ua en position
+            <template #item.ua="{ item }">
+              <span>{{ item.ua }}</span>
+            </template>
+          </v-data-table>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
     <v-scroll-y-transition>
       <v-card v-show="dialog && showRequisite" class="card-req-info">
         <v-card-text class="req-info-wrapper">
@@ -20,7 +61,6 @@
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
               <v-btn 
-                v-show="choosedPerson"
                 @click="ukVersion = !ukVersion" 
                 v-on="on"
                 class="change-req-info-btn" 
@@ -70,10 +110,30 @@
               </tr>
             </table>
           </v-fade-transition>
-          <div v-show="choosedLegal" style="padding-top: 7px;">
-            <span style="color: black;">ЄДРПОУ </span>
-            <span>{{ edrpou }}</span>
-          </div>
+          <v-fade-transition hide-on-leave>
+            <table v-show="choosedLegal && ukVersion" class="req-info">
+              <tr>
+                <th>ЄДРПОУ</th>
+                <th>Компанiя</th>
+              </tr>
+              <tr>
+                <td style="text-align: center;">{{ edrpou }}</td>
+                <td style="text-align: center;">{{ companyName ? companyName : "--" }}</td>
+              </tr>
+            </table>
+          </v-fade-transition>
+          <v-fade-transition hide-on-leave>
+            <table v-show="choosedLegal && !ukVersion" class="req-info">
+              <tr>
+                <th>ЄДРПОУ</th>
+                <th>Компанiя</th>
+              </tr>
+              <tr>
+                <td style="text-align: center;">{{ edrpou }}</td>
+                <td style="text-align: center;">{{ companyName ? this.transliterate(companyName) : "--" }}</td>
+              </tr>
+            </table>
+          </v-fade-transition>
         </v-card-text>
       </v-card>
     </v-scroll-y-transition>
@@ -112,7 +172,8 @@
                 <v-data-table
                   :headers="EDRTH"
                   :items="edrList"
-                  :items-per-page="10"
+                  :items-per-page="15"
+                  :hide-default-footer="edrList && edrList.length < 15"
                   :expanded.sync="edrExpanded"
                   show-expand
                   :single-expand="true"
@@ -121,15 +182,33 @@
                   <template #expanded-item="{ headers, item }">
                     <v-scroll-y-reverse-transition>
                       <td class="pa-0 custom-td" :colspan="headers.length" v-show="edrExpandedW">
-                        <v-simple-table
-                          v-if="item.founders.length" 
-                          :class="item.beneficialOwners.length ? 'half-table' : ''" 
+                        <v-simple-table 
+                          v-if="item.beneficialOwners.length"
                           dense>
                           <template #default>
                             <thead>
                               <tr style="background: #f5f5dc!important;">
                                 <th class="text-left black--text">
-                                  Засновники:
+                                  Бенефiцiарний власник:
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr v-for="(i, k) in item.beneficialOwners"
+                                :key="k">
+                                <td class="d-sm-table-cell">{{ k + 1 + ". " + i }}</td>
+                              </tr>
+                            </tbody>
+                          </template>
+                        </v-simple-table>
+                        <v-simple-table
+                          v-if="item.founders.length" 
+                          dense>
+                          <template #default>
+                            <thead>
+                              <tr style="background: #f5f5dc!important;">
+                                <th class="text-left black--text">
+                                  Засновник:
                                 </th>
                               </tr>
                             </thead>
@@ -141,22 +220,38 @@
                             </tbody>
                           </template>
                         </v-simple-table>
-                        <v-simple-table 
-                          v-if="item.beneficialOwners.length"
-                          :class="item.founders.length ? 'half-table' : ''"  
+                        <v-simple-table
+                          v-if="item.activity" 
                           dense>
                           <template #default>
                             <thead>
                               <tr style="background: #f5f5dc!important;">
                                 <th class="text-left black--text">
-                                  Бенефiцiарнi власники:
+                                  Дiяльнiсть
                                 </th>
                               </tr>
                             </thead>
                             <tbody>
-                              <tr v-for="(i, k) in item.beneficialOwners"
-                                :key="k">
-                                <td class="d-sm-table-cell">{{ k + 1 + ". " + i }}</td>
+                              <tr>
+                                <td class="d-sm-table-cell">{{ item.activity }}</td>
+                              </tr>
+                            </tbody>
+                          </template>
+                        </v-simple-table>
+                        <v-simple-table
+                          v-if="item.address" 
+                          dense>
+                          <template #default>
+                            <thead>
+                              <tr style="background: #f5f5dc!important;">
+                                <th class="text-left black--text">
+                                  Адреса
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td class="d-sm-table-cell">{{ item.address }}</td>
                               </tr>
                             </tbody>
                           </template>
@@ -186,7 +281,8 @@
                 <v-data-table
                   :headers="PEPTH"
                   :items="pepList"
-                  :items-per-page="10"
+                  :items-per-page="15"
+                  :hide-default-footer="pepList && pepList.length < 15"
                   :expanded.sync="pepExpanded"
                   show-expand
                   single-expand
@@ -201,6 +297,7 @@
                           :headers="pepNestedLegal"
                           :items="item.related_companies"
                           :items-per-page="15"
+                          :hide-default-footer="item.related_companies && item.related_companies.length < 15"
                           dense>
                         </v-data-table>
                         <div class="font-weight-bold">Зв`язки з фiзичними особами</div>
@@ -209,6 +306,7 @@
                           :headers="pepNestedPerson"
                           :items="item.related_persons"
                           :items-per-page="15"
+                          :hide-default-footer="item.related_persons && item.related_persons.length < 15"
                           dense>
                         </v-data-table>
                       </td>
@@ -242,7 +340,8 @@
                 <v-data-table
                   :headers="EDTH"
                   :items="eDeclarationList"
-                  :items-per-page="10" 
+                  :items-per-page="15" 
+                  :hide-default-footer="eDeclarationList && eDeclarationList.length < 15"
                   dense>
                   <template #item.action="{ item }">
                     <v-btn small @click="goToPage(item.infocard.url)">
@@ -292,25 +391,153 @@
             <v-card v-show="btnActv('UNSanc')" class="mb-2 item-card">
               <v-card-text v-show="unSanctionList.length">
                 <v-data-table
+                  v-if="choosedPerson"
                   color="black"
-                  :headers="unSanctionTH"
+                  :headers="UNOsancPerson"
                   :items="unSanctionList"
                   :expanded.sync="unSancExpanded"
                   show-expand
                   single-expand
                   item-key="fullName"
-                  :items-per-page="10" 
+                  :items-per-page="15"
+                  :hide-default-footer="unSanctionList && unSanctionList.length < 15"
                   dense>
+                  <template #item.designation="{ item }">
+                    <span>{{ item.designation || '--' }}</span>
+                  </template>
                   <template #expanded-item="{ item, headers }">
                     <v-scroll-y-reverse-transition>
                       <td class="pa-0 custom-td" :colspan="headers.length" v-show="unSancExpandedW">
-                        <v-data-table 
-                          class="nested-table"
-                          :headers="unSanctionTHNested"
-                          :items="item.INDIVIDUAL_ALIAS"
-                          :items-per-page="15"
+                        <v-simple-table
+                          v-if="item.INDIVIDUAL_ALIAS && item.INDIVIDUAL_ALIAS.length" 
                           dense>
-                        </v-data-table>
+                          <template #default>
+                            <thead>
+                              <tr style="background: #f5f5dc!important;">
+                                <th class="text-left black--text">
+                                  Також вiдомий як:
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr v-for="(i, k) in item.INDIVIDUAL_ALIAS"
+                                :key="k">
+                                <td class="d-sm-table-cell">{{ k + 1 + '. ' + i.ALIAS_NAME }}</td>
+                              </tr>
+                            </tbody>
+                          </template>
+                        </v-simple-table>
+                        <v-simple-table 
+                          v-if="item.comment"
+                          dense>
+                          <template #default>
+                            <thead>
+                              <tr style="background: #f5f5dc!important;">
+                                <th class="text-left black--text">
+                                  Додаткова iнформацiя
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td class="d-sm-table-cell">{{ item.comment }}</td>
+                              </tr>
+                            </tbody>
+                          </template>
+                        </v-simple-table>
+                      </td>
+                    </v-scroll-y-reverse-transition>
+                  </template>
+                </v-data-table>
+                <v-data-table 
+                  v-if="choosedLegal"
+                  :headers="UNOsancLegal"
+                  :items="unSanctionList"
+                  :expanded.sync="unSancExpanded"
+                  show-expand
+                  single-expand
+                  item-key="_id"
+                  :items-per-page="15"
+                  :hide-default-footer="unSanctionList && unSanctionList.length < 15"
+                  dense>
+                  <template #expanded-item="{ headers, item }">
+                    <v-scroll-y-reverse-transition>
+                      <td class="pa-0 custom-td" :colspan="headers.length" v-show="unSancExpandedW">
+                        <v-simple-table
+                          v-if="item.ENTITY_ADDRESS && item.ENTITY_ADDRESS.length" 
+                          dense>
+                          <template #default>
+                            <thead>
+                              <tr style="background: #f5f5dc!important;">
+                                <th class="text-left black--text">
+                                  Країна
+                                </th>
+                                <th class="text-left black--text">
+                                  Провiнцiя
+                                </th>
+                                <th class="text-left black--text">
+                                  Мiсто
+                                </th>
+                                <th class="text-left black--text">
+                                  Вулиця
+                                </th>
+                                <th class="text-left black--text">
+                                  Причетний до
+                                </th>
+                                <!-- <th class="text-left black--text">
+                                  ZIP_CODE
+                                </th> -->
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr v-for="(i, k) in item.ENTITY_ADDRESS"
+                                :key="k">
+                                <td class="d-sm-table-cell">{{ (i.COUNTRY || '--') }}</td>
+                                <td class="d-sm-table-cell">{{ (i.STATE_PROVINCE || '--') }}</td>
+                                <td class="d-sm-table-cell">{{ (i.CITY || '--') }}</td>
+                                <td class="d-sm-table-cell">{{ (i.STREET || '--') }}</td>
+                                <td class="d-sm-table-cell">{{ (i.NOTE || '--') }}</td>
+                              </tr>
+                            </tbody>
+                          </template>
+                        </v-simple-table>
+                        <v-simple-table 
+                          v-if="item.ENTITY_ALIAS && item.ENTITY_ALIAS.length"
+                          dense>
+                          <template #default>
+                            <thead>
+                              <tr style="background: #f5f5dc!important;">
+                                <th class="text-left black--text">
+                                  Також вiдомий як:
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr v-for="(i, k) in item.ENTITY_ALIAS"
+                                :key="k">
+                                <td class="d-sm-table-cell">{{ k + 1 + ". " + i.ALIAS_NAME }}</td>
+                              </tr>
+                            </tbody>
+                          </template>
+                        </v-simple-table>
+                        <v-simple-table 
+                          v-if="item.comment"
+                          dense>
+                          <template #default>
+                            <thead>
+                              <tr style="background: #f5f5dc!important;">
+                                <th class="text-left black--text">
+                                  Додаткова iнформацiя
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td class="d-sm-table-cell">{{ item.comment }}</td>
+                              </tr>
+                            </tbody>
+                          </template>
+                        </v-simple-table>
                       </td>
                     </v-scroll-y-reverse-transition>
                   </template>
@@ -335,22 +562,24 @@
             <v-card v-show="btnActv('UNTerror')" class="mb-2 item-card">
               <v-card-text v-show="unTerrorList.length">
                 <v-data-table
+                  v-if="choosedPerson"
                   color="black"
-                  :headers="unTerrorTH"
+                  :headers="UNOterrorPersonTH"
                   :items="unTerrorList"
                   :expanded.sync="unTerrorExpanded"
                   show-expand
                   single-expand
                   item-key="initials"
-                  :items-per-page="10" 
+                  :items-per-page="15" 
+                  :hide-default-footer="unTerrorList && unTerrorList.length < 15"
                   dense>
                   <template #expanded-item="{ item, headers }">
                     <v-scroll-y-reverse-transition>
                       <td class="pa-0 custom-td" :colspan="headers.length" v-show="unTerrorExpandedW">
-                        <v-simple-table  dense v-if="item.alsoKnown.length">
+                        <v-simple-table dense v-if="item && item.fullName">
                           <template #default>
                             <thead>
-                              <tr>
+                              <tr style="background: #f5f5dc!important;">
                                 <th class="text-left black--text">
                                   Також вiдомий як:
                                 </th>
@@ -361,6 +590,79 @@
                                 v-for="(i, k) in item.alsoKnown"
                                 :key="k">
                                 <td class="d-sm-table-cell">{{ k + 1 + ". " + i }}</td>
+                              </tr>
+                            </tbody>
+                          </template>
+                        </v-simple-table>
+                        <v-simple-table 
+                          v-if="item.comments"
+                          dense>
+                          <template #default>
+                            <thead>
+                              <tr style="background: #f5f5dc!important;">
+                                <th class="text-left black--text">
+                                  Додаткова iнформацiя
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td class="d-sm-table-cell">{{ item.comments }}</td>
+                              </tr>
+                            </tbody>
+                          </template>
+                        </v-simple-table>
+                      </td>
+                    </v-scroll-y-reverse-transition>
+                  </template>
+                </v-data-table>
+                <v-data-table
+                  v-if="choosedLegal"
+                  color="black"
+                  :headers="UNOterrorLegalTH"
+                  :items="unTerrorList"
+                  :expanded.sync="unTerrorExpanded"
+                  show-expand
+                  single-expand
+                  item-key="initials"
+                  :items-per-page="15" 
+                  :hide-default-footer="unTerrorList && unTerrorList.length < 15"
+                  dense>
+                  <template #expanded-item="{ item, headers }">
+                    <v-scroll-y-reverse-transition>
+                      <td class="pa-0 custom-td" :colspan="headers.length" v-show="unTerrorExpandedW">
+                        <v-simple-table dense v-if="item && item.fullName">
+                          <template #default>
+                            <thead>
+                              <tr style="background: #f5f5dc!important;">
+                                <th class="text-left black--text">
+                                  Псевдонiм:
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr
+                                v-for="(i, k) in item.alsoKnown"
+                                :key="k">
+                                <td class="d-sm-table-cell">{{ k + 1 + ". " + i }}</td>
+                              </tr>
+                            </tbody>
+                          </template>
+                        </v-simple-table>
+                        <v-simple-table 
+                          v-if="item.comments"
+                          dense>
+                          <template #default>
+                            <thead>
+                              <tr style="background: #f5f5dc!important;">
+                                <th class="text-left black--text">
+                                  Додаткова iнформацiя
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td class="d-sm-table-cell">{{ item.comments }}</td>
                               </tr>
                             </tbody>
                           </template>
@@ -406,26 +708,30 @@
             <v-card v-show="btnActv('USSanc')" class="mb-2 item-card">
               <v-card-text v-show="usSanctionList.length">
                 <v-data-table
+                  v-if="choosedPerson"
                   color="black"
-                  :headers="usSanctionTH"
+                  :headers="usSanctionPersonTH"
                   :items="usSanctionList"
                   :expanded.sync="usSanctionExpanded"
                   show-expand
                   single-expand
                   item-key="_id"
-                  :items-per-page="10" 
+                  :items-per-page="15"
+                  :hide-default-footer="usSanctionList && usSanctionList.length < 15"
                   dense>
+                  <template #item.title="{ item }">
+                    <span>{{ item.title || '--' }}</span>
+                  </template>
                   <template #expanded-item="{ item, headers }">
                     <v-scroll-y-reverse-transition>
                       <td class="pa-0 custom-td" :colspan="headers.length" v-show="usSanctionExpandedW">
                         <v-simple-table 
-                          v-if="item.akaList.length"
-                          class="half-table" 
+                          v-if="item.akaList && item.akaList.length"
                           dense 
                           mobile-breakpoint="600" >
                           <template #default>
                             <thead>
-                              <tr>
+                              <tr style="background: #f5f5dc!important;">
                                 <th class="text-left black--text">
                                   Також вiдомий як:
                                 </th>
@@ -440,50 +746,154 @@
                             </tbody>
                           </template>
                         </v-simple-table>
-                        <div class="half-table">
-                          <v-simple-table 
-                            v-if="item.dateOfBirthList.length"
-                            dense 
-                            mobile-breakpoint="600">
-                            <template #default>
-                              <thead>
-                                <tr>
-                                  <th class="text-left black--text">
-                                    Дата народження
-                                  </th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <tr
-                                  v-for="(i, k) in item.dateOfBirthList"
-                                  :key="k">
-                                  <td class="d-sm-table-cell">{{ i.dateOfBirth }}</td>
-                                </tr>
-                              </tbody>
-                            </template>
-                          </v-simple-table>
-                          <v-simple-table 
-                            v-if="item.placeOfBirthList.length" 
-                            dense 
-                            mobile-breakpoint="600">
-                            <template #default>
-                              <thead>
-                                <tr>
-                                  <th class="text-left black--text">
-                                    Мicце народження
-                                  </th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <tr
-                                  v-for="(i, k) in item.placeOfBirthList"
-                                  :key="k">
-                                  <td class="d-sm-table-cell">{{ i.placeOfBirth }}</td>
-                                </tr>
-                              </tbody>
-                            </template>
-                          </v-simple-table>
-                        </div>
+                        <v-simple-table 
+                          v-if="item.dateOfBirthList && item.dateOfBirthList.length"
+                          dense 
+                          mobile-breakpoint="600">
+                          <template #default>
+                            <thead>
+                              <tr style="background: #f5f5dc!important;">
+                                <th class="text-left black--text">
+                                  Дата народження
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr
+                                v-for="(i, k) in item.dateOfBirthList"
+                                :key="k">
+                                <td class="d-sm-table-cell">{{ i.dateOfBirth }}</td>
+                              </tr>
+                            </tbody>
+                          </template>
+                        </v-simple-table>
+                        <v-simple-table 
+                          v-if="item.placeOfBirthList && item.placeOfBirthList.length" 
+                          dense 
+                          mobile-breakpoint="600">
+                          <template #default>
+                            <thead>
+                              <tr style="background: #f5f5dc!important;">
+                                <th class="text-left black--text">
+                                  Мicце народження
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr
+                                v-for="(i, k) in item.placeOfBirthList"
+                                :key="k">
+                                <td class="d-sm-table-cell">{{ i.placeOfBirth }}</td>
+                              </tr>
+                            </tbody>
+                          </template>
+                        </v-simple-table>
+                        <v-simple-table 
+                          v-if="item.addressList && item.addressList.length"
+                          dense>
+                          <template #default>
+                            <thead>
+                              <tr style="background: #f5f5dc!important;">
+                                <th class="text-left black--text">
+                                  Країна
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr v-for="(item, k) in item.addressList"
+                                :key="k">
+                                <td class="d-sm-table-cell">{{ k + 1 + '. ' + item.country }}</td>
+                              </tr>
+                            </tbody>
+                          </template>
+                        </v-simple-table>
+                      </td>
+                    </v-scroll-y-reverse-transition>
+                  </template>
+                </v-data-table>
+                <v-data-table
+                  v-if="choosedLegal"
+                  color="black"
+                  :headers="usSanctionLegalTH"
+                  :items="usSanctionList"
+                  :expanded.sync="usSanctionExpanded"
+                  show-expand
+                  single-expand
+                  item-key="_id"
+                  :items-per-page="15"
+                  :hide-default-footer="usSanctionList && usSanctionList.length < 15"
+                  dense>
+                  <template #item.remarks="{ item }">
+                    <span>{{ item.remarks || '--' }}</span>
+                  </template>
+                  <template #expanded-item="{ item, headers }">
+                    <v-scroll-y-reverse-transition>
+                      <td class="pa-0 custom-td" :colspan="headers.length" v-show="usSanctionExpandedW">
+                        <v-simple-table 
+                          v-if="item.akaList && item.akaList.length"
+                          dense 
+                          mobile-breakpoint="600" >
+                          <template #default>
+                            <thead>
+                              <tr style="background: #f5f5dc!important;">
+                                <th class="text-left black--text">
+                                  Псевдонiм:
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr
+                                v-for="(i, k) in item.akaList"
+                                :key="k">
+                                <td class="d-sm-table-cell">{{ k + 1 + ". " + i.fullName }}</td>
+                              </tr>
+                            </tbody>
+                          </template>
+                        </v-simple-table>
+                        <v-simple-table 
+                          v-if="item.addressList && item.addressList.length"
+                          dense 
+                          mobile-breakpoint="600">
+                          <template #default>
+                            <thead>
+                              <tr style="background: #f5f5dc!important;">
+                                <th class="text-left black--text">Країна</th>
+                                <th class="text-left black--text">Мiсто</th>
+                                <th class="text-left black--text">Пошт. iндекс</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr
+                                v-for="(i, k) in item.addressList"
+                                :key="k">
+                                <td class="d-sm-table-cell">{{ i.country || '--'}}</td>
+                                <td class="d-sm-table-cell">{{ i.city || '--' }}</td>
+                                <td class="d-sm-table-cell">{{ i.postalCode || '--' }}</td>
+                              </tr>
+                            </tbody>
+                          </template>
+                        </v-simple-table>
+                        <v-simple-table 
+                          v-if="item.placeOfBirthList && item.placeOfBirthList.length" 
+                          dense 
+                          mobile-breakpoint="600">
+                          <template #default>
+                            <thead>
+                              <tr style="background: #f5f5dc!important;">
+                                <th class="text-left black--text">
+                                  Мicце народження
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr
+                                v-for="(i, k) in item.placeOfBirthList"
+                                :key="k">
+                                <td class="d-sm-table-cell">{{ i.placeOfBirth }}</td>
+                              </tr>
+                            </tbody>
+                          </template>
+                        </v-simple-table>
                       </td>
                     </v-scroll-y-reverse-transition>
                   </template>
@@ -553,6 +963,12 @@
                   :label="'ЄДРПОУ'"
                   color="black">
                 </v-text-field>
+                <v-text-field
+                  @input="clearData()"
+                  v-model="companyName"
+                  :label="'Назва компанiї'"
+                  color="black">
+                </v-text-field>
               </div>
             </v-fade-transition>
           </v-card-text>
@@ -563,7 +979,7 @@
                 v-show="requisites"
                 @click="mapResult()"
                 color="grey darken-3"
-                class="white--text"
+                class="white--text sbmt-btn"
                 small
                 :disabled="searchVariant === null"
                 :loading="loading">
@@ -585,7 +1001,8 @@
       mdiInformation,
       mdiAxisZRotateClockwise,
       mdiWindowMinimize,
-      mdiTextBoxSearchOutline
+      mdiTextBoxSearchOutline,
+      mdiSortAlphabeticalAscendingVariant
     } from '@mdi/js'
 
   import { letters } from '@/utils/utils'
@@ -596,65 +1013,113 @@
       controller: new AbortController(),
       // https:***//pacific-dawn-21711.herokuapp.com
       // http:***//localhost:8000
+
+      /* Individual */
+
+      transliteRule: [
+        {ua: "Аа", en: "Aa", position: "", exampleUK: "Алушта Андрій", exampleEN: "Alushta Andrii"},
+        {ua: "Бб", en: "Bb", position: "", exampleUK: "Борщагівка Борисенко", exampleEN: "Borshchahivka Borysenko"},
+        {ua: "Вв", en: "Vv", position: "", exampleUK: "Вінниця Володимир", exampleEN: "Vinnytsia Volodymyr"},
+        {ua: "Гг", en: "Hh", position: "", exampleUK: "Гадяч Богдан Згурський", exampleEN: "Hadiach Bohdan Zghurskyi"},
+        {ua: "Ґґ", en: "Gg", position: "", exampleUK: "Ґалаґан Ґорґани", exampleEN: "Galagan Gorgany"},
+        {ua: "Дд", en: "Dd", position: "", exampleUK: "Донецьк Дмитро", exampleEN: "Donetsk Dmytro"},
+        {ua: "Ее", en: "Ee", position: "", exampleUK: "Рівне Олег Есмань", exampleEN: "Rivne Oleh Esman"},
+        {ua: "Єє", en: "Ye", position: "ie", exampleUK: "Єнакієве Гаєвич Короп'є", exampleEN: "Yenakiieve Haievych Koropie"},
+        {ua: "Жж", en: "Zh", position: "", exampleUK: "Житомир Жанна Жежелів", exampleEN: "Zhytomyr Zhanna Zhezheliv"},
+        {ua: "Зз", en: "Zz", position: "", exampleUK: "Закарпаття Казимирчук", exampleEN: "Zakarpattia Kazymyrchuk"},
+        {ua: "Ии", en: "Yy", position: "", exampleUK: "Медвин Михайленко", exampleEN: "Medvyn Mykhailenko"},
+        {ua: "Іі", en: "Ii", position: "", exampleUK: "Іванків Іващенко", exampleEN: "Ivankiv Ivashchenko"},
+        {ua: "Її", en: "Yi", position: "i", exampleUK: "Їжакевич Кадиївка Мар'їне", exampleEN: "Yizhakevych Kadyivka Marine"},
+        {ua: "Йй", en: "Y", position: "i", exampleUK: "Йосипівка Стрий Олексій", exampleEN: "Yosypivka Stryi Oleksii"},
+        {ua: "Кк", en: "Kk", position: "", exampleUK: "Київ Коваленко", exampleEN: "Kyiv Kovalenko"},
+        {ua: "Лл", en: "Ll", position: "", exampleUK: "Лебедин Леонід", exampleEN: "Lebedyn Leonid"},
+        {ua: "Мм", en: "Mm", position: "", exampleUK: "Миколаїв Маринич", exampleEN: "Mykolaiv Marynych"},
+        {ua: "Нн", en: "Nn", position: "", exampleUK: "Ніжин Наталія", exampleEN: "Nizhyn Nataliia"},
+        {ua: "Оо", en: "Oo", position: "", exampleUK: "Одеса Онищенко", exampleEN: "Odesa Onyshchenko"},
+        {ua: "Пп", en: "Pp", position: "", exampleUK: "Полтава Петро", exampleEN: "Poltava Petro"},
+        {ua: "Рр", en: "Rr", position: "", exampleUK: "Решетилівка Рибчинський", exampleEN: "Reshetylivka Rybchynskyi"},
+        {ua: "Сс", en: "Ss", position: "", exampleUK: "Суми Соломія", exampleEN: "Sumy Solomiia"},
+        {ua: "Тт", en: "Tt", position: "", exampleUK: "Тернопіль Троць", exampleEN: "Ternopil Trots"},
+        {ua: "Уу", en: "Uu", position: "", exampleUK: "Ужгород Уляна", exampleEN: "Uzhhorod Uliana"},
+        {ua: "Фф", en: "Ff", position: "", exampleUK: "Фастів Філіпчук", exampleEN: "Fastiv Filipchuk"},
+        {ua: "Хх", en: "Kh", position: "", exampleUK: "Харків Христина", exampleEN: "Kharkiv Khrystyna"},
+        {ua: "Цц", en: "Ts", position: "", exampleUK: "Біла Церква Стеценко", exampleEN: "Bila Tserkva Stetsenko"},
+        {ua: "Чч", en: "Ch", position: "", exampleUK: "Чернівці Шевченко", exampleEN: "Chernivtsi Shevchenko"},
+        {ua: "Шш", en: "Sh", position: "", exampleUK: "Шостка Кишеньки", exampleEN: "Shostka Kyshenky"},
+        {ua: "Щщ", en: "Shch", position: "", exampleUK: "Щербухи Гоща Гаращенко", exampleEN: "Shcherbukhy Hoshcha Harashchenko"},
+        {ua: "Юю", en: "Yu", position: "iu", exampleUK: "Юрій Корюківка", exampleEN: "Yurii Koriukivka"},
+        {ua: "Яя", en: "Ya", position: "ia", exampleUK: "Яготин Ярошенко Костянтин Знам'янка Феодосія", exampleEN: "Yahotyn Yaroshenko Kostiantyn Znamianka Feodosiia"},
+      ],
+
+      transliteRuleTH: [
+        {text: "Українська", value: "ua", sortable: false, align: "start"},
+        {text: "Початок слова (EN)", value: "en", sortable: false, align: "center"},
+        {text: "В iнших поз-iях (EN)", value: "position", sortable: false, align: "center"},
+        {text: "Приклад UK", value: "exampleUK", sortable: false, align: "center"},
+        {text: "Приклад EN", value: "exampleEN", sortable: false, align: "center"},
+      ],
+
       edrByInitials: {
-        text: 'Публiчнi особи (Фiз)', 
         desc: 'edrByInitials',
-        url: 'https://pacific-dawn-21711.herokuapp.com/get-edr-persons'
-      },
-      edrByEdrpou: {
-        text: 'Публiчнi особи (Фiз)', 
-        desc: 'edrByEdrpou',
-        url: 'https://pacific-dawn-21711.herokuapp.com/get-edr-legal'
+        url: 'http://localhost:8000/get-edr-persons'
       },
       pepByInitials: {
-        text: 'Публiчнi особи (Фiз)', 
         desc: 'pepByInitials',
-        url: 'https://pacific-dawn-21711.herokuapp.com/get-public-person'
-      },
-      pepByEdrpou: {
-        text: 'Публiчнi особи за ЄДРПОУ (Фiз)',
-        desc: 'pepByEdrpou',
-        url: 'https://pacific-dawn-21711.herokuapp.com/get-related-persons'
+        url: 'http://localhost:8000/get-public-person'
       },
       eDeclarations: { 
-        text: 'E-декларації (Фiз)', 
         desc: 'eDeclarations',
-        url: 'https://pacific-dawn-21711.herokuapp.com/get-declarations'
-      },
-      rnboLegals: {
-        text: 'Санкцiї до юридичних осiб (Юр)', 
-        desc: 'rnboLegals',
-        url: 'https://pacific-dawn-21711.herokuapp.com/get-legal-sanctions'
+        url: 'http://localhost:8000/get-declarations'
       },
       rnboPersons: {
-        text: 'Санкцiї до фiзичних осiб (Фiз)', 
         desc: 'rnboList',
-        url: 'https://pacific-dawn-21711.herokuapp.com/get-person-sanctions'
+        url: 'http://localhost:8000/get-person-sanctions'
       },
-      unSanctions: {
-        text: 'Cанкцiйний перелiк ООН (Фiз. особи)',
-        desc: 'unSanctions',
-        url: 'https://pacific-dawn-21711.herokuapp.com/un-person-sanctions'
-      },
-      unTerrors: {
-        text: 'База терористiв (Фiз. особи)',
-        desc: 'unTerrors',
-        url: 'https://pacific-dawn-21711.herokuapp.com/un-person-terror'   
+      unPersSanctions: {
+        desc: 'unPersSanctions',
+        url: 'http://localhost:8000/un-person-sanctions'
       },
       usPersonSunctions: {
-        text: 'USA individual Sunction list',
         desc: 'USSancions',
-        url: 'https://pacific-dawn-21711.herokuapp.com/get-us-person-sanctions/'
+        url: 'http://localhost:8000/us-person-sanctions/'
       },
       esPersonSunctions: { 
-        text: 'Europe individual Sunction list',
         desc: 'EUSunctions',
-        url: 'https://pacific-dawn-21711.herokuapp.com/get-eu-person-sanctions/'
+        url: 'http://localhost:8000/get-eu-person-sanctions/'
       },
-      esLegalSunctions: {
-        text: 'Europe entity Sunction list',
+      unTerrors: {
+        desc: 'unTerrors',
+        url: 'http://localhost:8000/un-person-terror'   
+      },
+
+      /* Legals */
+      edrByEdrpou: { // present now
+        desc: 'edrByEdrpou',
+        url: 'http://localhost:8000/get-edr-legals'
+      },
+      rnboLegals: { // present now
+        desc: 'rnboLegals',
+        url: 'http://localhost:8000/get-legal-sanctions'
+      },
+      esLegalSanctions: { // present now
         desc: 'EUSunctions',
-        url: 'https://pacific-dawn-21711.herokuapp.com/get-eu-legal-sanctions/'
+        url: 'http://localhost:8000/get-eu-legal-sanctions/'
+      },
+      pepByEdrpou: { // present now
+        desc: 'pepByEdrpou',
+        url: 'http://localhost:8000/get-related-persons'
+      },
+      unLegalSanctions: { // present now
+        desc: 'unLegalSanctions',
+        url: 'http://localhost:8000/un-legal-sanctions'
+      },
+      unLegalTerrors: { // present now
+        desc: 'unLegalTerrors',
+        url: 'http://localhost:8000/un-legal-terrors'
+      },
+      usLegalSanctions: {
+        desc: 'usLegalSanctions', // present now
+        url: 'http://localhost:8000/us-legal-sanctions'
       },
 
       EDRTH: [
@@ -691,26 +1156,38 @@
         { text: "Тип зв`язку", value: 'relationship_type', align: 'start', sortable: false},
       ],
 
-      unSanctionTH: [
+      UNOsancPerson: [
         { text: 'ПIБ', value: 'fullName', align: 'start', sortable: false},
         { text: 'Нацiональнiсть', value: 'nationality', align: 'center', sortable: false },
-        { text: 'Д.Н.', value: 'dateOfBirth', align: 'center', sortable: false },
+        { text: 'День н-ння', value: 'dateOfBirth', align: 'center', sortable: false },
         { text: 'Посада', value: 'designation', align: 'center', sortable: false },
       ],
-      unSanctionTHNested: [
+      UNOsancLegal: [
+        { text: 'Пiдроздiл', value: 'firstName', align: 'start', sortable: false},
+        { text: 'Органiзацiя', value: 'unListType', align: 'center', sortable: false },
+      ],
+      UNOsancPersonNested: [
         { text: 'Також вiдомий як', value: 'ALIAS_NAME', align: 'start', sortable: false},
       ],
 
-      unTerrorTH: [
-        { text: 'ПIБ', value: 'initials', align: 'start', sortable: false},
+      UNOterrorPersonTH: [
+        { text: 'ПIБ', value: 'fullName', align: 'start', sortable: false},
         { text: 'Мiсце народження', value: 'place-of-birth-list', align: 'center', sortable: false },
         { text: 'Мiсце проживання', value: 'address-list.address', align: 'center', sortable: false },
         { text: 'Дата народження', value: 'date-of-birth-list', align: 'center', sortable: false },
       ],
+      UNOterrorLegalTH: [
+        { text: 'Назва органiзації', value: 'fullName', align: 'start', sortable: false},
+        { text: 'Адреса', value: 'address-list.address', align: 'center', sortable: false },
+      ],
 
-      usSanctionTH: [
+      usSanctionPersonTH: [
         { text: 'ПIБ', value: 'initials', align: 'start', sortable: false},
         { text: 'Дiяльнiсть', value: 'title', align: 'center', sortable: false },
+      ],
+      usSanctionLegalTH: [
+        { text: 'Назва компанiї', value: 'lastName', align: 'start', sortable: false},
+        { text: 'Контакти', value: 'remarks', align: 'center', sortable: false },
       ],
       usSanctionNested: [
         { text: 'Також вiдомий як', value: 'ALIAS_NAME', align: 'start', sortable: false},
@@ -720,6 +1197,7 @@
       currSection: null,
       ukVersion: true,
       showRequisite: false,
+      showRule: false,
 
       edrExpanded: [],
       pepExpanded: [],
@@ -748,6 +1226,7 @@
       firstName: null,
       patronymic: null,
       edrpou: null,
+      companyName: null,
 
       /* Data */
       pageUrl: null,
@@ -764,7 +1243,8 @@
       mdiInformation,
       mdiAxisZRotateClockwise,
       mdiWindowMinimize,
-      mdiTextBoxSearchOutline
+      mdiTextBoxSearchOutline,
+      mdiSortAlphabeticalAscendingVariant
     }),
 
 
@@ -780,10 +1260,24 @@
         return this.currSection === name
       },
       async checkEntity() {
-        return Promise.all(this.objectUrlsController.map(async reqObj => {
+        console.log('checkEntity')
+        /* alowed requests from this.legalUrls without edrpou */
+        const withoutEdrpou = [
+          'unLegalSanctions', 
+          'unLegalTerrors',
+          'usLegalSanctions'
+        ]
+
+        return Promise.all(this.objectUrlsController
+          .map(async reqObj => {
+            const checkReq = !this.objCntr(reqObj.desc).edrpou // obj does not have edrpou
+              && !withoutEdrpou.includes(reqObj.desc) // and request is not present in array
+              && this.choosedLegal // and choosed legal handler
+            if (checkReq) return Promise.resolve([])
+
             let obj = await this.startRequest(
               reqObj.url,
-              this.reqOption(this.objectController(reqObj.desc), 'POST'),
+              this.reqOption(this.objCntr(reqObj.desc), 'POST'),
               /* If you provide callback you should always retun res object or modified res object */
               res => reqObj.desc !== 'eDeclarations' 
                 ? res 
@@ -795,15 +1289,17 @@
             return Array.isArray(obj) ? [[prop], obj || []] : [[prop], [obj] || []]
           })
         )
-        .then(arr => arr.filter(v =>  v[1].length))
-        .then(arr => Object.fromEntries(arr))
+        .then(arr => {console.log({rowData: arr}); return arr.filter(v => v[1] && v[1].length)})
+        .then(arr => {console.log({filteredArr: Object.fromEntries(arr)}); return Object.fromEntries(arr)})
       },
 
 
       async getInitials() {
+        if(this.choosedLegal && !this.objCntr().edrpou) return Promise.resolve([])
+
         return await this.startRequest(
           this.requestController.edrUrl,
-          this.reqOption(this.objectController(), 'POST'),
+          this.reqOption(this.objCntr(), 'POST'),
           res => {
             this.clearData()
             return res
@@ -841,21 +1337,24 @@
           let {edrList = [], edrInitials = []} = await this.getInitials()
           let {eDeclarations = [], 
             rnboList = [], 
-            unSanctions = [], 
+            unPersSanctions = [], 
             unTerrors = [],
-            USSancions = [], 
-            EUSunctions = []} = await this.checkEntity()
+            USSancions = [],
+            usLegalSanctions = [],
+            EUSunctions = [],
+            pepByEdrpou = [],
+            unLegalTerrors = [],
+            unLegalSanctions = []} = await this.checkEntity()
           this.edrInitials = edrInitials
           this.edrList = edrList
           let pepList = await this.getPepList()
-
-          this.pepList.push(...pepList)
+          this.pepList.push(...this.filterArrOfObj(pepByEdrpou.concat(pepList), '_id'))
           this.eDeclarationList.push(...eDeclarations)
           this.rnboList.push(...rnboList)
-          this.unSanctionList.push(...unSanctions)
-          this.unTerrorList.push(...unTerrors)
+          this.unSanctionList.push(...unPersSanctions, ...unLegalSanctions)
+          this.unTerrorList.push(...unTerrors, ...unLegalTerrors)
           this.esSanctionList.push(...EUSunctions)
-          this.usSanctionList.push(...USSancions)
+          this.usSanctionList.push(...USSancions, ...usLegalSanctions)
 
           this.consoleObjects // console result
           this.dialog = true
@@ -874,7 +1373,7 @@
             .then(arr => {
               this.eDeclarationList.push(...arr.eDeclarations)
               this.rnboList.push(...arr.rnboList)
-              this.unSanctionList.push(...arr.unSanctions)
+              this.unSanctionList.push(...arr.unPersSanctions)
               this.unTerrorList.push(...arr.unTerrors)
               this.esSanctionList.push(...arr.USSancions)
               this.usSanctionList.push(...arr.EUSunctions)
@@ -885,34 +1384,30 @@
           .then(obj => this.objectFilter(obj))
       },
 
+      filterArrOfObj(arr, id) {
+        const ids = new Set()
+        let filteredArr = arr.filter(obj => {
+          const duplicate = ids.has(obj[id])
+          ids.add(obj[id])
+          return !duplicate
+        })
+        return filteredArr
+      },
+
 
       getPersonFromLegal() {
         return this.personUrls.map(async obj => {
           let urlRes = await Promise.all(this.edrInitials.map(initial => {
-            let cpzList = [
-              "unSanctions",
-              "unTerrors",
-              "USSancions",
-              "EUSunctions"
-            ]
-            let [
-              lastName = '', 
-              firstName = '', 
-              patronymic = ''
-            ] = this.formatInitials(initial)
-
-            // in case if parsed initials is not correct abort req
-            if(lastName.length  < 2 || firstName.length  < 2) return Promise.resolve([])
-
-            let ch = cpzList.includes(obj.desc)
+            // in case if parsed initials is not correct abort request
+            if(!this.objCntr(null, initial)) return Promise.resolve([])
 
             return this.startRequest(
               obj.url,
-              this.reqOption({
-                lastName: ch ? this.transliterate(lastName) : this.capitalize(lastName),
-                firstName: ch ? this.transliterate(firstName) : this.capitalize(firstName),
-                patronymic: ch ? this.transliterate(patronymic) : this.capitalize(patronymic)
-              }, 'POST'),
+              this.reqOption(
+                this.objCntr(obj.desc, initial), 
+                'POST'
+              ),
+              // callback to modify res
               res => obj.desc !== 'eDeclarations' 
                 ? res 
                 : obj.desc === 'eDeclarations' 
@@ -928,28 +1423,22 @@
       },
 
       formatInitials(initials) {
-        let person = this.choosedPerson
-        return person 
+        return this.choosedPerson 
           ? initials.replace(/\s/g, '').split('*') 
           : initials.replace(/\*/g, '').split(' ')
       },
 
       async postInitials(initials) {
-        let [lastName = '', 
-          firstName = '', 
-          patronymic = ''] = this.formatInitials(initials)
-        
         // in case if parsed initials is not correct abort req
-        if(lastName.length < 2 || firstName.length < 2) return Promise.resolve()
+        if(!this.objCntr(null, initials)) return Promise.resolve()
 
         try {
           return await this.startRequest(
             this.pepByInitials.url,
-            this.reqOption({
-              lastName: lastName,
-              firstName: firstName,
-              patronymic: patronymic
-            }, 'POST'),
+            this.reqOption(
+              this.objCntr(null, initials), 
+              'POST'
+            ),
           ).then(v => v[0])
         } catch(err) {
           this.notify(this.err(err))
@@ -1007,37 +1496,55 @@
         }
       },
 
-      objectController(desc) {
+      objCntr(desc, customObj) {
         let obj
-        let person = this.choosedPerson
-        let legal = this.choosedLegal
-        let translite = (
-          person && desc === "unSanctions" ||
-          person && desc === "unTerrors" ||
-          person && desc === "USSancions" ||
-          person && desc === "EUSunctions"
-        )
-        let noTraslite = person && !translite
+        const arrEn = [
+          'unPersSanctions', 
+          'unTerrors', 
+          'USSancions', 
+          'EUSunctions', 
+          'unLegalSanctions',
+          'unLegalTerrors',
+          'usLegalSanctions']
+
+        const translite = desc ? arrEn.includes(desc) : false
+
+        if(customObj) {
+          const [lastName, firstName, patronymic] = this.formatInitials(customObj)
+          if(!lastName || !firstName || lastName.length < 2 || firstName.length < 2) return null
+
+          return {
+            firstName: this.capitalize(firstName),
+            lastName: this.capitalize(lastName),
+            patronymic: (patronymic ? this.capitalize(patronymic) : '')
+          }
+        }
         
-        if (noTraslite) obj = {
+        if (!translite && this.choosedPerson) obj = {
           firstName: this.capitalize(this.firstName),
           lastName: this.capitalize(this.lastName),
           patronymic: (this.patronymic ? this.capitalize(this.patronymic) : '')
         } 
-
-        else if (translite) obj = {
+        else if (translite && this.choosedPerson) obj = {
           firstName: this.transliterate(this.firstName),
           lastName: this.transliterate(this.lastName),
           patronymic: (this.patronymic ? this.transliterate(this.patronymic) : '')
         }
-
-        else if (legal) obj = { 
-          edrpou: this.edrpou 
+        else if (this.choosedLegal && !translite) obj = {
+          edrpou: this.edrpou ? this.edrpou.trim() : null,
+          companyName: this.companyName
         }
+        else if (this.choosedLegal && translite) obj = { 
+          edrpou: this.edrpou ? this.edrpou.trim() : null,
+          companyName: this.transliterate(this.companyName)
+        }
+        
         return obj
       },
 
       capitalize(str) {
+        if(!str) return ''
+
         str = str
           .trim()
           .replace(/\s+/g, ' ')
@@ -1055,13 +1562,14 @@
           if(Object.keys(fI).includes(v) && i !== 0) str.splice(i, 1, fI[v])
         })
         return str.join("")
+          .replace(/зг/g, 'ZGH')
           .trim()
           .replace(/\s+/g, ' ')
           .split('')
           .map(char => { 
             return this.letters[char] || char
           }).join("")
-          .replace(/[^a-zA-Z-`\s]/gu, '')
+          .replace(/[^a-zA-Z-`\s0-9]/gu, '')
       },
       
       notify(title, text) {
@@ -1101,27 +1609,27 @@
 
         switch(handler) {
           case 'legalHandler': range = [
-              text.indexOf(this.edrpou), 
-              text.indexOf(this.edrpou) + this.edrpou.length
+              this.edrpou ? text.indexOf(this.edrpou) : 0, 
+              this.edrpou ? text.indexOf(this.edrpou) + this.edrpou.length : 0
             ]
             break;
           case 'personHandler': range = [
               text.indexOf(this.lastName), 
               this.patronymic 
                 ? text.indexOf(this.patronymic) + this.patronymic.length
-                : text.indexOf(this.firstName) + this.firstName.length 
+                : this.firstName ? text.indexOf(this.firstName) + this.firstName.length : 0 
             ]
             break;
           case 'unLegalHandler': range = [
-              text.indexOf(this.edrpou), 
-              text.indexOf(this.edrpou) + this.edrpou.length
+              this.edrpou ? text.indexOf(this.edrpou) : 0, 
+              this.edrpou ? text.indexOf(this.edrpou) + this.edrpou.length : 0
             ]
             break;
           case 'unPersonHandler': range = [
               text.indexOf(this.transliterate(this.firstName)), 
               this.patronymic 
                 ? text.indexOf(this.transliterate(this.patronymic)) + this.patronymic.length
-                : text.indexOf(this.transliterate(this.lastName)) + this.lastName.length 
+                : this.lastName ? text.indexOf(this.transliterate(this.lastName)) + this.lastName.length : 0 
             ]
             break;
         }
@@ -1129,6 +1637,8 @@
       },
 
       markSearchedText(val, handler) {
+        console.log(val)
+        console.log(handler)
         let copy = JSON.parse(JSON.stringify(val))
         let arr = []
         return copy.map(v => {
@@ -1142,6 +1652,14 @@
           v.text = arr.join('')
           return v
         })
+      },
+
+      listenPressKey(e) {
+        if (e.keyCode === 13) {
+          this.mapResult()
+        } else if (e.keyCode === 27) {
+          this.dialog = false
+        }
       },
     },
 
@@ -1167,7 +1685,7 @@
         return [
           this.eDeclarations,
           this.rnboPersons,
-          this.unSanctions,
+          this.unPersSanctions,
           this.unTerrors,
           this.usPersonSunctions,
           this.esPersonSunctions
@@ -1177,7 +1695,11 @@
       legalUrls() {
         return [
           this.rnboLegals,
-          this.esLegalSunctions,
+          this.esLegalSanctions,
+          this.unLegalSanctions,
+          this.unLegalTerrors,
+          this.usLegalSanctions,
+          this.pepByEdrpou
         ]
       },
 
@@ -1222,7 +1744,7 @@
         return this.choosedPerson 
           ? this.firstName && this.lastName
           : this.choosedLegal 
-            ? this.edrpou
+            ? this.edrpou || this.companyName
             : false
       },
 
@@ -1253,7 +1775,7 @@
 
       consoleObjects() {
         return (
-          console.log(this.choosedLegal ? 'EDRPOU': 'INITIALS'),
+          console.log(this.choosedLegal ? 'LEGAL': 'PERSON'),
           console.log({initials: this.edrInitials}),
           console.log({edr: this.edrList}),
           console.log({pep: this.pepList}),
@@ -1265,7 +1787,7 @@
           console.log({usSanctionList: this.usSanctionList})
         )
       },
-    },
+    }, 
     watch: {
       searchVariant(val) {
         console.log(val)
@@ -1308,6 +1830,12 @@
           this.showRequisite = false
         }
       }
+    },
+    mounted() {
+      window.addEventListener('keydown', this.listenPressKey)
+    },
+    beforeDestroy() {
+      window.removeEventListener('keydown', this.listenPressKey)
     }
   }
 </script>
@@ -1325,6 +1853,18 @@
 
 .v-data-table .half-table {
   width: 50%; 
+  display: inline-block; 
+  vertical-align: top;
+}
+
+.v-data-table .one-third-table {
+  width: 33.33%; 
+  display: inline-block; 
+  vertical-align: top;
+}
+
+.v-data-table .two-third-table {
+  width: 66.66%; 
   display: inline-block; 
   vertical-align: top;
 }
@@ -1379,6 +1919,10 @@ button.toggle-hint-btn {
   position: fixed; 
   top: 15px; 
   left: 15px;
+}
+
+button.sbmt-btn.v-btn {
+  border-radius: 2px;
 }
 
 .v-card__text.custom-bg {
@@ -1459,6 +2003,21 @@ button.toggle-hint-btn {
 }
 .v-data-table th {
   text-transform: uppercase!important;
+}
+
+.v-data-table thead {
+  vertical-align: middle!important;
+}
+
+.alphabet-table.v-data-table thead {
+  background: beige!important;
+}
+
+.alphabet-table.v-data-table thead th {
+  height: 55px!important;
+  padding: 2px 13px!important;
+  background: #424242;
+  color: #eeeeee!important;
 }
 
 tr.v-data-table__expanded.v-data-table__expanded__content {

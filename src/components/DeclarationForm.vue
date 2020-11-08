@@ -1011,11 +1011,6 @@
     name: 'DeclarationForm',
     data: () => ({
       controller: new AbortController(),
-      // https:***//pacific-dawn-21711.herokuapp.com
-      // http:***//localhost:8000
-
-      /* Individual */
-
       transliteRule: [
         {ua: "Аа", en: "Aa", position: "", exampleUK: "Алушта Андрій", exampleEN: "Alushta Andrii"},
         {ua: "Бб", en: "Bb", position: "", exampleUK: "Борщагівка Борисенко", exampleEN: "Borshchahivka Borysenko"},
@@ -1058,68 +1053,70 @@
         {text: "Приклад UK", value: "exampleUK", sortable: false, align: "center"},
         {text: "Приклад EN", value: "exampleEN", sortable: false, align: "center"},
       ],
-
+      /* Individual */
+      // https:***//pacific-dawn-21711.herokuapp.com
+      // http:***//localhost:8000
       edrByInitials: {
         desc: 'edrByInitials',
-        url: 'http://localhost:8000/get-edr-persons'
+        url: 'https://pacific-dawn-21711.herokuapp.com/get-edr-persons'
       },
       pepByInitials: {
         desc: 'pepByInitials',
-        url: 'http://localhost:8000/get-public-person'
+        url: 'https://pacific-dawn-21711.herokuapp.com/get-public-person'
       },
       eDeclarations: { 
         desc: 'eDeclarations',
-        url: 'http://localhost:8000/get-declarations'
+        url: 'https://pacific-dawn-21711.herokuapp.com/get-declarations'
       },
       rnboPersons: {
         desc: 'rnboList',
-        url: 'http://localhost:8000/get-person-sanctions'
+        url: 'https://pacific-dawn-21711.herokuapp.com/get-person-sanctions'
       },
       unPersSanctions: {
         desc: 'unPersSanctions',
-        url: 'http://localhost:8000/un-person-sanctions'
+        url: 'https://pacific-dawn-21711.herokuapp.com/un-person-sanctions'
       },
       usPersonSunctions: {
         desc: 'USSancions',
-        url: 'http://localhost:8000/us-person-sanctions/'
+        url: 'https://pacific-dawn-21711.herokuapp.com/us-person-sanctions/'
       },
       esPersonSunctions: { 
         desc: 'EUSunctions',
-        url: 'http://localhost:8000/get-eu-person-sanctions/'
+        url: 'https://pacific-dawn-21711.herokuapp.com/get-eu-person-sanctions/'
       },
       unTerrors: {
         desc: 'unTerrors',
-        url: 'http://localhost:8000/un-person-terror'   
+        url: 'https://pacific-dawn-21711.herokuapp.com/un-person-terror'   
       },
 
       /* Legals */
       edrByEdrpou: { // present now
         desc: 'edrByEdrpou',
-        url: 'http://localhost:8000/get-edr-legals'
+        url: 'https://pacific-dawn-21711.herokuapp.com/get-edr-legals'
       },
       rnboLegals: { // present now
         desc: 'rnboLegals',
-        url: 'http://localhost:8000/get-legal-sanctions'
+        url: 'https://pacific-dawn-21711.herokuapp.com/get-legal-sanctions'
       },
       esLegalSanctions: { // present now
         desc: 'EUSunctions',
-        url: 'http://localhost:8000/get-eu-legal-sanctions/'
+        url: 'https://pacific-dawn-21711.herokuapp.com/get-eu-legal-sanctions/'
       },
       pepByEdrpou: { // present now
         desc: 'pepByEdrpou',
-        url: 'http://localhost:8000/get-related-persons'
+        url: 'https://pacific-dawn-21711.herokuapp.com/get-related-persons'
       },
       unLegalSanctions: { // present now
         desc: 'unLegalSanctions',
-        url: 'http://localhost:8000/un-legal-sanctions'
+        url: 'https://pacific-dawn-21711.herokuapp.com/un-legal-sanctions'
       },
       unLegalTerrors: { // present now
         desc: 'unLegalTerrors',
-        url: 'http://localhost:8000/un-legal-terrors'
+        url: 'https://pacific-dawn-21711.herokuapp.com/un-legal-terrors'
       },
       usLegalSanctions: {
         desc: 'usLegalSanctions', // present now
-        url: 'http://localhost:8000/us-legal-sanctions'
+        url: 'https://pacific-dawn-21711.herokuapp.com/us-legal-sanctions'
       },
 
       EDRTH: [

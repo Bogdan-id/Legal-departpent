@@ -2014,7 +2014,17 @@ button.sbmt-btn.v-btn {
   height: 55px!important;
   padding: 2px 13px!important;
   background: #424242;
-  color: #eeeeee!important;
+  color: #f5f5f5!important;
+  /* text-transform: capitalize!important; */
+}
+
+.alphabet-table.v-data-table tbody {
+  background: #f5f5f5!important;
+  color: #424242!important;
+}
+
+.alphabet-table.v-data-table tbody td {
+  border-bottom: 0!important;
 }
 
 tr.v-data-table__expanded.v-data-table__expanded__content {

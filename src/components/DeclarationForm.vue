@@ -165,9 +165,11 @@
           <v-scroll-x-transition hide-on-leave>
             <v-card v-show="btnActv('EDR')" class="mb-2 item-card">
               <v-card-text v-show="edrList.length">
+                <div style="color: black; background: rgb(245, 245, 220); font-weight: bold; padding: 3px 4px;">{{'Юридичнi особи'.toUpperCase()}}</div>
                 <v-data-table
+                  v-if="edrListLegals.length"
                   :headers="EDRTH"
-                  :items="edrList"
+                  :items="edrListLegals"
                   :items-per-page="15"
                   :hide-default-footer="edrList && edrList.length < 15"
                   :expanded.sync="edrExpanded"
@@ -179,7 +181,7 @@
                     <v-scroll-y-reverse-transition>
                       <td class="pa-0 custom-td" :colspan="headers.length" v-show="edrExpandedW">
                         <v-simple-table 
-                          v-if="item.beneficialOwners.length"
+                          v-if="item.beneficialOwners && item.beneficialOwners.length"
                           dense>
                           <template #default>
                             <thead>
@@ -198,7 +200,7 @@
                           </template>
                         </v-simple-table>
                         <v-simple-table
-                          v-if="item.founders.length" 
+                          v-if="item.founders && item.founders.length" 
                           dense>
                           <template #default>
                             <thead>
@@ -256,6 +258,62 @@
                     </v-scroll-y-reverse-transition>
                   </template>
                 </v-data-table>
+                <div style="color: black; background: rgb(245, 245, 220); font-weight: bold; padding: 3px 4px;">{{'Фiзичнi особи'.toUpperCase()}}</div>
+                <v-data-table
+                  v-if="edrListPersons.length"
+                  :headers="EDRTHperson"
+                  :items="edrListPersons"
+                  :items-per-page="15"
+                  :hide-default-footer="edrList && edrList.length < 15"
+                  :expanded.sync="edrPersonExpanded"
+                  show-expand
+                  :single-expand="true"
+                  item-key="_id"
+                  dense>
+                  <template #expanded-item="{ headers, item }">
+                    <v-scroll-y-reverse-transition>
+                      <td class="pa-0 custom-td" :colspan="headers.length" v-show="edrPersonExpandedW">
+                        <v-simple-table
+                          v-if="item.activity" 
+                          dense>
+                          <template #default>
+                            <thead>
+                              <tr style="background: #f5f5dc!important;">
+                                <th class="text-left black--text">
+                                  Дiяльнiсть
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td class="d-sm-table-cell">{{ item.activity }}</td>
+                              </tr>
+                            </tbody>
+                          </template>
+                        </v-simple-table>
+                        <v-simple-table
+                          v-if="item.address" 
+                          dense>
+                          <template #default>
+                            <thead>
+                              <tr style="background: #f5f5dc!important;">
+                                <th class="text-left black--text">
+                                  Адреса
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td class="d-sm-table-cell">{{ item.address }}</td>
+                              </tr>
+                            </tbody>
+                          </template>
+                        </v-simple-table>
+                      </td>
+                    </v-scroll-y-reverse-transition>
+                  </template>
+                </v-data-table>
+
               </v-card-text>
               <v-card-text v-show="!edrList.length">
                 Данi для вiдображення вiдсутнi
@@ -1056,6 +1114,10 @@
         desc: 'edrByInitials',
         url: 'https://pacific-dawn-21711.herokuapp.com/get-edr-persons'
       },
+      edrByInitial: {
+        desc: 'edrByInitial',
+        url: 'https://pacific-dawn-21711.herokuapp.com/get-edr-initial'
+      },
       pepByInitials: {
         desc: 'pepByInitials',
         url: 'https://pacific-dawn-21711.herokuapp.com/get-public-person'
@@ -1066,52 +1128,52 @@
       },
       rnboPersons: {
         desc: 'rnboList',
-        url: 'https://pacific-dawn-21711.herokuapp.com/get-person-sanctions'
+        url: 'https://pacific-dawn-21711.herokuapp.com/get-person-sanctions' // Partial searching
       },
-      unPersSanctions: {
+      unPersSanctions: { // Partial searching
         desc: 'unPersSanctions',
         url: 'https://pacific-dawn-21711.herokuapp.com/un-person-sanctions'
       },
-      usPersonSunctions: {
+      usPersonSunctions: { // Partial searching
         desc: 'USSancions',
         url: 'https://pacific-dawn-21711.herokuapp.com/us-person-sanctions/'
       },
-      esPersonSunctions: { 
+      esPersonSunctions: {  // Partial searching
         desc: 'EUSunctions',
         url: 'https://pacific-dawn-21711.herokuapp.com/get-eu-person-sanctions/'
       },
-      unTerrors: {
+      unTerrors: { // Partial searching
         desc: 'unTerrors',
         url: 'https://pacific-dawn-21711.herokuapp.com/un-person-terror'   
       },
 
       /* Legals */
-      edrByEdrpou: { // present now
+      edrByEdrpou: {
         desc: 'edrByEdrpou',
         url: 'https://pacific-dawn-21711.herokuapp.com/get-edr-legals'
       },
-      rnboLegals: { // present now
+      rnboLegals: { // Partial searching
         desc: 'rnboLegals',
         url: 'https://pacific-dawn-21711.herokuapp.com/get-legal-sanctions'
       },
-      esLegalSanctions: { // present now
+      esLegalSanctions: { // Partial searching
         desc: 'esLegalSanctions',
         url: 'https://pacific-dawn-21711.herokuapp.com/get-eu-legal-sanctions'
       },
-      pepByEdrpou: { // present now
+      pepByEdrpou: {
         desc: 'pepByEdrpou',
         url: 'https://pacific-dawn-21711.herokuapp.com/get-related-persons'
       },
-      unLegalSanctions: { // present now
+      unLegalSanctions: { // Partial searching
         desc: 'unLegalSanctions',
         url: 'https://pacific-dawn-21711.herokuapp.com/un-legal-sanctions'
       },
-      unLegalTerrors: { // present now
+      unLegalTerrors: { // Partial searching
         desc: 'unLegalTerrors',
         url: 'https://pacific-dawn-21711.herokuapp.com/un-legal-terrors'
       },
       usLegalSanctions: {
-        desc: 'usLegalSanctions', // present now
+        desc: 'usLegalSanctions', // Partial searching
         url: 'https://pacific-dawn-21711.herokuapp.com/us-legal-sanctions'
       },
 
@@ -1120,6 +1182,10 @@
         { text: 'Керiвник', value: 'boss', align: 'center', sortable: false },
         { text: 'Статус', value: 'condition', align: 'center', sortable: false },
         { text: 'ЄДРПОУ', value: 'edrpou', align: 'center', sortable: false },
+      ],
+      EDRTHperson: [
+        { text: 'ФОП', value: 'initials', align: 'start', sortable: false},
+        { text: 'Статус', value: 'condition', align: 'center', sortable: false },
       ],
 
       EDTH: [
@@ -1193,11 +1259,13 @@
       showRule: false,
 
       edrExpanded: [],
+      edrPersonExpanded: [],
       pepExpanded: [],
       unSancExpanded: [],
       unTerrorExpanded: [],
       usSanctionExpanded: [],
       edrExpandedW: false,
+      edrPersonExpandedW: false,
       pepExpandedW: false,
       unSancExpandedW: false,
       unTerrorExpandedW: false,
@@ -1324,11 +1392,25 @@
         
       },
 
+      async getEdrPerson() {
+        if(this.choosedLegal) return Promise.resolve([])
+
+        return await this.startRequest(
+          this.edrByInitial.url,
+          this.reqOption(this.objCntr(), 'POST'),
+        ).then(res => {
+          let arr = Array.isArray(res) ? res : [res]
+          return arr
+        })
+      },
+
       async mapResult() {
         this.loading = true
         this.clearData()
         
         try {
+          let edrPerson = await this.getEdrPerson()
+          console.log({edrPerson: edrPerson})
           let {edrList = [], edrInitials = []} = await this.getInitials()
           let {eDeclarations = [], 
             rnboList = [], 
@@ -1342,8 +1424,8 @@
             unLegalSanctions = [],
             rnboLegals = [],
             esLegalSanctions = []} = await this.checkEntity()
-          this.edrInitials = edrInitials
-          this.edrList = edrList
+          this.edrInitials.push(...edrInitials)
+          this.edrList.push(...edrList, ...edrPerson)
           let pepList = await this.getPepList()
           this.pepList.push(...this.filterArrOfObj(pepByEdrpou.concat(pepList), '_id'))
           this.eDeclarationList.push(...eDeclarations)
@@ -1770,6 +1852,14 @@
         return this.$vuetify.breakpoint.height / 10 * 9
       },
 
+      edrListLegals() {
+        return this.edrList.filter(v => !v.initials)
+      },
+
+      edrListPersons() {
+        return this.edrList.filter(v => v.initials)
+      },
+
       consoleObjects() {
         return (
           console.log(this.choosedLegal ? 'LEGAL': 'PERSON'),
@@ -1793,6 +1883,12 @@
         setTimeout(() => {
           if(val.length) this.edrExpandedW = true
           else this.edrExpandedW = false
+        }, 0)
+      },
+      edrPersonExpanded(val) {
+        setTimeout(() => {
+          if(val.length) this.edrPersonExpandedW = true
+          else this.edrPersonExpandedW = false
         }, 0)
       },
       pepExpanded(val) {

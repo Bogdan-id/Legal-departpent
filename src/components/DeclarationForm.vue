@@ -165,7 +165,7 @@
           <v-scroll-x-transition hide-on-leave>
             <v-card v-show="btnActv('EDR')" class="mb-2 item-card">
               <v-card-text v-show="edrList.length">
-                <div style="color: black; background: rgb(245, 245, 220); font-weight: bold; padding: 3px 4px;">{{'Юридичнi особи'.toUpperCase()}}</div>
+                <div v-if="edrListLegals.length" style="color: black; background: rgb(245, 245, 220); font-weight: bold; padding: 3px 4px;">{{'Юридичнi особи'.toUpperCase()}}</div>
                 <v-data-table
                   v-if="edrListLegals.length"
                   :headers="EDRTH"
@@ -258,7 +258,7 @@
                     </v-scroll-y-reverse-transition>
                   </template>
                 </v-data-table>
-                <div style="color: black; background: rgb(245, 245, 220); font-weight: bold; padding: 3px 4px;">{{'Фiзичнi особи'.toUpperCase()}}</div>
+                <div edrListPersons.length style="color: black; background: rgb(245, 245, 220); font-weight: bold; padding: 3px 4px;">{{'Фiзичнi особи'.toUpperCase()}}</div>
                 <v-data-table
                   v-if="edrListPersons.length"
                   :headers="EDRTHperson"

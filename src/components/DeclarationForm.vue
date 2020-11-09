@@ -46,10 +46,6 @@
             class="alphabet-table"
             hide-default-footer
             dense>
-            ua en position
-            <template #item.ua="{ item }">
-              <span>{{ item.ua }}</span>
-            </template>
           </v-data-table>
         </v-card-text>
       </v-card>
@@ -1099,8 +1095,8 @@
         url: 'https://pacific-dawn-21711.herokuapp.com/get-legal-sanctions'
       },
       esLegalSanctions: { // present now
-        desc: 'EUSunctions',
-        url: 'https://pacific-dawn-21711.herokuapp.com/get-eu-legal-sanctions/'
+        desc: 'esLegalSanctions',
+        url: 'https://pacific-dawn-21711.herokuapp.com/get-eu-legal-sanctions'
       },
       pepByEdrpou: { // present now
         desc: 'pepByEdrpou',
@@ -1262,7 +1258,9 @@
         const withoutEdrpou = [
           'unLegalSanctions', 
           'unLegalTerrors',
-          'usLegalSanctions'
+          'usLegalSanctions',
+          'rnboLegals',
+          'esLegalSanctions'
         ]
 
         return Promise.all(this.objectUrlsController
@@ -1341,16 +1339,18 @@
             EUSunctions = [],
             pepByEdrpou = [],
             unLegalTerrors = [],
-            unLegalSanctions = []} = await this.checkEntity()
+            unLegalSanctions = [],
+            rnboLegals = [],
+            esLegalSanctions = []} = await this.checkEntity()
           this.edrInitials = edrInitials
           this.edrList = edrList
           let pepList = await this.getPepList()
           this.pepList.push(...this.filterArrOfObj(pepByEdrpou.concat(pepList), '_id'))
           this.eDeclarationList.push(...eDeclarations)
-          this.rnboList.push(...rnboList)
+          this.rnboList.push(...rnboList, ...rnboLegals)
           this.unSanctionList.push(...unPersSanctions, ...unLegalSanctions)
           this.unTerrorList.push(...unTerrors, ...unLegalTerrors)
-          this.esSanctionList.push(...EUSunctions)
+          this.esSanctionList.push(...EUSunctions, ...esLegalSanctions)
           this.usSanctionList.push(...USSancions, ...usLegalSanctions)
 
           this.consoleObjects // console result
@@ -2043,7 +2043,7 @@ tr.v-data-table__expanded.v-data-table__expanded__content {
 }
 
 ::-webkit-scrollbar-thumb {
-  border-radius: 10px;
+  border-radius: 0px;
   background-color: rgba(85, 85, 85, 0.836);
 }
 </style>

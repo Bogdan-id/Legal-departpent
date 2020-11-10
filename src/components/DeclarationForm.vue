@@ -165,11 +165,11 @@
           <v-scroll-x-transition hide-on-leave>
             <v-card v-show="btnActv('EDR')" class="mb-2 item-card">
               <v-card-text v-show="edrList.length">
-                <div v-if="edrListLegals.length" style="color: black; background: rgb(245, 245, 220); font-weight: bold; padding: 3px 4px;">{{'Юридичнi особи'.toUpperCase()}}</div>
+                <div v-if="edrList.length" style="color: black; background: rgb(245, 245, 220); font-weight: bold; padding: 3px 4px;">{{'Юридичнi особи'.toUpperCase()}}</div>
                 <v-data-table
-                  v-if="edrListLegals.length"
+                  v-if="edrList.length"
                   :headers="EDRTH"
-                  :items="edrListLegals"
+                  :items="edrList"
                   :items-per-page="15"
                   :hide-default-footer="edrList && edrList.length < 15"
                   :expanded.sync="edrExpanded"
@@ -258,13 +258,13 @@
                     </v-scroll-y-reverse-transition>
                   </template>
                 </v-data-table>
-                <div v-if="edrListPersons.length" style="color: black; background: rgb(245, 245, 220); font-weight: bold; padding: 3px 4px;">{{'Фiзичнi особи'.toUpperCase()}}</div>
+                <div v-if="edrListPerson.length" style="color: black; background: rgb(245, 245, 220); font-weight: bold; padding: 3px 4px;">{{'Фiзичнi особи'.toUpperCase()}}</div>
                 <v-data-table
-                  v-if="edrListPersons.length"
+                  v-if="edrListPerson.length"
                   :headers="EDRTHperson"
-                  :items="edrListPersons"
+                  :items="edrListPerson"
                   :items-per-page="15"
-                  :hide-default-footer="edrList && edrList.length < 15"
+                  :hide-default-footer="edrListPerson && edrListPerson.length < 15"
                   :expanded.sync="edrPersonExpanded"
                   show-expand
                   :single-expand="true"
@@ -1273,6 +1273,7 @@
 
       
       edrList: [],
+      edrListPerson: [],
       pepList: [],
       eDeclarationList: [],
       rnboList: [],
@@ -1408,6 +1409,7 @@
         this.loading = true
         this.clearData()
         this.edrList.length = 0
+        this.edrInitials.length = 0
         
         try {
           let edrPerson = await this.getEdrPerson()
@@ -1426,15 +1428,17 @@
             rnboLegals = [],
             esLegalSanctions = []} = await this.checkEntity()
           this.edrInitials.push(...edrInitials)
-          this.edrList.push(...edrList, ...edrPerson)
-          let pepList = await this.getPepList()
-          this.pepList.push(...this.filterArrOfObj(pepByEdrpou.concat(pepList), '_id'))
+          this.edrList.push(...edrList)
+          this.edrListPerson.push(...edrPerson)
           this.eDeclarationList.push(...eDeclarations)
           this.rnboList.push(...rnboList, ...rnboLegals)
           this.unSanctionList.push(...unPersSanctions, ...unLegalSanctions)
           this.unTerrorList.push(...unTerrors, ...unLegalTerrors)
           this.esSanctionList.push(...EUSunctions, ...esLegalSanctions)
           this.usSanctionList.push(...USSancions, ...usLegalSanctions)
+          let pepList = await this.getPepList()
+          this.pepList.push(...this.filterArrOfObj(pepByEdrpou.concat(pepList), '_id'))
+          
 
           this.consoleObjects // console result
           this.dialog = true
@@ -1664,6 +1668,7 @@
       /* Data clearing */
       clearData() {
         this.pepList.length = 0
+        this.edrListPerson.length = 0
         this.eDeclarationList.length = 0
         this.rnboList.length = 0
         this.unSanctionList.length = 0
@@ -1851,14 +1856,6 @@
 
       maxCardHeight() {
         return this.$vuetify.breakpoint.height / 10 * 9
-      },
-
-      edrListLegals() {
-        return this.edrList.filter(v => !v.initials)
-      },
-
-      edrListPersons() {
-        return this.edrList.filter(v => v.initials)
       },
 
       consoleObjects() {

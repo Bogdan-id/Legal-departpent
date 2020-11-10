@@ -157,14 +157,14 @@
           <v-btn @click="makeActive('EDR')" 
             class="d-block white--text section-btn"
             :color="btnActv('EDR') ? 'grey darken-1' : 'grey darken-3'">
-            Єдиний державний реєстр&nbsp;-&nbsp;[<span :style="`color: ${edrList.length > 0 ? '#e57373;' : ''}`">{{ edrList.length }}</span>]
+            Єдиний державний реєстр&nbsp;-&nbsp;[<span :style="`color: ${edrList.length > 0 || edrListPerson.length > 0 ? '#e57373;' : ''}`">{{ edrList.length || edrListPerson.length }}</span>]
             <v-icon 
               :class="btnActv('EDR') ? 'active' : ''" 
               color="white">{{ mdiMenuDown }}</v-icon>
           </v-btn>
           <v-scroll-x-transition hide-on-leave>
             <v-card v-show="btnActv('EDR')" class="mb-2 item-card">
-              <v-card-text v-show="edrList.length">
+              <v-card-text v-show="edrList.length || edrListPerson.length">
                 <div v-if="edrList.length" style="color: black; background: rgb(245, 245, 220); font-weight: bold; padding: 3px 4px;">{{'Юридичнi особи'.toUpperCase()}}</div>
                 <v-data-table
                   v-if="edrList.length"
@@ -315,7 +315,7 @@
                 </v-data-table>
 
               </v-card-text>
-              <v-card-text v-show="!edrList.length">
+              <v-card-text v-show="!edrList.length && !edrListPerson.length">
                 Данi для вiдображення вiдсутнi
               </v-card-text>
             </v-card>

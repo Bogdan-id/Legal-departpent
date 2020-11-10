@@ -258,7 +258,7 @@
                     </v-scroll-y-reverse-transition>
                   </template>
                 </v-data-table>
-                <div edrListPersons.length style="color: black; background: rgb(245, 245, 220); font-weight: bold; padding: 3px 4px;">{{'Фiзичнi особи'.toUpperCase()}}</div>
+                <div v-if="edrListPersons.length" style="color: black; background: rgb(245, 245, 220); font-weight: bold; padding: 3px 4px;">{{'Фiзичнi особи'.toUpperCase()}}</div>
                 <v-data-table
                   v-if="edrListPersons.length"
                   :headers="EDRTHperson"
@@ -1407,6 +1407,7 @@
       async mapResult() {
         this.loading = true
         this.clearData()
+        this.edrList.length = 0
         
         try {
           let edrPerson = await this.getEdrPerson()

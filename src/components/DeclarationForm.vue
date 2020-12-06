@@ -412,12 +412,18 @@
           <v-btn @click="makeActive('RNBO')" 
             class="d-block white--text section-btn"
             :color="btnActv('RNBO') ? 'grey darken-1' : 'grey darken-3'">
-            РНБО Санкцiї&nbsp;-&nbsp;[<span :style="`color: ${rnboList.length > 0 ? '#e57373;' : ''}`">{{ rnboList.length }}</span>]
+            РНБО Санкцiї&nbsp;-&nbsp;[<span :style="`color: ${rnboList.length > 0 ? '#e57373;' : ''}`">
+              {{ rnboList.length && choosedPerson ? rnboList.length - 1 : rnboList.length }}
+            </span>]
             <v-icon 
               :class="btnActv('RNBO') ? 'active' : ''" 
               color="white">
               {{ mdiMenuDown }}
             </v-icon>
+            <span v-show="rnboList.length" 
+              class="result-header">
+              {{switchHeader(rnboList, rnboList.length - 1)}}
+            </span>
           </v-btn>
           <v-scroll-x-transition hide-on-leave>
             <v-card v-show="btnActv('RNBO')" class="mb-2 item-card">
@@ -434,12 +440,18 @@
           <v-btn @click="makeActive('UNSanc')" 
             class="d-block white--text section-btn"
             :color="btnActv('UNSanc') ? 'grey darken-1' : 'grey darken-3'">
-            ООН Санкцiї&nbsp;-&nbsp;[<span :style="`color: ${unSanctionList.length > 0 ? '#e57373;' : ''}`">{{ unSanctionList.length }}</span>]
+            ООН Санкцiї&nbsp;-&nbsp;[<span :style="`color: ${unSanctionList.length > 0 ? '#e57373;' : ''}`">
+              {{ unSanctionList.length && choosedPerson ? unSanctionList.length - 1 : unSanctionList.length}}
+            </span>]
             <v-icon 
               :class="btnActv('UNSanc') ? 'active' : ''" 
               color="white">
               {{ mdiMenuDown }}
             </v-icon>
+            <span v-show="unSanctionList.length" 
+              class="result-header">
+              {{switchHeader(unSanctionList, unSanctionList.length - 1)}}
+            </span>
           </v-btn>
           <v-scroll-x-transition hide-on-leave>
             <v-card v-show="btnActv('UNSanc')" class="mb-2 item-card">
@@ -447,6 +459,7 @@
                 <v-data-table
                   v-if="choosedPerson"
                   color="black"
+                  class="person-table"
                   :headers="UNOsancPerson"
                   :items="unSanctionList"
                   :expanded.sync="unSancExpanded"
@@ -605,12 +618,18 @@
           <v-btn @click="makeActive('UNTerror')" 
             class="d-block white--text section-btn"
             :color="btnActv('UNTerror') ? 'grey darken-1' : 'grey darken-3'">
-            ООН. Перелiк терористiв&nbsp;-&nbsp;[<span :style="`color: ${unTerrorList.length > 0 ? '#e57373;' : ''}`">{{ unTerrorList.length }}</span>]
+            ООН. Перелiк терористiв&nbsp;-&nbsp;[<span :style="`color: ${unTerrorList.length > 0 ? '#e57373;' : ''}`">
+              {{ unTerrorList.length && choosedPerson ? unTerrorList.length - 1 : unTerrorList.length }}
+            </span>]
             <v-icon 
               :class="btnActv('UNTerror') ? 'active' : ''" 
               color="white">
               {{ mdiMenuDown }}
               </v-icon>
+              <span v-show="unTerrorList.length" 
+                class="result-header">
+                {{switchHeader(unTerrorList, unTerrorList.length - 1)}}
+              </span>
           </v-btn>
           <v-scroll-x-transition hide-on-leave>
             <v-card v-show="btnActv('UNTerror')" class="mb-2 item-card">
@@ -618,6 +637,7 @@
                 <v-data-table
                   v-if="choosedPerson"
                   color="black"
+                  class="person-table"
                   :headers="UNOterrorPersonTH"
                   :items="unTerrorList"
                   :expanded.sync="unTerrorExpanded"
@@ -734,10 +754,18 @@
           <v-btn @click="makeActive('EUSanc')" 
             class="d-block white--text section-btn"
             :color="btnActv('EUSanc') ? 'grey darken-1' : 'grey darken-3'">
-            ЄС(Європейський союз) Санкцiї&nbsp;-&nbsp;[<span :style="`color: ${esSanctionList.length > 0 ? '#e57373;' : ''}`">{{esSanctionList.length}}</span>]
+            ЄС(Європейський союз) Санкцiї&nbsp;-&nbsp;[<span :style="`color: ${esSanctionList.length > 0 ? '#e57373;' : ''}`">
+              {{esSanctionList.length && choosedPerson ? esSanctionList.length - 1 : esSanctionList.length}}
+            </span>]
             <v-icon
               :class="btnActv('EUSanc') ? 'active' : ''" 
-              color="white">{{ mdiMenuDown }}</v-icon>
+              color="white">
+              {{ mdiMenuDown }}
+            </v-icon>
+            <span v-show="esSanctionList.length" 
+              class="result-header">
+              {{switchHeader(esSanctionList, esSanctionList.length - 1)}}
+            </span>
           </v-btn>
           <v-scroll-x-transition hide-on-leave>
             <v-card v-show="btnActv('EUSanc')" class="mb-2 item-card">
@@ -754,9 +782,17 @@
           <v-btn @click="makeActive('USSanc')" 
             class="d-block white--text section-btn"
             :color="btnActv('USSanc') ? 'grey darken-1' : 'grey darken-3'">
-            Санкцiйний перелiк осiб (Юр./фiз.) США&nbsp;-&nbsp;[<span :style="`color: ${usSanctionList.length > 0 ? '#e57373;' : ''}`">{{ usSanctionList.length }}</span>]
+            Санкцiйний перелiк осiб (Юр./фiз.) США&nbsp;-&nbsp;[<span :style="`color: ${usSanctionList.length > 0 ? '#e57373;' : ''}`">
+              {{ usSanctionList.length && choosedPerson ? usSanctionList.length - 1 : usSanctionList.length }}
+            </span>]
             <v-icon :class="btnActv('USSanc') ? 'active' : ''" 
-              color="white">{{ mdiMenuDown }}</v-icon>
+              color="white">
+              {{ mdiMenuDown }}
+            </v-icon>
+            <span v-show="usSanctionList.length" 
+              class="result-header">
+              {{switchHeader(usSanctionList, usSanctionList.length - 1)}}
+            </span>
           </v-btn>
           <v-scroll-x-transition hide-on-leave>
             <v-card v-show="btnActv('USSanc')" class="mb-2 item-card">
@@ -764,6 +800,7 @@
                 <v-data-table
                   v-if="choosedPerson"
                   color="black"
+                  class="person-table"
                   :headers="usSanctionPersonTH"
                   :items="usSanctionList"
                   :expanded.sync="usSanctionExpanded"
@@ -1311,6 +1348,16 @@
 
 
     methods: {
+      switchHeader(list, index) {
+        // initials lastFirstName lastName firstName patronymic
+        switch(list[index]) {
+          case 'initials': return 'спiвпадiння за ПIП';
+          case 'lastFirstName': return 'спiвпадiння за Прiзвищем та Iм`ям';
+          case 'lastName' : return 'спiвпадiння за Прiзвищем'; 
+          case 'firstName': return 'спiвпадiння за Iм`ям'; 
+          case 'patronymic': return 'спiвпадiння По батьковi'; 
+        }
+      },
       viewDetail(item) {
         console.log(item)
       },
@@ -1653,7 +1700,7 @@
           .map(char => { 
             return this.letters[char] || char
           }).join("")
-          .replace(/[^a-zA-Z-`\s0-9]/gu, '')
+          .replace(/[^a-zA-Z-`\s0-9().,]/gu, '')
       },
       
       notify(title, text) {
@@ -1691,6 +1738,9 @@
       /* Controllers */
       markText(handler, text) {
         let range
+        console.log({'this.patronymic': this.patronymic})
+        console.log({'this.firstName': this.firstName})
+        console.log({text: text})
 
         switch(handler) {
           case 'legalHandler': range = [
@@ -1722,21 +1772,24 @@
       },
 
       markSearchedText(val, handler) {
-        console.log(val)
-        console.log(handler)
+        console.log({val: val})
+        console.log({handler: handler})
         let copy = JSON.parse(JSON.stringify(val))
-        let arr = []
-        return copy.map(v => {
-          let text = v.text
-          let [start, end] = this.markText(handler, text)
+        console.log({copy: copy})
+        
+        return copy.filter(v => v._id)
+          .map(v => {
+            let arr = []
+            let text = v.text
+            let [start, end] = this.markText(handler, text)
 
-          arr.push(text.substring(0, start))
-          arr.push('<span class="search-text">' + text.substring(start, end) + '</span>')
-          arr.push(text.substring(end, text.length))
+            arr.push(text.substring(0, start))
+            arr.push('<span class="search-text">' + text.substring(start, end) + '</span>')
+            arr.push(text.substring(end, text.length))
 
-          v.text = arr.join('')
-          return v
-        })
+            v.text = arr.join('')
+            return v
+          })
       },
 
       listenPressKey(e) {
@@ -1932,7 +1985,9 @@
 </script>
 
 <style>
-
+.v-data-table.person-table tr:last-child {
+  display: none!important;
+}
 .v-card.item-card {
   max-height: 330px!important;
   overflow-y: scroll!important;
@@ -2139,5 +2194,13 @@ tr.v-data-table__expanded.v-data-table__expanded__content {
 ::-webkit-scrollbar-thumb {
   border-radius: 0px;
   background-color: rgba(85, 85, 85, 0.836);
+}
+.result-header {
+  text-transform: none;
+  font-size: 0.8rem;
+  font-weight: normal;
+  padding-bottom: 0.9rem;
+  padding-left: 0.5rem;
+  color: floralwhite;
 }
 </style>

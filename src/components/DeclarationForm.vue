@@ -1985,7 +1985,7 @@
 </script>
 
 <style>
-.v-data-table.person-table tr:last-child {
+.v-data-table.person-table > .v-data-table__wrapper > table > tbody > tr:last-child {
   display: none!important;
 }
 .v-card.item-card {

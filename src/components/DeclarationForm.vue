@@ -1379,35 +1379,43 @@
           'esLegalSanctions'
         ]
 
-        return Promise.all(this.objectUrlsController
-          .map(async reqObj => {
-            const checkReq = !this.objCntr(reqObj.desc).edrpou // obj does not have edrpou
-              && !withoutEdrpou.includes(reqObj.desc) // and request is not present in array
-              && this.choosedLegal // and choosed legal handler
-            if (checkReq) return Promise.resolve([])
-
-            let obj = await this.startRequest(
-              reqObj.url,
-              this.reqOption(this.objCntr(reqObj.desc), 'POST'),
-              /* If you provide callback you should always retun res object or modified res object */
-              res => reqObj.desc !== 'eDeclarations' 
-                ? res 
-                : reqObj.desc === 'eDeclarations' 
-                  && res?.results?.object_list.length ? res.results.object_list : []
-            )
-            // console.log({[reqObj.desc]:obj})
-            let prop = reqObj.desc
-            return Array.isArray(obj) ? [[prop], obj || []] : [[prop], [obj] || []]
-          })
+        return Promise.all(
+          this.objectUrlsController
+            .map(async reqObj => {
+              const checkReq = !this.objCntr(reqObj.desc).edrpou // obj does not have edrpou
+                && !withoutEdrpou.includes(reqObj.desc) // and request is not present in array
+                && this.choosedLegal // and choosed legal handler
+              if (checkReq) return Promise.resolve([]) // return empty array
+            
+              let obj = await this.startRequest(
+                reqObj.url,
+                this.reqOption(
+                  this.objCntr(reqObj.desc), // choosed right object by .desc property
+                  'POST'
+                ),
+                /* If you provide callback you should always retun res object or modified res object */
+                res => reqObj.desc !== 'eDeclarations' 
+                  ? res 
+                  : reqObj.desc === 'eDeclarations' 
+                    && res?.results?.object_list.length ? res.results.object_list : []
+              )
+              // console.log({[reqObj.desc]:obj})
+              let prop = reqObj.desc
+              return Array.isArray(obj) ? [[prop], obj || []] : [[prop], [obj] || []]
+            })
         )
-        .then(arr => {console.log({rowData: arr}); return arr.filter(v => v[1] && v[1].length)})
-        .then(arr => {console.log({filteredArr: Object.fromEntries(arr)}); return Object.fromEntries(arr)})
+        .then(arr => {
+          // console.log({rowData: arr}); 
+          return arr.filter(v => v[1] && v[1].length)})
+        .then(arr => {
+          // console.log({filteredArr: Object.fromEntries(arr)}); 
+          return Object.fromEntries(arr)})
       },
 
 
       async getInitials() {
+        console.log('getInitials')
         if(this.choosedLegal && !this.objCntr().edrpou) return Promise.resolve([])
-
         return await this.startRequest(
           this.requestController.edrUrl,
           this.reqOption(this.objCntr(), 'POST'),
@@ -1427,20 +1435,24 @@
       },
 
       filterEdrPerson(arr) {
-        console.log({FILTEREDPERSON: arr})
-        return arr
+        return arr.filter(v => v)
       },
 
       uniqArr(res) {
         if(!res || !res.length) return []
         res = res[0]
         return [
-          ...new Set(res.beneficialOwners.concat(res.founders, [res.boss]))
+          ...new Set(
+            res.beneficialOwners
+            .filter(v => v)
+            .concat(res.founders, [res.boss])
+          )
         ]
         
       },
 
       async getEdrPerson() {
+        console.log('getEdrPerson')
         if(this.choosedLegal) return Promise.resolve([])
 
         return await this.startRequest(
@@ -1461,8 +1473,13 @@
         try {
           let edrPerson = await this.getEdrPerson()
           console.log({edrPerson: edrPerson})
-          let {edrList = [], edrInitials = []} = await this.getInitials()
-          let {eDeclarations = [], 
+          let {
+            edrList = [], 
+            edrInitials = []
+            } = await this.getInitials()
+
+          let {
+            eDeclarations = [], 
             rnboList = [], 
             unPersSanctions = [], 
             unTerrors = [],
@@ -1473,8 +1490,10 @@
             unLegalTerrors = [],
             unLegalSanctions = [],
             rnboLegals = [],
-            esLegalSanctions = []} = await this.checkEntity()
-          this.edrInitials.push(...edrInitials)
+            esLegalSanctions = []
+            } = await this.checkEntity()
+
+          this.edrInitials.push(...edrInitials.filter(v => v))
           this.edrList.push(...edrList)
           this.edrListPerson.push(...edrPerson)
           this.eDeclarationList.push(...eDeclarations)
@@ -1484,7 +1503,11 @@
           this.esSanctionList.push(...EUSunctions, ...esLegalSanctions)
           this.usSanctionList.push(...USSancions, ...usLegalSanctions)
           let pepList = await this.getPepList()
-          this.pepList.push(...this.filterArrOfObj(pepByEdrpou.concat(pepList), '_id'))
+          this.pepList.push(
+            ...this.filterArrOfObj(
+              pepByEdrpou.concat(pepList), '_id'
+            )
+          )
           
 
           this.consoleObjects // console result
@@ -1498,6 +1521,7 @@
       },
 
       getPepList() {
+        console.log('getPeplist')
         this.choosedLegal 
           ? Promise.all(this.getPersonFromLegal())
             .then(arr => Object.fromEntries(arr))
@@ -1511,8 +1535,10 @@
             })
           : false
 
-        return Promise.all(this.edrInitials.map(this.postInitials))
-          .then(obj => this.objectFilter(obj))
+        // return Promise.all(this.edrInitials.map(this.postInitials))
+        //   .then(obj => this.objectFilter(obj))
+
+        return [] // tempory then uncoment above
       },
 
       filterArrOfObj(arr, id) {
@@ -1527,25 +1553,35 @@
 
 
       getPersonFromLegal() {
-        return this.personUrls.map(async obj => {
-          let urlRes = await Promise.all(this.edrInitials.map(initial => {
-            // in case if parsed initials is not correct abort request
-            if(!this.objCntr(null, initial)) return Promise.resolve([])
+        console.log('getPersonFromLegal')
+        return this.personUrls.map(
+          async obj => {
+            let urlRes = await Promise.all(
+              this.edrInitials
+                .filter(v => v)
+                .map(
+                initial => {
+                  // in case if parsed initials is not correct abort request
+                  if(!this.objCntr(null, initial)) return Promise.resolve([])
 
-            return this.startRequest(
-              obj.url,
-              this.reqOption(
-                this.objCntr(obj.desc, initial), 
-                'POST'
-              ),
-              // callback to modify res
-              res => obj.desc !== 'eDeclarations' 
-                ? res 
-                : obj.desc === 'eDeclarations' 
-                  && res?.results?.object_list.length ? res.results.object_list : []
+                  return this.startRequest(
+                    obj.url,
+                    this.reqOption(
+                      this.objCntr(obj.desc, initial, 'test'), // INVALID controler choose
+                      'POST'
+                    ),
+                    // callback to modify res
+                    res => obj.desc !== 'eDeclarations' 
+                      ? res 
+                      : obj.desc === 'eDeclarations' 
+                        && res?.results?.object_list.length 
+                          ? res.results.object_list 
+                          : []
+                  )
+                }
+              )
             )
-          }))
-          return [[obj.desc], [].concat(...urlRes)]
+            return [[obj.desc], [].concat(...urlRes)]
         })
       },
 
@@ -1626,8 +1662,8 @@
           signal: this.controller.signal
         }
       },
-
-      objCntr(desc, customObj) {
+      // customObj (optional) for individuals
+      objCntr(desc, customObj, test) {
         let obj
         const arrEn = [
           'unPersSanctions', 
@@ -1638,38 +1674,47 @@
           'unLegalTerrors',
           'usLegalSanctions']
 
-        const translite = desc ? arrEn.includes(desc) : false
-
+        // translite object properties
+        const translite = desc 
+          ? arrEn.includes(desc) 
+          : false
+        if(test) console.log({customObj: obj})
         if(customObj) {
           const [lastName, firstName, patronymic] = this.formatInitials(customObj)
-          if(!lastName || !firstName || lastName.length < 2 || firstName.length < 2) return null
-
-          return {
+          // if(!lastName || !firstName || lastName.length < 1 || firstName.length < 1) return null
+          obj = {
             firstName: this.capitalize(firstName),
             lastName: this.capitalize(lastName),
             patronymic: (patronymic ? this.capitalize(patronymic) : '')
           }
+          
+        } else if (!translite && this.choosedPerson) {
+          obj = {
+            firstName: this.capitalize(this.firstName),
+            lastName: this.capitalize(this.lastName),
+            patronymic: (this.patronymic ? this.capitalize(this.patronymic) : '')
+          } 
+        } else if (translite && this.choosedPerson) {
+          obj = {
+            firstName: this.transliterate(this.firstName),
+            lastName: this.transliterate(this.lastName),
+            patronymic: (this.patronymic ? this.transliterate(this.patronymic) : '')
+          }
+        } else if (this.choosedLegal && !translite) {
+          obj = {
+            edrpou: this.edrpou ? this.edrpou.trim() : null,
+            companyName: this.companyName
+          }
         }
-        
-        if (!translite && this.choosedPerson) obj = {
-          firstName: this.capitalize(this.firstName),
-          lastName: this.capitalize(this.lastName),
-          patronymic: (this.patronymic ? this.capitalize(this.patronymic) : '')
-        } 
-        else if (translite && this.choosedPerson) obj = {
-          firstName: this.transliterate(this.firstName),
-          lastName: this.transliterate(this.lastName),
-          patronymic: (this.patronymic ? this.transliterate(this.patronymic) : '')
+        else if (this.choosedLegal && translite) {
+          obj = { 
+            edrpou: this.edrpou ? this.edrpou.trim() : null,
+            companyName: this.transliterate(this.companyName)
+          }
         }
-        else if (this.choosedLegal && !translite) obj = {
-          edrpou: this.edrpou ? this.edrpou.trim() : null,
-          companyName: this.companyName
-        }
-        else if (this.choosedLegal && translite) obj = { 
-          edrpou: this.edrpou ? this.edrpou.trim() : null,
-          companyName: this.transliterate(this.companyName)
-        }
-        
+
+        if(test) console.log({['Controller: ' + desc]: obj}) // for debug purposes
+
         return obj
       },
 
@@ -1738,10 +1783,6 @@
       /* Controllers */
       markText(handler, text) {
         let range
-        console.log({'this.patronymic': this.patronymic})
-        console.log({'this.firstName': this.firstName})
-        console.log({text: text})
-
         switch(handler) {
           case 'legalHandler': range = [
               this.edrpou ? text.indexOf(this.edrpou) : 0, 
@@ -1772,9 +1813,9 @@
       },
 
       markSearchedText(val, handler) {
-        console.log({val: val})
-        console.log({handler: handler})
-        let copy = JSON.parse(JSON.stringify(val))
+        let copy = JSON.parse(
+          JSON.stringify(val)
+        )
         console.log({copy: copy})
         
         return copy.filter(v => v._id)
@@ -1809,12 +1850,10 @@
           edrList: [], 
           edrInitials: [
             // mark string below with * to split further in "Initials"
-            this.capitalize(
-              `
-                ${this.lastName?.replace(/\s+/g, ' ').trim()}*
-                ${this.firstName?.replace(/\s+/g, ' ').trim()}*
-                ${this.patronymic ? (this.patronymic.replace(/\s+/g, ' ')).trim() : ''}
-              `
+            this.capitalize(`
+              ${this.lastName?.replace(/\s+/g, ' ').trim()}*
+              ${this.firstName?.replace(/\s+/g, ' ').trim()}*
+              ${this.patronymic ? (this.patronymic.replace(/\s+/g, ' ')).trim() : ''}`
             )
           ]
         }

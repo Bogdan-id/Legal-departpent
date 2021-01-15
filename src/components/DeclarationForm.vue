@@ -1435,17 +1435,18 @@
       },
 
       filterEdrPerson(arr) {
-        return arr.filter(v => v)
+        return arr
       },
 
       uniqArr(res) {
         if(!res || !res.length) return []
         res = res[0]
+        console.log({UNIQARR: res})
         return [
           ...new Set(
             res.beneficialOwners
-            .concat(res.founders, [res.boss])
-            .filter(v => v)
+              .concat(res.founders, [res.boss])
+              .filter(v => v)
           )
         ]
         

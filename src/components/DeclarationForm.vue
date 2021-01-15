@@ -1444,8 +1444,8 @@
         return [
           ...new Set(
             res.beneficialOwners
-            .filter(v => v)
             .concat(res.founders, [res.boss])
+            .filter(v => v)
           )
         ]
         

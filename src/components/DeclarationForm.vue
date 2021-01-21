@@ -1536,10 +1536,10 @@
             })
           : false
 
-        // return Promise.all(this.edrInitials.map(this.postInitials))
-        //   .then(obj => this.objectFilter(obj))
+        return Promise.all(this.edrInitials.map(this.postInitials))
+          .then(obj => this.objectFilter(obj))
 
-        return [] // tempory then uncoment above
+        // return [] // tempory then uncoment above
       },
 
       filterArrOfObj(arr, id) {
@@ -1552,7 +1552,6 @@
         return filteredArr
       },
 
-
       getPersonFromLegal() {
         console.log('getPersonFromLegal')
         return this.personUrls.map(
@@ -1561,25 +1560,25 @@
               this.edrInitials
                 .filter(v => v)
                 .map(
-                initial => {
-                  // in case if parsed initials is not correct abort request
-                  if(!this.objCntr(null, initial)) return Promise.resolve([])
-
-                  return this.startRequest(
-                    obj.url,
-                    this.reqOption(
-                      this.objCntr(obj.desc, initial, 'test'), // INVALID controler choose
-                      'POST'
-                    ),
-                    // callback to modify res
-                    res => obj.desc !== 'eDeclarations' 
-                      ? res 
-                      : obj.desc === 'eDeclarations' 
-                        && res?.results?.object_list.length 
-                          ? res.results.object_list 
-                          : []
-                  )
-                }
+                  initial => {
+                    // in case if parsed initials is not correct abort request
+                    if(!this.objCntr(null, initial)) return Promise.resolve([])
+                    console.log({initials: initial})
+                    return this.startRequest(
+                      obj.url,
+                      this.reqOption(
+                        this.objCntr(obj.desc, initial, 'test'), // INVALID controler choose
+                        'POST'
+                      ),
+                      // callback to modify res
+                      res => obj.desc !== 'eDeclarations' 
+                        ? res 
+                        : obj.desc === 'eDeclarations' 
+                          && res?.results?.object_list.length 
+                            ? res.results.object_list 
+                            : []
+                    )
+                  }
               )
             )
             return [[obj.desc], [].concat(...urlRes)]
@@ -1679,10 +1678,10 @@
         const translite = desc 
           ? arrEn.includes(desc) 
           : false
-        if(test) console.log({customObj: obj})
+        if(test) console.log({customObj: customObj})
         if(customObj) {
           const [lastName, firstName, patronymic] = this.formatInitials(customObj)
-          // if(!lastName || !firstName || lastName.length < 1 || firstName.length < 1) return null
+          if(!lastName || !firstName || lastName.length < 1 || firstName.length < 1) return null
           obj = {
             firstName: this.capitalize(firstName),
             lastName: this.capitalize(lastName),

@@ -413,7 +413,7 @@
             class="d-block white--text section-btn"
             :color="btnActv('RNBO') ? 'grey darken-1' : 'grey darken-3'">
             РНБО Санкцiї&nbsp;-&nbsp;[<span :style="`color: ${rnboList.length > 0 ? '#e57373;' : ''}`">
-              {{ rnboList.length && choosedPerson ? rnboList.length - 1 : rnboList.length }}
+              {{ rnboVariant.length }}
             </span>]
             <v-icon 
               :class="btnActv('RNBO') ? 'active' : ''" 
@@ -441,7 +441,7 @@
             class="d-block white--text section-btn"
             :color="btnActv('UNSanc') ? 'grey darken-1' : 'grey darken-3'">
             ООН Санкцiї&nbsp;-&nbsp;[<span :style="`color: ${unSanctionList.length > 0 ? '#e57373;' : ''}`">
-              {{ unSanctionList.length && choosedPerson ? unSanctionList.length - 1 : unSanctionList.length}}
+              {{ validLength(unSanctionList).length}}
             </span>]
             <v-icon 
               :class="btnActv('UNSanc') ? 'active' : ''" 
@@ -619,7 +619,7 @@
             class="d-block white--text section-btn"
             :color="btnActv('UNTerror') ? 'grey darken-1' : 'grey darken-3'">
             ООН. Перелiк терористiв&nbsp;-&nbsp;[<span :style="`color: ${unTerrorList.length > 0 ? '#e57373;' : ''}`">
-              {{ unTerrorList.length && choosedPerson ? unTerrorList.length - 1 : unTerrorList.length }}
+              {{ validLength(unTerrorList).length }}
             </span>]
             <v-icon 
               :class="btnActv('UNTerror') ? 'active' : ''" 
@@ -755,7 +755,7 @@
             class="d-block white--text section-btn"
             :color="btnActv('EUSanc') ? 'grey darken-1' : 'grey darken-3'">
             ЄС(Європейський союз) Санкцiї&nbsp;-&nbsp;[<span :style="`color: ${esSanctionList.length > 0 ? '#e57373;' : ''}`">
-              {{esSanctionList.length && choosedPerson ? esSanctionList.length - 1 : esSanctionList.length}}
+              {{esVariant.length}}
             </span>]
             <v-icon
               :class="btnActv('EUSanc') ? 'active' : ''" 
@@ -783,7 +783,7 @@
             class="d-block white--text section-btn"
             :color="btnActv('USSanc') ? 'grey darken-1' : 'grey darken-3'">
             Санкцiйний перелiк осiб (Юр./фiз.) США&nbsp;-&nbsp;[<span :style="`color: ${usSanctionList.length > 0 ? '#e57373;' : ''}`">
-              {{ usSanctionList.length && choosedPerson ? usSanctionList.length - 1 : usSanctionList.length }}
+              {{ validLength(usSanctionList).length }}
             </span>]
             <v-icon :class="btnActv('USSanc') ? 'active' : ''" 
               color="white">
@@ -1358,6 +1358,19 @@
           case 'patronymic': return 'спiвпадiння По батьковi'; 
         }
       },
+      validLength(arr) {
+        let items = [
+          'initials',
+          'lastFirstName',
+          'lastName',
+          'firstName',
+          'patronymic'
+        ]
+        return arr
+          .filter(
+            v => items.includes(v)
+          )
+      },
       viewDetail(item) {
         console.log(item)
       },
@@ -1425,6 +1438,7 @@
           }
         ).then(res => {
           let arr = Array.isArray(res) ? res : [res]
+          console.log({INITIALS: arr})
           return {
             edrList: this.filterEdrPerson(arr),
             edrInitials: this.choosedPerson 
@@ -1447,6 +1461,7 @@
             res.beneficialOwners
               .concat(res.founders, [res.boss])
               .filter(v => v)
+              // .map(v => v.toUpperCase())
           )
         ]
         
@@ -1527,8 +1542,9 @@
           ? Promise.all(this.getPersonFromLegal())
             .then(arr => Object.fromEntries(arr))
             .then(arr => {
+              console.log({ARRRNBO: arr})
               this.eDeclarationList.push(...arr.eDeclarations)
-              this.rnboList.push(...arr.rnboList)
+              this.rnboList.push(...arr.rnboList) // not right
               this.unSanctionList.push(...arr.unPersSanctions)
               this.unTerrorList.push(...arr.unTerrors)
               this.esSanctionList.push(...arr.USSancions)
@@ -1563,7 +1579,6 @@
                   initial => {
                     // in case if parsed initials is not correct abort request
                     if(!this.objCntr(null, initial)) return Promise.resolve([])
-                    console.log({initials: initial})
                     return this.startRequest(
                       obj.url,
                       this.reqOption(
@@ -1681,7 +1696,7 @@
         if(test) console.log({customObj: customObj})
         if(customObj) {
           const [lastName, firstName, patronymic] = this.formatInitials(customObj)
-          if(!lastName || !firstName || lastName.length < 1 || firstName.length < 1) return null
+          if(!lastName || !firstName || lastName.length <= 1 || firstName.length <= 1) return null
           obj = {
             firstName: this.capitalize(firstName),
             lastName: this.capitalize(lastName),

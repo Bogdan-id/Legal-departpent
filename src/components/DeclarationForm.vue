@@ -1099,8 +1099,8 @@ import {
 import { letters } from '@/utils/utils'
 import { transliteRule } from './translite'
 const baseURL = process.env.NODE_ENV === "development" 
-  ? 'http://94.131.243.7:4000' 
-  : 'http://127.0.0.1:4000' // https://pacific-dawn-21711.herokuapp.com
+  ? 'http://127.0.0.1:4000' 
+  : 'http://94.131.243.7:4000'
 
 export default {
   name: 'DeclarationForm',

@@ -1085,933 +1085,904 @@
 </template>
 
 <script>
-  import { 
-      mdiClose, 
-      mdiAccountSearch,
-      mdiMenuDown,
-      mdiInformation,
-      mdiAxisZRotateClockwise,
-      mdiWindowMinimize,
-      mdiTextBoxSearchOutline,
-      mdiSortAlphabeticalAscendingVariant
-    } from '@mdi/js'
+import { 
+    mdiClose, 
+    mdiAccountSearch,
+    mdiMenuDown,
+    mdiInformation,
+    mdiAxisZRotateClockwise,
+    mdiWindowMinimize,
+    mdiTextBoxSearchOutline,
+    mdiSortAlphabeticalAscendingVariant
+  } from '@mdi/js'
 
-  import { letters } from '@/utils/utils'
+import { letters } from '@/utils/utils'
+import { transliteRule } from './translite'
+const baseURL = process.env.NODE_ENV === "development" 
+  ? 'http://94.131.243.7:4000' 
+  : 'http://127.0.0.1:4000/' // https://pacific-dawn-21711.herokuapp.com
 
-  export default {
-    name: 'DeclarationForm',
-    data: () => ({
-      controller: new AbortController(),
-      transliteRule: [
-        {ua: "Аа", en: "Aa", position: "", exampleUK: "Алушта Андрій", exampleEN: "Alushta Andrii"},
-        {ua: "Бб", en: "Bb", position: "", exampleUK: "Борщагівка Борисенко", exampleEN: "Borshchahivka Borysenko"},
-        {ua: "Вв", en: "Vv", position: "", exampleUK: "Вінниця Володимир", exampleEN: "Vinnytsia Volodymyr"},
-        {ua: "Гг", en: "Hh", position: "", exampleUK: "Гадяч Богдан Згурський", exampleEN: "Hadiach Bohdan Zghurskyi"},
-        {ua: "Ґґ", en: "Gg", position: "", exampleUK: "Ґалаґан Ґорґани", exampleEN: "Galagan Gorgany"},
-        {ua: "Дд", en: "Dd", position: "", exampleUK: "Донецьк Дмитро", exampleEN: "Donetsk Dmytro"},
-        {ua: "Ее", en: "Ee", position: "", exampleUK: "Рівне Олег Есмань", exampleEN: "Rivne Oleh Esman"},
-        {ua: "Єє", en: "Ye", position: "ie", exampleUK: "Єнакієве Гаєвич Короп'є", exampleEN: "Yenakiieve Haievych Koropie"},
-        {ua: "Жж", en: "Zh", position: "", exampleUK: "Житомир Жанна Жежелів", exampleEN: "Zhytomyr Zhanna Zhezheliv"},
-        {ua: "Зз", en: "Zz", position: "", exampleUK: "Закарпаття Казимирчук", exampleEN: "Zakarpattia Kazymyrchuk"},
-        {ua: "Ии", en: "Yy", position: "", exampleUK: "Медвин Михайленко", exampleEN: "Medvyn Mykhailenko"},
-        {ua: "Іі", en: "Ii", position: "", exampleUK: "Іванків Іващенко", exampleEN: "Ivankiv Ivashchenko"},
-        {ua: "Її", en: "Yi", position: "i", exampleUK: "Їжакевич Кадиївка Мар'їне", exampleEN: "Yizhakevych Kadyivka Marine"},
-        {ua: "Йй", en: "Y", position: "i", exampleUK: "Йосипівка Стрий Олексій", exampleEN: "Yosypivka Stryi Oleksii"},
-        {ua: "Кк", en: "Kk", position: "", exampleUK: "Київ Коваленко", exampleEN: "Kyiv Kovalenko"},
-        {ua: "Лл", en: "Ll", position: "", exampleUK: "Лебедин Леонід", exampleEN: "Lebedyn Leonid"},
-        {ua: "Мм", en: "Mm", position: "", exampleUK: "Миколаїв Маринич", exampleEN: "Mykolaiv Marynych"},
-        {ua: "Нн", en: "Nn", position: "", exampleUK: "Ніжин Наталія", exampleEN: "Nizhyn Nataliia"},
-        {ua: "Оо", en: "Oo", position: "", exampleUK: "Одеса Онищенко", exampleEN: "Odesa Onyshchenko"},
-        {ua: "Пп", en: "Pp", position: "", exampleUK: "Полтава Петро", exampleEN: "Poltava Petro"},
-        {ua: "Рр", en: "Rr", position: "", exampleUK: "Решетилівка Рибчинський", exampleEN: "Reshetylivka Rybchynskyi"},
-        {ua: "Сс", en: "Ss", position: "", exampleUK: "Суми Соломія", exampleEN: "Sumy Solomiia"},
-        {ua: "Тт", en: "Tt", position: "", exampleUK: "Тернопіль Троць", exampleEN: "Ternopil Trots"},
-        {ua: "Уу", en: "Uu", position: "", exampleUK: "Ужгород Уляна", exampleEN: "Uzhhorod Uliana"},
-        {ua: "Фф", en: "Ff", position: "", exampleUK: "Фастів Філіпчук", exampleEN: "Fastiv Filipchuk"},
-        {ua: "Хх", en: "Kh", position: "", exampleUK: "Харків Христина", exampleEN: "Kharkiv Khrystyna"},
-        {ua: "Цц", en: "Ts", position: "", exampleUK: "Біла Церква Стеценко", exampleEN: "Bila Tserkva Stetsenko"},
-        {ua: "Чч", en: "Ch", position: "", exampleUK: "Чернівці Шевченко", exampleEN: "Chernivtsi Shevchenko"},
-        {ua: "Шш", en: "Sh", position: "", exampleUK: "Шостка Кишеньки", exampleEN: "Shostka Kyshenky"},
-        {ua: "Щщ", en: "Shch", position: "", exampleUK: "Щербухи Гоща Гаращенко", exampleEN: "Shcherbukhy Hoshcha Harashchenko"},
-        {ua: "Юю", en: "Yu", position: "iu", exampleUK: "Юрій Корюківка", exampleEN: "Yurii Koriukivka"},
-        {ua: "Яя", en: "Ya", position: "ia", exampleUK: "Яготин Ярошенко Костянтин Знам'янка Феодосія", exampleEN: "Yahotyn Yaroshenko Kostiantyn Znamianka Feodosiia"},
-      ],
-
-      transliteRuleTH: [
-        {text: "Українська", value: "ua", sortable: false, align: "start"},
-        {text: "Початок слова (EN)", value: "en", sortable: false, align: "center"},
-        {text: "В iнших поз-iях (EN)", value: "position", sortable: false, align: "center"},
-        {text: "Приклад UK", value: "exampleUK", sortable: false, align: "center"},
-        {text: "Приклад EN", value: "exampleEN", sortable: false, align: "center"},
-      ],
-      /* Individual */
-      // https:***//pacific-dawn-21711.herokuapp.com
-      // http:***//localhost:8000
-      edrByInitials: {
-        desc: 'edrByInitials',
-        url: 'https://pacific-dawn-21711.herokuapp.com/get-edr-persons'
-      },
-      edrByInitial: {
-        desc: 'edrByInitial',
-        url: 'https://pacific-dawn-21711.herokuapp.com/get-edr-initial'
-      },
-      pepByInitials: {
-        desc: 'pepByInitials',
-        url: 'https://pacific-dawn-21711.herokuapp.com/get-public-person'
-      },
-      eDeclarations: { 
-        desc: 'eDeclarations',
-        url: 'https://pacific-dawn-21711.herokuapp.com/get-declarations'
-      },
-      rnboPersons: {
-        desc: 'rnboList',
-        url: 'https://pacific-dawn-21711.herokuapp.com/get-person-sanctions' // Partial searching
-      },
-      unPersSanctions: { // Partial searching
-        desc: 'unPersSanctions',
-        url: 'https://pacific-dawn-21711.herokuapp.com/un-person-sanctions'
-      },
-      usPersonSunctions: { // Partial searching
-        desc: 'USSancions',
-        url: 'https://pacific-dawn-21711.herokuapp.com/us-person-sanctions/'
-      },
-      esPersonSunctions: {  // Partial searching
-        desc: 'EUSunctions',
-        url: 'https://pacific-dawn-21711.herokuapp.com/get-eu-person-sanctions/'
-      },
-      unTerrors: { // Partial searching
-        desc: 'unTerrors',
-        url: 'https://pacific-dawn-21711.herokuapp.com/un-person-terror'   
-      },
-
-      /* Legals */
-      edrByEdrpou: {
-        desc: 'edrByEdrpou',
-        url: 'https://pacific-dawn-21711.herokuapp.com/get-edr-legals'
-      },
-      rnboLegals: { // Partial searching
-        desc: 'rnboLegals',
-        url: 'https://pacific-dawn-21711.herokuapp.com/get-legal-sanctions'
-      },
-      esLegalSanctions: { // Partial searching
-        desc: 'esLegalSanctions',
-        url: 'https://pacific-dawn-21711.herokuapp.com/get-eu-legal-sanctions'
-      },
-      pepByEdrpou: {
-        desc: 'pepByEdrpou',
-        url: 'https://pacific-dawn-21711.herokuapp.com/get-related-persons'
-      },
-      unLegalSanctions: { // Partial searching
-        desc: 'unLegalSanctions',
-        url: 'https://pacific-dawn-21711.herokuapp.com/un-legal-sanctions'
-      },
-      unLegalTerrors: { // Partial searching
-        desc: 'unLegalTerrors',
-        url: 'https://pacific-dawn-21711.herokuapp.com/un-legal-terrors'
-      },
-      usLegalSanctions: {
-        desc: 'usLegalSanctions', // Partial searching
-        url: 'https://pacific-dawn-21711.herokuapp.com/us-legal-sanctions'
-      },
-
-      EDRTH: [
-        { text: 'Назва', value: 'name', align: 'start', sortable: false},
-        { text: 'Керiвник', value: 'boss', align: 'center', sortable: false },
-        { text: 'Статус', value: 'condition', align: 'center', sortable: false },
-        { text: 'ЄДРПОУ', value: 'edrpou', align: 'center', sortable: false },
-      ],
-      EDRTHperson: [
-        { text: 'ФОП', value: 'initials', align: 'start', sortable: false},
-        { text: 'Статус', value: 'condition', align: 'center', sortable: false },
-      ],
-
-      EDTH: [
-        { text: 'Прiзвище', value: 'infocard.last_name', align: 'start', sortable: false},
-        { text: 'Iм`я', value: 'infocard.first_name', align: 'center', sortable: false },
-        { text: 'По батьковi', value: 'infocard.patronymic', align: 'center', sortable: false },
-        { text: 'Посада', value: 'infocard.position', align: 'center', sortable: false },
-        { text: 'Рiк', value: 'infocard.declaration_year', align: 'center', sortable: false},
-        { text: 'Тип', value: 'infocard.document_type', align: 'center', sortable: false },
-        { text: "Детально", value: 'action', align: 'center', sortable: false}
-      ],
-
-      PEPTH: [
-        { text: 'ПIБ', value: 'full_name', align: 'start', sortable: false },
-        { text: 'Дата нар-ння', value: 'date_of_birth', align: 'center', sortable: false},
-        { text: 'Посада', value: 'last_job_title', align: 'center', sortable: false },
-        { text: 'Оф. тип.', value: 'type_of_official', align: 'center', sortable: false },
-        { text: "Детально", value: 'action', align: 'center', sortable: false}
-      ],
-      pepNestedLegal: [
-        { text: "Юр. особа", value: 'to_company_uk', align: 'start', sortable: false},
-        { text: "Тип зв`язку", value: 'relationship_type_uk', align: 'start', sortable: false},
-        { text: "ЄДРПОУ", value: 'to_company_edrpou', align: 'start', sortable: false},
-      ],
-      pepNestedPerson: [
-        { text: "ПIБ", value: 'person_uk', align: 'start', sortable: false},
-        { text: "Тип зв`язку", value: 'relationship_type', align: 'start', sortable: false},
-      ],
-
-      UNOsancPerson: [
-        { text: 'ПIБ', value: 'fullName', align: 'start', sortable: false},
-        { text: 'Нацiональнiсть', value: 'nationality', align: 'center', sortable: false },
-        { text: 'День н-ння', value: 'dateOfBirth', align: 'center', sortable: false },
-        { text: 'Посада', value: 'designation', align: 'center', sortable: false },
-      ],
-      UNOsancLegal: [
-        { text: 'Пiдроздiл', value: 'firstName', align: 'start', sortable: false},
-        { text: 'Органiзацiя', value: 'unListType', align: 'center', sortable: false },
-      ],
-      UNOsancPersonNested: [
-        { text: 'Також вiдомий як', value: 'ALIAS_NAME', align: 'start', sortable: false},
-      ],
-
-      UNOterrorPersonTH: [
-        { text: 'ПIБ', value: 'fullName', align: 'start', sortable: false},
-        { text: 'Мiсце народження', value: 'place-of-birth-list', align: 'center', sortable: false },
-        { text: 'Мiсце проживання', value: 'address-list.address', align: 'center', sortable: false },
-        { text: 'Дата народження', value: 'date-of-birth-list', align: 'center', sortable: false },
-      ],
-      UNOterrorLegalTH: [
-        { text: 'Назва органiзації', value: 'fullName', align: 'start', sortable: false},
-        { text: 'Адреса', value: 'address-list.address', align: 'center', sortable: false },
-      ],
-
-      usSanctionPersonTH: [
-        { text: 'ПIБ', value: 'initials', align: 'start', sortable: false},
-        { text: 'Дiяльнiсть', value: 'title', align: 'center', sortable: false },
-      ],
-      usSanctionLegalTH: [
-        { text: 'Назва компанiї', value: 'lastName', align: 'start', sortable: false},
-        { text: 'Контакти', value: 'remarks', align: 'center', sortable: false },
-      ],
-      usSanctionNested: [
-        { text: 'Також вiдомий як', value: 'ALIAS_NAME', align: 'start', sortable: false},
-      ],
-
-      letters: letters,
-      currSection: null,
-      ukVersion: true,
-      showRequisite: false,
-      showRule: false,
-
-      edrExpanded: [],
-      edrPersonExpanded: [],
-      pepExpanded: [],
-      unSancExpanded: [],
-      unTerrorExpanded: [],
-      usSanctionExpanded: [],
-      edrExpandedW: false,
-      edrPersonExpandedW: false,
-      pepExpandedW: false,
-      unSancExpandedW: false,
-      unTerrorExpandedW: false,
-      usSanctionExpandedW: false,
-
-      
-      edrList: [],
-      edrListPerson: [],
-      pepList: [],
-      eDeclarationList: [],
-      rnboList: [],
-      unSanctionList: [],
-      unTerrorList: [],
-      esSanctionList: [],
-      usSanctionList: [],
-
-      edrInitials: [],
-
-      lastName: null,
-      firstName: null,
-      patronymic: null,
-      edrpou: null,
-      companyName: null,
-
-      /* Data */
-      pageUrl: null,
-      searchVariant: null,
-
-      /* Booleans */
-      loading: false,
-      dialog: false,
-
-      /* Icons */
-      mdiClose,
-      mdiAccountSearch,
-      mdiMenuDown,
-      mdiInformation,
-      mdiAxisZRotateClockwise,
-      mdiWindowMinimize,
-      mdiTextBoxSearchOutline,
-      mdiSortAlphabeticalAscendingVariant
-    }),
-
-
-    methods: {
-      switchHeader(list, index) {
-        // initials lastFirstName lastName firstName patronymic
-        switch(list[index]) {
-          case 'initials': return 'спiвпадiння за ПIП';
-          case 'lastFirstName': return 'спiвпадiння за Прiзвищем та Iм`ям';
-          case 'lastName' : return 'спiвпадiння за Прiзвищем'; 
-          case 'firstName': return 'спiвпадiння за Iм`ям'; 
-          case 'patronymic': return 'спiвпадiння По батьковi'; 
-        }
-      },
-      validLength(arr) {
-        let items = [
-          'initials',
-          'lastFirstName',
-          'lastName',
-          'firstName',
-          'patronymic'
-        ]
-        return arr
-          .filter(
-            v => items.includes(v)
-          )
-      },
-      makeActive(e) {
-        if(e === this.currSection) this.currSection = null 
-        else this.currSection = e
-      },
-      btnActv(name) {
-        return this.currSection === name
-      },
-      async checkEntity() {
-        /* alowed requests from this.legalUrls without edrpou */
-        const withoutEdrpou = [
-          'unLegalSanctions', 
-          'unLegalTerrors',
-          'usLegalSanctions',
-          'rnboLegals',
-          'esLegalSanctions'
-        ]
-
-        return Promise.all(
-          this.objectUrlsController
-            .map(async reqObj => {
-              const checkReq = !this.objCntr(reqObj.desc).edrpou // obj does not have edrpou
-                && !withoutEdrpou.includes(reqObj.desc) // and request is not present in array
-                && this.choosedLegal // and choosed legal handler
-              if (checkReq) return Promise.resolve([]) // return empty array
-            
-              let obj = await this.startRequest(
-                reqObj.url,
-                this.reqOption(
-                  this.objCntr(reqObj.desc), // choosed right object by .desc property
-                  'POST'
-                ),
-                /* If you provide callback you should always retun res object or modified res object */
-                res => reqObj.desc !== 'eDeclarations' 
-                  ? res 
-                  : reqObj.desc === 'eDeclarations' 
-                    && res?.results?.object_list.length ? res.results.object_list : []
-              )
-              let prop = reqObj.desc
-              return Array.isArray(obj) ? [[prop], obj || []] : [[prop], [obj] || []]
-            })
-        )
-        .then(arr => arr.filter(v => v[1] && v[1].length))
-        .then(arr => Object.fromEntries(arr))
-      },
-
-
-      async getInitials() {
-        if(this.choosedLegal && !this.objCntr().edrpou) return Promise.resolve([])
-        return await this.startRequest(
-          this.requestController.edrUrl,
-          this.reqOption(this.objCntr(), 'POST'),
-          res => {
-            this.clearData()
-            return res
-          }
-        ).then(res => {
-          let arr = Array.isArray(res) ? res : [res]
-          return {
-            edrList: this.filterEdrPerson(arr),
-            edrInitials: this.choosedPerson 
-              ? this.initialArr.edrInitials 
-              : this.uniqArr(res)
-          }
-        })
-      },
-
-      filterEdrPerson(arr) {
-        return arr
-      },
-
-      uniqArr(res) {
-        if(!res || !res.length) return []
-        res = res[0]
-
-        return [
-          ...new Set(
-            res.beneficialOwners
-              .concat(res.founders, [res.boss])
-              .filter(v => v)
-              // .map(v => v.toUpperCase())
-          )
-        ]
-        
-      },
-
-      async getEdrPerson() {
-        if(this.choosedLegal) return Promise.resolve([])
-
-        return await this.startRequest(
-          this.edrByInitial.url,
-          this.reqOption(this.objCntr(), 'POST'),
-        ).then(res => {
-          let arr = Array.isArray(res) ? res : [res]
-          return arr
-        })
-      },
-
-      async mapResult() {
-        this.loading = true
-        this.clearData()
-        this.edrList.length = 0
-        this.edrInitials.length = 0
-        
-        try {
-          let edrPerson = await this.getEdrPerson()
-          let {
-            edrList = [], 
-            edrInitials = []
-            } = await this.getInitials()
-
-          let {
-            eDeclarations = [], 
-            rnboList = [], 
-            unPersSanctions = [], 
-            unTerrors = [],
-            USSancions = [],
-            usLegalSanctions = [],
-            EUSunctions = [],
-            pepByEdrpou = [],
-            unLegalTerrors = [],
-            unLegalSanctions = [],
-            rnboLegals = [],
-            esLegalSanctions = []
-            } = await this.checkEntity()
-
-          this.edrInitials.push(...edrInitials.filter(v => v))
-          this.edrList.push(...edrList)
-          this.edrListPerson.push(...edrPerson)
-          this.eDeclarationList.push(...eDeclarations)
-          this.rnboList.push(...rnboList, ...rnboLegals)
-          this.unSanctionList.push(...unPersSanctions, ...unLegalSanctions)
-          this.unTerrorList.push(...unTerrors, ...unLegalTerrors)
-          this.esSanctionList.push(...EUSunctions, ...esLegalSanctions)
-          this.usSanctionList.push(...USSancions, ...usLegalSanctions)
-          let pepList = await this.getPepList()
-          this.pepList.push(
-            ...this.filterArrOfObj(
-              pepByEdrpou.concat(pepList), '_id'
-            )
-          )
-          
-
-          this.consoleObjects // console result
-          this.dialog = true
-          this.loading = false
-
-        } catch(err) {
-          this.loading = false
-          this.notify(this.err(err))
-        }
-      },
-
-      getPepList() {
-        this.choosedLegal 
-          ? Promise.all(this.getPersonFromLegal())
-            .then(arr => Object.fromEntries(arr))
-            .then(arr => {
-              this.eDeclarationList.push(...arr.eDeclarations)
-              this.rnboList.push(...arr.rnboList) // not right
-              this.unSanctionList.push(...arr.unPersSanctions)
-              this.unTerrorList.push(...arr.unTerrors)
-              this.esSanctionList.push(...arr.USSancions)
-              this.usSanctionList.push(...arr.EUSunctions)
-            })
-          : false
-
-        return Promise.all(this.edrInitials.map(this.postInitials))
-          .then(obj => this.objectFilter(obj))
-
-        // return [] // tempory then uncoment above
-      },
-
-      filterArrOfObj(arr, id) {
-        const ids = new Set()
-        let filteredArr = arr.filter(obj => {
-          const duplicate = ids.has(obj[id])
-          ids.add(obj[id])
-          return !duplicate
-        })
-        return filteredArr
-      },
-
-      getPersonFromLegal() {
-        return this.personUrls.map(
-          async obj => {
-            let urlRes = await Promise.all(
-              this.edrInitials
-                .filter(v => v)
-                .map(
-                  initial => {
-                    // in case if parsed initials is not correct abort request
-                    if(!this.objCntr(null, initial)) return Promise.resolve([])
-                    return this.startRequest(
-                      obj.url,
-                      this.reqOption(
-                        this.objCntr(obj.desc, initial),
-                        'POST'
-                      ),
-                      // callback to modify res
-                      res => obj.desc !== 'eDeclarations' 
-                        ? res 
-                        : obj.desc === 'eDeclarations' 
-                          && res?.results?.object_list.length 
-                            ? res.results.object_list 
-                            : []
-                    )
-                  }
-              )
-            )
-            return [[obj.desc], [].concat(...urlRes)]
-        })
-      },
-
-      objectFilter(obj) {
-        return obj.filter(k => k instanceof Object)
-      },
-
-      formatInitials(initials) {
-        return this.choosedPerson 
-          ? initials.replace(/\s/g, '').split('*') 
-          : initials.replace(/\*/g, '').split(' ')
-      },
-
-      async postInitials(initials) {
-        // in case if parsed initials is not correct abort req
-        if(!this.objCntr(null, initials)) return Promise.resolve()
-
-        try {
-          return await this.startRequest(
-            this.pepByInitials.url,
-            this.reqOption(
-              this.objCntr(null, initials), 
-              'POST'
-            ),
-          ).then(v => v[0])
-        } catch(err) {
-          this.notify(this.err(err))
-        }
-      },
-
-      initRequest(url, obj) {
-        return fetch(url, obj)
-      },
-
-      resHandler(url, obj) {
-        return this.initRequest(url, obj)
-          .then(res => {
-            if(res.ok) {
-              return res.json()
-            } else {
-              // this.controller.abort()
-              this.notify(this.err(res))
-              throw new Error('Network response was not ok')
-            }
-          })
-      },
-
-      err(res) {
-        if(res && res.status) return  (res.status, res.statusText)
-        else return res
-      },
-
-      resController(url, obj, callback) {
-        return this.resHandler(url, obj)
-          .then(res => {
-            if(typeof callback === 'function') return callback(res)
-            else return res
-          })
-      },
-
-      startRequest(url, obj, resCallback) {
-        return this.resController(url, obj, resCallback)
-          .catch(err => {
-            this.loading = false
-            this.notify(this.err(err))
-          })
-      },
-
-      reqOption(obj, method) {
-        return {
-          method: method,
-          headers: {
-            "Content-Type": "application/json"
-          },
-          mode: 'cors',
-          body: JSON.stringify(obj),
-          signal: this.controller.signal
-        }
-      },
-      // customObj (optional) for individuals
-      objCntr(desc, customObj) {
-        let obj
-        const arrEn = [
-          'unPersSanctions', 
-          'unTerrors', 
-          'USSancions', 
-          'EUSunctions', 
-          'unLegalSanctions',
-          'unLegalTerrors',
-          'usLegalSanctions']
-
-        // translite object properties
-        const translite = desc 
-          ? arrEn.includes(desc) 
-          : false
-
-        if(customObj) {
-          const [lastName, firstName, patronymic] = this.formatInitials(customObj)
-          if(!lastName || !firstName || lastName.length <= 1 || firstName.length <= 1) return null
-          obj = {
-            firstName: this.capitalize(firstName),
-            lastName: this.capitalize(lastName),
-            patronymic: (patronymic ? this.capitalize(patronymic) : '')
-          }
-          
-        } else if (!translite && this.choosedPerson) {
-          obj = {
-            firstName: this.capitalize(this.firstName),
-            lastName: this.capitalize(this.lastName),
-            patronymic: (this.patronymic ? this.capitalize(this.patronymic) : '')
-          } 
-        } else if (translite && this.choosedPerson) {
-          obj = {
-            firstName: this.transliterate(this.firstName),
-            lastName: this.transliterate(this.lastName),
-            patronymic: (this.patronymic ? this.transliterate(this.patronymic) : '')
-          }
-        } else if (this.choosedLegal && !translite) {
-          obj = {
-            edrpou: this.edrpou ? this.edrpou.trim() : null,
-            companyName: this.companyName
-          }
-        }
-        else if (this.choosedLegal && translite) {
-          obj = { 
-            edrpou: this.edrpou ? this.edrpou.trim() : null,
-            companyName: this.transliterate(this.companyName)
-          }
-        }
-
-        return obj
-      },
-
-      capitalize(str) {
-        if(!str) return ''
-
-        str = str
-          .trim()
-          .replace(/\s+/g, ' ')
-          .split(' ')
-        return str.map(text => {
-          return (text.charAt(0).toUpperCase() + text.slice(1).toLowerCase()).trim()
-        }).join(' ')
-      },
-
-      transliterate(str) {
-        if(!str) return
-        let fI = {"Є": "IE", "Ї": "I", "Й": "I", "Ю": "IU", "Я": "IA"}
-        str = str.toUpperCase().split("")
-        str.forEach((v, i) => {
-          if(Object.keys(fI).includes(v) && i !== 0) str.splice(i, 1, fI[v])
-        })
-        return str.join("")
-          .replace(/зг/g, 'ZGH')
-          .trim()
-          .replace(/\s+/g, ' ')
-          .split('')
-          .map(char => { 
-            return this.letters[char] || char
-          }).join("")
-          .replace(/[^a-zA-Z-`\s0-9().,]/gu, '')
-      },
-      
-      notify(title, text) {
-        this.$snotify.simple(text, title, {
-          timeout: 2000,
-          showProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true
-        })
-      },
-
-      /* Data clearing */
-      clearData() {
-        this.pepList.length = 0
-        this.edrListPerson.length = 0
-        this.eDeclarationList.length = 0
-        this.rnboList.length = 0
-        this.unSanctionList.length = 0
-        this.unTerrorList.length = 0
-        this.esSanctionList.length = 0
-        this.usSanctionList.length = 0
-      },
-
-
-      /* Action handlers */
-      goToPage(url) {
-        if(!url) return
-        this.pageUrl = url
-        setTimeout(() => {
-          this.$refs.targetLink.click()
-          this.pageUrl = null
-          }, 0)
-      },
-
-      /* Controllers */
-      markText(handler, text) {
-        let range
-        switch(handler) {
-          case 'legalHandler': range = [
-              this.edrpou ? text.indexOf(this.edrpou) : 0, 
-              this.edrpou ? text.indexOf(this.edrpou) + this.edrpou.length : 0
-            ]
-            break;
-          case 'personHandler': range = [
-              text.indexOf(this.lastName), 
-              this.patronymic 
-                ? text.indexOf(this.patronymic) + this.patronymic.length
-                : this.firstName ? text.indexOf(this.firstName) + this.firstName.length : 0 
-            ]
-            break;
-          case 'unLegalHandler': range = [
-              this.edrpou ? text.indexOf(this.edrpou) : 0, 
-              this.edrpou ? text.indexOf(this.edrpou) + this.edrpou.length : 0
-            ]
-            break;
-          case 'unPersonHandler': range = [
-              text.indexOf(this.transliterate(this.firstName)), 
-              this.patronymic 
-                ? text.indexOf(this.transliterate(this.patronymic)) + this.patronymic.length
-                : this.lastName ? text.indexOf(this.transliterate(this.lastName)) + this.lastName.length : 0 
-            ]
-            break;
-        }
-        return range
-      },
-
-      markSearchedText(val, handler) {
-        let copy = JSON.parse(
-          JSON.stringify(val)
-        )
-        
-        return copy.filter(v => v._id)
-          .map(v => {
-            let arr = []
-            let text = v.text
-            let [start, end] = this.markText(handler, text)
-
-            arr.push(text.substring(0, start))
-            arr.push('<span class="search-text">' + text.substring(start, end) + '</span>')
-            arr.push(text.substring(end, text.length))
-
-            v.text = arr.join('')
-            return v
-          })
-      },
-
-      listenPressKey(e) {
-        if (e.keyCode === 13) {
-          this.mapResult()
-        } else if (e.keyCode === 27) {
-          this.dialog = false
-        }
-      },
+export default {
+  name: 'DeclarationForm',
+  data: () => ({
+    controller: new AbortController(),
+    transliteRuleTH: [
+      {text: "Українська", value: "ua", sortable: false, align: "start"},
+      {text: "Початок слова (EN)", value: "en", sortable: false, align: "center"},
+      {text: "В iнших поз-iях (EN)", value: "position", sortable: false, align: "center"},
+      {text: "Приклад UK", value: "exampleUK", sortable: false, align: "center"},
+      {text: "Приклад EN", value: "exampleEN", sortable: false, align: "center"},
+    ],
+    /* Individual */
+    edrByInitials: {
+      desc: 'edrByInitials',
+      url: baseURL + '/get-edr-persons'
+    },
+    edrByInitial: {
+      desc: 'edrByInitial',
+      url: baseURL + '/get-edr-initial'
+    },
+    pepByInitials: {
+      desc: 'pepByInitials',
+      url: baseURL + '/get-public-person'
+    },
+    eDeclarations: { 
+      desc: 'eDeclarations',
+      url: baseURL + '/get-declarations'
+    },
+    rnboPersons: {
+      desc: 'rnboList',
+      url: baseURL + '/get-person-sanctions' // Partial searching
+    },
+    unPersSanctions: { // Partial searching
+      desc: 'unPersSanctions',
+      url: baseURL + '/un-person-sanctions'
+    },
+    usPersonSunctions: { // Partial searching
+      desc: 'USSancions',
+      url: baseURL + '/us-person-sanctions/'
+    },
+    esPersonSunctions: {  // Partial searching
+      desc: 'EUSunctions',
+      url: baseURL + '/get-eu-person-sanctions/'
+    },
+    unTerrors: { // Partial searching
+      desc: 'unTerrors',
+      url: baseURL + '/un-person-terror'   
     },
 
+    /* Legals */
+    edrByEdrpou: {
+      desc: 'edrByEdrpou',
+      url: baseURL + '/get-edr-legals'
+    },
+    rnboLegals: { // Partial searching
+      desc: 'rnboLegals',
+      url: baseURL + '/get-legal-sanctions'
+    },
+    esLegalSanctions: { // Partial searching
+      desc: 'esLegalSanctions',
+      url: baseURL + '/get-eu-legal-sanctions'
+    },
+    pepByEdrpou: {
+      desc: 'pepByEdrpou',
+      url: baseURL + '/get-related-persons'
+    },
+    unLegalSanctions: { // Partial searching
+      desc: 'unLegalSanctions',
+      url: baseURL + '/un-legal-sanctions'
+    },
+    unLegalTerrors: { // Partial searching
+      desc: 'unLegalTerrors',
+      url: baseURL + '/un-legal-terrors'
+    },
+    usLegalSanctions: {
+      desc: 'usLegalSanctions', // Partial searching
+      url: baseURL + '/us-legal-sanctions'
+    },
 
-    computed: {
-      /* Objects */
-      initialArr() {
-        return  {
-          edrList: [], 
-          edrInitials: [
-            // mark string below with * to split further in "Initials"
-            this.capitalize(`
-              ${this.lastName?.replace(/\s+/g, ' ').trim()}*
-              ${this.firstName?.replace(/\s+/g, ' ').trim()}*
-              ${this.patronymic ? (this.patronymic.replace(/\s+/g, ' ')).trim() : ''}`
-            )
-          ]
-        }
-      },
-      personUrls() {
-        return [
-          this.eDeclarations,
-          this.rnboPersons,
-          this.unPersSanctions,
-          this.unTerrors,
-          this.usPersonSunctions,
-          this.esPersonSunctions
-        ]
-      },
+    EDRTH: [
+      { text: 'Назва', value: 'name', align: 'start', sortable: false},
+      { text: 'Керiвник', value: 'boss', align: 'center', sortable: false },
+      { text: 'Статус', value: 'condition', align: 'center', sortable: false },
+      { text: 'ЄДРПОУ', value: 'edrpou', align: 'center', sortable: false },
+    ],
+    EDRTHperson: [
+      { text: 'ФОП', value: 'initials', align: 'start', sortable: false},
+      { text: 'Статус', value: 'condition', align: 'center', sortable: false },
+    ],
 
-      legalUrls() {
-        return [
-          this.rnboLegals,
-          this.esLegalSanctions,
-          this.unLegalSanctions,
-          this.unLegalTerrors,
-          this.usLegalSanctions,
-          this.pepByEdrpou
-        ]
-      },
+    EDTH: [
+      { text: 'Прiзвище', value: 'infocard.last_name', align: 'start', sortable: false},
+      { text: 'Iм`я', value: 'infocard.first_name', align: 'center', sortable: false },
+      { text: 'По батьковi', value: 'infocard.patronymic', align: 'center', sortable: false },
+      { text: 'Посада', value: 'infocard.position', align: 'center', sortable: false },
+      { text: 'Рiк', value: 'infocard.declaration_year', align: 'center', sortable: false},
+      { text: 'Тип', value: 'infocard.document_type', align: 'center', sortable: false },
+      { text: "Детально", value: 'action', align: 'center', sortable: false}
+    ],
 
-      objectUrlsController() {
-        let obj
-        if (this.choosedPerson) { obj = this.personUrls }
-        else if (this.choosedLegal) { obj = this.legalUrls }
-        return obj
-      },
+    PEPTH: [
+      { text: 'ПIБ', value: 'full_name', align: 'start', sortable: false },
+      { text: 'Дата нар-ння', value: 'date_of_birth', align: 'center', sortable: false},
+      { text: 'Посада', value: 'last_job_title', align: 'center', sortable: false },
+      { text: 'Оф. тип.', value: 'type_of_official', align: 'center', sortable: false },
+      { text: "Детально", value: 'action', align: 'center', sortable: false}
+    ],
+    pepNestedLegal: [
+      { text: "Юр. особа", value: 'to_company_uk', align: 'start', sortable: false},
+      { text: "Тип зв`язку", value: 'relationship_type_uk', align: 'start', sortable: false},
+      { text: "ЄДРПОУ", value: 'to_company_edrpou', align: 'start', sortable: false},
+    ],
+    pepNestedPerson: [
+      { text: "ПIБ", value: 'person_uk', align: 'start', sortable: false},
+      { text: "Тип зв`язку", value: 'relationship_type', align: 'start', sortable: false},
+    ],
 
-      requestController() {
-        let obj
-        if (this.choosedPerson) obj = {
-          edrUrl: this.edrByInitials.url
-        } 
-        else if (this.choosedLegal) obj = { 
-          edrUrl: this.edrByEdrpou.url
-        }
-        return obj
-      },
+    UNOsancPerson: [
+      { text: 'ПIБ', value: 'fullName', align: 'start', sortable: false},
+      { text: 'Нацiональнiсть', value: 'nationality', align: 'center', sortable: false },
+      { text: 'День н-ння', value: 'dateOfBirth', align: 'center', sortable: false },
+      { text: 'Посада', value: 'designation', align: 'center', sortable: false },
+    ],
+    UNOsancLegal: [
+      { text: 'Пiдроздiл', value: 'firstName', align: 'start', sortable: false},
+      { text: 'Органiзацiя', value: 'unListType', align: 'center', sortable: false },
+    ],
+    UNOsancPersonNested: [
+      { text: 'Також вiдомий як', value: 'ALIAS_NAME', align: 'start', sortable: false},
+    ],
 
-      rnboVariant() {
-        let arr
-        this.choosedPerson && this.rnboList.length > 0
-          ? arr = this.markSearchedText(this.rnboList, 'personHandler')
-          : this.choosedLegal && this.rnboList.length > 0
-            ? arr =  this.markSearchedText(this.rnboList, 'legalHandler')
-            : arr = []
-        return arr
-      },
-      esVariant() {
-        let arr
-        this.choosedPerson && this.esSanctionList.length > 0
-          ? arr = this.markSearchedText(this.esSanctionList, 'unPersonHandler')
-          : this.choosedLegal && this.esSanctionList.length > 0
-            ? arr =  this.markSearchedText(this.esSanctionList, 'unLegalHandler')
-            : arr = []
-        return arr
-      },
+    UNOterrorPersonTH: [
+      { text: 'ПIБ', value: 'fullName', align: 'start', sortable: false},
+      { text: 'Мiсце народження', value: 'place-of-birth-list', align: 'center', sortable: false },
+      { text: 'Мiсце проживання', value: 'address-list.address', align: 'center', sortable: false },
+      { text: 'Дата народження', value: 'date-of-birth-list', align: 'center', sortable: false },
+    ],
+    UNOterrorLegalTH: [
+      { text: 'Назва органiзації', value: 'fullName', align: 'start', sortable: false},
+      { text: 'Адреса', value: 'address-list.address', align: 'center', sortable: false },
+    ],
 
-      requisites() {
-        return this.choosedPerson 
-          ? this.firstName && this.lastName
-          : this.choosedLegal 
-            ? this.edrpou || this.companyName
-            : false
-      },
+    usSanctionPersonTH: [
+      { text: 'ПIБ', value: 'initials', align: 'start', sortable: false},
+      { text: 'Дiяльнiсть', value: 'title', align: 'center', sortable: false },
+    ],
+    usSanctionLegalTH: [
+      { text: 'Назва компанiї', value: 'lastName', align: 'start', sortable: false},
+      { text: 'Контакти', value: 'remarks', align: 'center', sortable: false },
+    ],
+    usSanctionNested: [
+      { text: 'Також вiдомий як', value: 'ALIAS_NAME', align: 'start', sortable: false},
+    ],
 
-      choosedPerson() {
-        return this.searchVariant === 1
-      },
+    letters: letters,
+    currSection: null,
+    ukVersion: true,
+    showRequisite: false,
+    showRule: false,
 
-      choosedLegal() {
-        return this.searchVariant === 2
-      },
+    edrExpanded: [],
+    edrPersonExpanded: [],
+    pepExpanded: [],
+    unSancExpanded: [],
+    unTerrorExpanded: [],
+    usSanctionExpanded: [],
+    edrExpandedW: false,
+    edrPersonExpandedW: false,
+    pepExpandedW: false,
+    unSancExpandedW: false,
+    unTerrorExpandedW: false,
+    usSanctionExpandedW: false,
 
-      /* Styles */
-      cardOverflow() {
-        return `
-          position: relative; overflow-x: hidden; 
-          overflow-y: scroll; background: #f5f0f0`
-      },
+    
+    edrList: [],
+    edrListPerson: [],
+    pepList: [],
+    eDeclarationList: [],
+    rnboList: [],
+    unSanctionList: [],
+    unTerrorList: [],
+    esSanctionList: [],
+    usSanctionList: [],
 
-      closeAbsBtn() {
-        return `
-          position: absolute; top: -35px; 
-          right: ${this.$vuetify.breakpoint.xs ? '-8px' : '-28px;'}`
-      },
+    edrInitials: [],
 
-      maxCardHeight() {
-        return this.$vuetify.breakpoint.height / 10 * 9
-      },
+    lastName: null,
+    firstName: null,
+    patronymic: null,
+    edrpou: null,
+    companyName: null,
 
-      consoleObjects() {
-        return (
-          console.log(this.choosedLegal ? 'LEGAL': 'PERSON'),
-          console.log({initials: this.edrInitials}),
-          console.log({edr: this.edrList}),
-          console.log({pep: this.pepList}),
-          console.log({eDeclarations: this.eDeclarationList}),
-          console.log({rnboList: this.rnboList}),
-          console.log({unSanctions: this.unSanctionList}),
-          console.log({unTerrorList: this.unTerrorList}),
-          console.log({esSanctionList: this.esSanctionList}),
-          console.log({usSanctionList: this.usSanctionList})
-        )
-      },
-    }, 
-    watch: {
-      edrExpanded(val) {
-        setTimeout(() => {
-          if(val.length) this.edrExpandedW = true
-          else this.edrExpandedW = false
-        }, 0)
-      },
-      edrPersonExpanded(val) {
-        setTimeout(() => {
-          if(val.length) this.edrPersonExpandedW = true
-          else this.edrPersonExpandedW = false
-        }, 0)
-      },
-      pepExpanded(val) {
-        setTimeout(() => {
-          if(val.length) this.pepExpandedW = true
-          else this.pepExpandedW = false
-        }, 0)
-      },
-      unSancExpanded(val) {
-        setTimeout(() => {
-          if(val.length) this.unSancExpandedW = true
-          else this.unSancExpandedW = false
-        }, 0)
-      },
-      unTerrorExpanded(val) {
-        setTimeout(() => {
-          if(val.length) this.unTerrorExpandedW = true
-          else this.unTerrorExpandedW = false
-        }, 0)
-      },
-      usSanctionExpanded(val) {
-        setTimeout(() => {
-          if(val.length) this.usSanctionExpandedW = true
-          else this.usSanctionExpandedW = false
-        }, 0)
-      },
-      dialog(val) {
-        if(!val) {
-          this.currSection = null
-          this.ukVersion = true
-          this.showRequisite = false
-        }
+    /* Data */
+    pageUrl: null,
+    searchVariant: null,
+
+    /* Booleans */
+    loading: false,
+    dialog: false,
+
+    /* Icons */
+    mdiClose,
+    mdiAccountSearch,
+    mdiMenuDown,
+    mdiInformation,
+    mdiAxisZRotateClockwise,
+    mdiWindowMinimize,
+    mdiTextBoxSearchOutline,
+    mdiSortAlphabeticalAscendingVariant
+  }),
+
+
+  methods: {
+    switchHeader(list, index) {
+      // initials lastFirstName lastName firstName patronymic
+      switch(list[index]) {
+        case 'initials': return 'спiвпадiння за ПIП';
+        case 'lastFirstName': return 'спiвпадiння за Прiзвищем та Iм`ям';
+        case 'lastName' : return 'спiвпадiння за Прiзвищем'; 
+        case 'firstName': return 'спiвпадiння за Iм`ям'; 
+        case 'patronymic': return 'спiвпадiння По батьковi'; 
       }
     },
-    mounted() {
-      window.addEventListener('keydown', this.listenPressKey)
+    validLength(arr) {
+      let items = [
+        'initials',
+        'lastFirstName',
+        'lastName',
+        'firstName',
+        'patronymic'
+      ]
+      return arr
+        .filter(
+          v => items.includes(v)
+        )
     },
-    beforeDestroy() {
-      window.removeEventListener('keydown', this.listenPressKey)
+    makeActive(e) {
+      if(e === this.currSection) this.currSection = null 
+      else this.currSection = e
+    },
+    btnActv(name) {
+      return this.currSection === name
+    },
+    async checkEntity() {
+      /* alowed requests from this.legalUrls without edrpou */
+      const withoutEdrpou = [
+        'unLegalSanctions', 
+        'unLegalTerrors',
+        'usLegalSanctions',
+        'rnboLegals',
+        'esLegalSanctions'
+      ]
+
+      return Promise.all(
+        this.objectUrlsController
+          .map(async reqObj => {
+            const checkReq = !this.objCntr(reqObj.desc).edrpou // obj does not have edrpou
+              && !withoutEdrpou.includes(reqObj.desc) // and request is not present in array
+              && this.choosedLegal // and choosed legal handler
+            if (checkReq) return Promise.resolve([]) // return empty array
+          
+            let obj = await this.startRequest(
+              reqObj.url,
+              this.reqOption(
+                this.objCntr(reqObj.desc), // choosed right object by .desc property
+                'POST'
+              ),
+              /* If you provide callback you should always retun res object or modified res object */
+              res => reqObj.desc !== 'eDeclarations' 
+                ? res 
+                : reqObj.desc === 'eDeclarations' 
+                  && res?.results?.object_list.length ? res.results.object_list : []
+            )
+            let prop = reqObj.desc
+            return Array.isArray(obj) ? [[prop], obj || []] : [[prop], [obj] || []]
+          })
+      )
+      .then(arr => arr.filter(v => v[1] && v[1].length))
+      .then(arr => Object.fromEntries(arr))
+    },
+
+
+    async getInitials() {
+      if(this.choosedLegal && !this.objCntr().edrpou) return Promise.resolve([])
+      return await this.startRequest(
+        this.requestController.edrUrl,
+        this.reqOption(this.objCntr(), 'POST'),
+        res => {
+          this.clearData()
+          return res
+        }
+      ).then(res => {
+        let arr = Array.isArray(res) ? res : [res]
+        return {
+          edrList: this.filterEdrPerson(arr),
+          edrInitials: this.choosedPerson 
+            ? this.initialArr.edrInitials 
+            : this.uniqArr(res)
+        }
+      })
+    },
+
+    filterEdrPerson(arr) {
+      return arr
+    },
+
+    uniqArr(res) {
+      if(!res || !res.length) return []
+      res = res[0]
+
+      return [
+        ...new Set(
+          res.beneficialOwners
+            .concat(res.founders, [res.boss])
+            .filter(v => v)
+            // .map(v => v.toUpperCase())
+        )
+      ]
+      
+    },
+
+    async getEdrPerson() {
+      if(this.choosedLegal) return Promise.resolve([])
+
+      return await this.startRequest(
+        this.edrByInitial.url,
+        this.reqOption(this.objCntr(), 'POST'),
+      ).then(res => {
+        let arr = Array.isArray(res) ? res : [res]
+        return arr
+      })
+    },
+
+    async mapResult() {
+      this.loading = true
+      this.clearData()
+      this.edrList.length = 0
+      this.edrInitials.length = 0
+      
+      try {
+        let edrPerson = await this.getEdrPerson()
+        let {
+          edrList = [], 
+          edrInitials = []
+          } = await this.getInitials()
+
+        let {
+          eDeclarations = [], 
+          rnboList = [], 
+          unPersSanctions = [], 
+          unTerrors = [],
+          USSancions = [],
+          usLegalSanctions = [],
+          EUSunctions = [],
+          pepByEdrpou = [],
+          unLegalTerrors = [],
+          unLegalSanctions = [],
+          rnboLegals = [],
+          esLegalSanctions = []
+          } = await this.checkEntity()
+
+        this.edrInitials.push(...edrInitials.filter(v => v))
+        this.edrList.push(...edrList)
+        this.edrListPerson.push(...edrPerson)
+        this.eDeclarationList.push(...eDeclarations)
+        this.rnboList.push(...rnboList, ...rnboLegals)
+        this.unSanctionList.push(...unPersSanctions, ...unLegalSanctions)
+        this.unTerrorList.push(...unTerrors, ...unLegalTerrors)
+        this.esSanctionList.push(...EUSunctions, ...esLegalSanctions)
+        this.usSanctionList.push(...USSancions, ...usLegalSanctions)
+        let pepList = await this.getPepList()
+        this.pepList.push(
+          ...this.filterArrOfObj(
+            pepByEdrpou.concat(pepList), '_id'
+          )
+        )
+        
+
+        this.consoleObjects // console result
+        this.dialog = true
+        this.loading = false
+
+      } catch(err) {
+        this.loading = false
+        this.notify(this.err(err))
+      }
+    },
+
+    getPepList() {
+      this.choosedLegal 
+        ? Promise.all(this.getPersonFromLegal())
+          .then(arr => Object.fromEntries(arr))
+          .then(arr => {
+            this.eDeclarationList.push(...arr.eDeclarations)
+            this.rnboList.push(...arr.rnboList) // not right
+            this.unSanctionList.push(...arr.unPersSanctions)
+            this.unTerrorList.push(...arr.unTerrors)
+            this.esSanctionList.push(...arr.USSancions)
+            this.usSanctionList.push(...arr.EUSunctions)
+          })
+        : false
+
+      return Promise.all(this.edrInitials.map(this.postInitials))
+        .then(obj => this.objectFilter(obj))
+
+      // return [] // tempory then uncoment above
+    },
+
+    filterArrOfObj(arr, id) {
+      const ids = new Set()
+      let filteredArr = arr.filter(obj => {
+        const duplicate = ids.has(obj[id])
+        ids.add(obj[id])
+        return !duplicate
+      })
+      return filteredArr
+    },
+
+    getPersonFromLegal() {
+      return this.personUrls.map(
+        async obj => {
+          let urlRes = await Promise.all(
+            this.edrInitials
+              .filter(v => v)
+              .map(
+                initial => {
+                  // in case if parsed initials is not correct abort request
+                  if(!this.objCntr(null, initial)) return Promise.resolve([])
+                  return this.startRequest(
+                    obj.url,
+                    this.reqOption(
+                      this.objCntr(obj.desc, initial),
+                      'POST'
+                    ),
+                    // callback to modify res
+                    res => obj.desc !== 'eDeclarations' 
+                      ? res 
+                      : obj.desc === 'eDeclarations' 
+                        && res?.results?.object_list.length 
+                          ? res.results.object_list 
+                          : []
+                  )
+                }
+            )
+          )
+          return [[obj.desc], [].concat(...urlRes)]
+      })
+    },
+
+    objectFilter(obj) {
+      return obj.filter(k => k instanceof Object)
+    },
+
+    formatInitials(initials) {
+      return this.choosedPerson 
+        ? initials.replace(/\s/g, '').split('*') 
+        : initials.replace(/\*/g, '').split(' ')
+    },
+
+    async postInitials(initials) {
+      // in case if parsed initials is not correct abort req
+      if(!this.objCntr(null, initials)) return Promise.resolve()
+
+      try {
+        return await this.startRequest(
+          this.pepByInitials.url,
+          this.reqOption(
+            this.objCntr(null, initials), 
+            'POST'
+          ),
+        ).then(v => v[0])
+      } catch(err) {
+        this.notify(this.err(err))
+      }
+    },
+
+    initRequest(url, obj) {
+      return fetch(url, obj)
+    },
+
+    resHandler(url, obj) {
+      return this.initRequest(url, obj)
+        .then(res => {
+          if(res.ok) {
+            return res.json()
+          } else {
+            // this.controller.abort()
+            this.notify(this.err(res))
+            throw new Error('Network response was not ok')
+          }
+        })
+    },
+
+    err(res) {
+      if(res && res.status) return  (res.status, res.statusText)
+      else return res
+    },
+
+    resController(url, obj, callback) {
+      return this.resHandler(url, obj)
+        .then(res => {
+          if(typeof callback === 'function') return callback(res)
+          else return res
+        })
+    },
+
+    startRequest(url, obj, resCallback) {
+      return this.resController(url, obj, resCallback)
+        .catch(err => {
+          this.loading = false
+          this.notify(this.err(err))
+        })
+    },
+
+    reqOption(obj, method) {
+      return {
+        method: method,
+        headers: {
+          "Content-Type": "application/json"
+        },
+        mode: 'cors',
+        body: JSON.stringify(obj),
+        signal: this.controller.signal
+      }
+    },
+    // customObj (optional) for individuals
+    objCntr(desc, customObj) {
+      let obj
+      const arrEn = [
+        'unPersSanctions', 
+        'unTerrors', 
+        'USSancions', 
+        'EUSunctions', 
+        'unLegalSanctions',
+        'unLegalTerrors',
+        'usLegalSanctions']
+
+      // translite object properties
+      const translite = desc 
+        ? arrEn.includes(desc) 
+        : false
+
+      if(customObj) {
+        const [lastName, firstName, patronymic] = this.formatInitials(customObj)
+        if(!lastName || !firstName || lastName.length <= 1 || firstName.length <= 1) return null
+        obj = {
+          firstName: this.capitalize(firstName),
+          lastName: this.capitalize(lastName),
+          patronymic: (patronymic ? this.capitalize(patronymic) : '')
+        }
+        
+      } else if (!translite && this.choosedPerson) {
+        obj = {
+          firstName: this.capitalize(this.firstName),
+          lastName: this.capitalize(this.lastName),
+          patronymic: (this.patronymic ? this.capitalize(this.patronymic) : '')
+        } 
+      } else if (translite && this.choosedPerson) {
+        obj = {
+          firstName: this.transliterate(this.firstName),
+          lastName: this.transliterate(this.lastName),
+          patronymic: (this.patronymic ? this.transliterate(this.patronymic) : '')
+        }
+      } else if (this.choosedLegal && !translite) {
+        obj = {
+          edrpou: this.edrpou ? this.edrpou.trim() : null,
+          companyName: this.companyName
+        }
+      }
+      else if (this.choosedLegal && translite) {
+        obj = { 
+          edrpou: this.edrpou ? this.edrpou.trim() : null,
+          companyName: this.transliterate(this.companyName)
+        }
+      }
+
+      return obj
+    },
+
+    capitalize(str) {
+      if(!str) return ''
+
+      str = str
+        .trim()
+        .replace(/\s+/g, ' ')
+        .split(' ')
+      return str.map(text => {
+        return (text.charAt(0).toUpperCase() + text.slice(1).toLowerCase()).trim()
+      }).join(' ')
+    },
+
+    transliterate(str) {
+      if(!str) return
+      let fI = {"Є": "IE", "Ї": "I", "Й": "I", "Ю": "IU", "Я": "IA"}
+      str = str.toUpperCase().split("")
+      str.forEach((v, i) => {
+        if(Object.keys(fI).includes(v) && i !== 0) str.splice(i, 1, fI[v])
+      })
+      return str.join("")
+        .replace(/зг/g, 'ZGH')
+        .trim()
+        .replace(/\s+/g, ' ')
+        .split('')
+        .map(char => { 
+          return this.letters[char] || char
+        }).join("")
+        .replace(/[^a-zA-Z-`\s0-9().,]/gu, '')
+    },
+    
+    notify(title, text) {
+      this.$snotify.simple(text, title, {
+        timeout: 2000,
+        showProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true
+      })
+    },
+
+    /* Data clearing */
+    clearData() {
+      this.pepList.length = 0
+      this.edrListPerson.length = 0
+      this.eDeclarationList.length = 0
+      this.rnboList.length = 0
+      this.unSanctionList.length = 0
+      this.unTerrorList.length = 0
+      this.esSanctionList.length = 0
+      this.usSanctionList.length = 0
+    },
+
+
+    /* Action handlers */
+    goToPage(url) {
+      if(!url) return
+      this.pageUrl = url
+      setTimeout(() => {
+        this.$refs.targetLink.click()
+        this.pageUrl = null
+        }, 0)
+    },
+
+    /* Controllers */
+    markText(handler, text) {
+      let range
+      switch(handler) {
+        case 'legalHandler': range = [
+            this.edrpou ? text.indexOf(this.edrpou) : 0, 
+            this.edrpou ? text.indexOf(this.edrpou) + this.edrpou.length : 0
+          ]
+          break;
+        case 'personHandler': range = [
+            text.indexOf(this.lastName), 
+            this.patronymic 
+              ? text.indexOf(this.patronymic) + this.patronymic.length
+              : this.firstName ? text.indexOf(this.firstName) + this.firstName.length : 0 
+          ]
+          break;
+        case 'unLegalHandler': range = [
+            this.edrpou ? text.indexOf(this.edrpou) : 0, 
+            this.edrpou ? text.indexOf(this.edrpou) + this.edrpou.length : 0
+          ]
+          break;
+        case 'unPersonHandler': range = [
+            text.indexOf(this.transliterate(this.firstName)), 
+            this.patronymic 
+              ? text.indexOf(this.transliterate(this.patronymic)) + this.patronymic.length
+              : this.lastName ? text.indexOf(this.transliterate(this.lastName)) + this.lastName.length : 0 
+          ]
+          break;
+      }
+      return range
+    },
+
+    markSearchedText(val, handler) {
+      let copy = JSON.parse(
+        JSON.stringify(val)
+      )
+      
+      return copy.filter(v => v._id)
+        .map(v => {
+          let arr = []
+          let text = v.text
+          let [start, end] = this.markText(handler, text)
+
+          arr.push(text.substring(0, start))
+          arr.push('<span class="search-text">' + text.substring(start, end) + '</span>')
+          arr.push(text.substring(end, text.length))
+
+          v.text = arr.join('')
+          return v
+        })
+    },
+
+    listenPressKey(e) {
+      if (e.keyCode === 13) {
+        this.mapResult()
+      } else if (e.keyCode === 27) {
+        this.dialog = false
+      }
+    },
+  },
+
+
+  computed: {
+    transliteRule() {
+      return transliteRule
+    },
+    /* Objects */
+    initialArr() {
+      return  {
+        edrList: [], 
+        edrInitials: [
+          // mark string below with * to split further in "Initials"
+          this.capitalize(`
+            ${this.lastName?.replace(/\s+/g, ' ').trim()}*
+            ${this.firstName?.replace(/\s+/g, ' ').trim()}*
+            ${this.patronymic ? (this.patronymic.replace(/\s+/g, ' ')).trim() : ''}`
+          )
+        ]
+      }
+    },
+    personUrls() {
+      return [
+        this.eDeclarations,
+        this.rnboPersons,
+        this.unPersSanctions,
+        this.unTerrors,
+        this.usPersonSunctions,
+        this.esPersonSunctions
+      ]
+    },
+
+    legalUrls() {
+      return [
+        this.rnboLegals,
+        this.esLegalSanctions,
+        this.unLegalSanctions,
+        this.unLegalTerrors,
+        this.usLegalSanctions,
+        this.pepByEdrpou
+      ]
+    },
+
+    objectUrlsController() {
+      let obj
+      if (this.choosedPerson) { obj = this.personUrls }
+      else if (this.choosedLegal) { obj = this.legalUrls }
+      return obj
+    },
+
+    requestController() {
+      let obj
+      if (this.choosedPerson) obj = {
+        edrUrl: this.edrByInitials.url
+      } 
+      else if (this.choosedLegal) obj = { 
+        edrUrl: this.edrByEdrpou.url
+      }
+      return obj
+    },
+
+    rnboVariant() {
+      let arr
+      this.choosedPerson && this.rnboList.length > 0
+        ? arr = this.markSearchedText(this.rnboList, 'personHandler')
+        : this.choosedLegal && this.rnboList.length > 0
+          ? arr =  this.markSearchedText(this.rnboList, 'legalHandler')
+          : arr = []
+      return arr
+    },
+    esVariant() {
+      let arr
+      this.choosedPerson && this.esSanctionList.length > 0
+        ? arr = this.markSearchedText(this.esSanctionList, 'unPersonHandler')
+        : this.choosedLegal && this.esSanctionList.length > 0
+          ? arr =  this.markSearchedText(this.esSanctionList, 'unLegalHandler')
+          : arr = []
+      return arr
+    },
+
+    requisites() {
+      return this.choosedPerson 
+        ? this.firstName && this.lastName
+        : this.choosedLegal 
+          ? this.edrpou || this.companyName
+          : false
+    },
+
+    choosedPerson() {
+      return this.searchVariant === 1
+    },
+
+    choosedLegal() {
+      return this.searchVariant === 2
+    },
+
+    /* Styles */
+    cardOverflow() {
+      return `
+        position: relative; overflow-x: hidden; 
+        overflow-y: scroll; background: #f5f0f0`
+    },
+
+    closeAbsBtn() {
+      return `
+        position: absolute; top: -35px; 
+        right: ${this.$vuetify.breakpoint.xs ? '-8px' : '-28px;'}`
+    },
+
+    maxCardHeight() {
+      return this.$vuetify.breakpoint.height / 10 * 9
+    },
+
+    consoleObjects() {
+      return (
+        console.log(this.choosedLegal ? 'LEGAL': 'PERSON'),
+        console.log({initials: this.edrInitials}),
+        console.log({edr: this.edrList}),
+        console.log({pep: this.pepList}),
+        console.log({eDeclarations: this.eDeclarationList}),
+        console.log({rnboList: this.rnboList}),
+        console.log({unSanctions: this.unSanctionList}),
+        console.log({unTerrorList: this.unTerrorList}),
+        console.log({esSanctionList: this.esSanctionList}),
+        console.log({usSanctionList: this.usSanctionList})
+      )
+    },
+  }, 
+  watch: {
+    edrExpanded(val) {
+      setTimeout(() => {
+        if(val.length) this.edrExpandedW = true
+        else this.edrExpandedW = false
+      }, 0)
+    },
+    edrPersonExpanded(val) {
+      setTimeout(() => {
+        if(val.length) this.edrPersonExpandedW = true
+        else this.edrPersonExpandedW = false
+      }, 0)
+    },
+    pepExpanded(val) {
+      setTimeout(() => {
+        if(val.length) this.pepExpandedW = true
+        else this.pepExpandedW = false
+      }, 0)
+    },
+    unSancExpanded(val) {
+      setTimeout(() => {
+        if(val.length) this.unSancExpandedW = true
+        else this.unSancExpandedW = false
+      }, 0)
+    },
+    unTerrorExpanded(val) {
+      setTimeout(() => {
+        if(val.length) this.unTerrorExpandedW = true
+        else this.unTerrorExpandedW = false
+      }, 0)
+    },
+    usSanctionExpanded(val) {
+      setTimeout(() => {
+        if(val.length) this.usSanctionExpandedW = true
+        else this.usSanctionExpandedW = false
+      }, 0)
+    },
+    dialog(val) {
+      if(!val) {
+        this.currSection = null
+        this.ukVersion = true
+        this.showRequisite = false
+      }
     }
+  },
+  mounted() {
+    window.addEventListener('keydown', this.listenPressKey)
+    console.log(process.env.NODE_ENV)
+  },
+  beforeDestroy() {
+    window.removeEventListener('keydown', this.listenPressKey)
   }
+}
 </script>
 
 <style>

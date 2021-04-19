@@ -1371,9 +1371,6 @@
             v => items.includes(v)
           )
       },
-      viewDetail(item) {
-        console.log(item)
-      },
       makeActive(e) {
         if(e === this.currSection) this.currSection = null 
         else this.currSection = e
@@ -1382,7 +1379,6 @@
         return this.currSection === name
       },
       async checkEntity() {
-        console.log('checkEntity')
         /* alowed requests from this.legalUrls without edrpou */
         const withoutEdrpou = [
           'unLegalSanctions', 
@@ -1412,22 +1408,16 @@
                   : reqObj.desc === 'eDeclarations' 
                     && res?.results?.object_list.length ? res.results.object_list : []
               )
-              // console.log({[reqObj.desc]:obj})
               let prop = reqObj.desc
               return Array.isArray(obj) ? [[prop], obj || []] : [[prop], [obj] || []]
             })
         )
-        .then(arr => {
-          // console.log({rowData: arr}); 
-          return arr.filter(v => v[1] && v[1].length)})
-        .then(arr => {
-          // console.log({filteredArr: Object.fromEntries(arr)}); 
-          return Object.fromEntries(arr)})
+        .then(arr => arr.filter(v => v[1] && v[1].length))
+        .then(arr => Object.fromEntries(arr))
       },
 
 
       async getInitials() {
-        console.log('getInitials')
         if(this.choosedLegal && !this.objCntr().edrpou) return Promise.resolve([])
         return await this.startRequest(
           this.requestController.edrUrl,
@@ -1438,7 +1428,6 @@
           }
         ).then(res => {
           let arr = Array.isArray(res) ? res : [res]
-          console.log({INITIALS: arr})
           return {
             edrList: this.filterEdrPerson(arr),
             edrInitials: this.choosedPerson 
@@ -1455,7 +1444,7 @@
       uniqArr(res) {
         if(!res || !res.length) return []
         res = res[0]
-        console.log({UNIQARR: res})
+
         return [
           ...new Set(
             res.beneficialOwners
@@ -1468,7 +1457,6 @@
       },
 
       async getEdrPerson() {
-        console.log('getEdrPerson')
         if(this.choosedLegal) return Promise.resolve([])
 
         return await this.startRequest(
@@ -1488,7 +1476,6 @@
         
         try {
           let edrPerson = await this.getEdrPerson()
-          console.log({edrPerson: edrPerson})
           let {
             edrList = [], 
             edrInitials = []
@@ -1537,12 +1524,10 @@
       },
 
       getPepList() {
-        console.log('getPeplist')
         this.choosedLegal 
           ? Promise.all(this.getPersonFromLegal())
             .then(arr => Object.fromEntries(arr))
             .then(arr => {
-              console.log({ARRRNBO: arr})
               this.eDeclarationList.push(...arr.eDeclarations)
               this.rnboList.push(...arr.rnboList) // not right
               this.unSanctionList.push(...arr.unPersSanctions)
@@ -1569,7 +1554,6 @@
       },
 
       getPersonFromLegal() {
-        console.log('getPersonFromLegal')
         return this.personUrls.map(
           async obj => {
             let urlRes = await Promise.all(
@@ -1582,7 +1566,7 @@
                     return this.startRequest(
                       obj.url,
                       this.reqOption(
-                        this.objCntr(obj.desc, initial, 'test'), // INVALID controler choose
+                        this.objCntr(obj.desc, initial),
                         'POST'
                       ),
                       // callback to modify res
@@ -1645,7 +1629,6 @@
       },
 
       err(res) {
-        console.log(res)
         if(res && res.status) return  (res.status, res.statusText)
         else return res
       },
@@ -1678,7 +1661,7 @@
         }
       },
       // customObj (optional) for individuals
-      objCntr(desc, customObj, test) {
+      objCntr(desc, customObj) {
         let obj
         const arrEn = [
           'unPersSanctions', 
@@ -1693,7 +1676,7 @@
         const translite = desc 
           ? arrEn.includes(desc) 
           : false
-        if(test) console.log({customObj: customObj})
+
         if(customObj) {
           const [lastName, firstName, patronymic] = this.formatInitials(customObj)
           if(!lastName || !firstName || lastName.length <= 1 || firstName.length <= 1) return null
@@ -1727,8 +1710,6 @@
             companyName: this.transliterate(this.companyName)
           }
         }
-
-        if(test) console.log({['Controller: ' + desc]: obj}) // for debug purposes
 
         return obj
       },
@@ -1831,7 +1812,6 @@
         let copy = JSON.parse(
           JSON.stringify(val)
         )
-        console.log({copy: copy})
         
         return copy.filter(v => v._id)
           .map(v => {
@@ -1981,9 +1961,6 @@
       },
     }, 
     watch: {
-      searchVariant(val) {
-        console.log(val)
-      },
       edrExpanded(val) {
         setTimeout(() => {
           if(val.length) this.edrExpandedW = true
@@ -2003,7 +1980,6 @@
         }, 0)
       },
       unSancExpanded(val) {
-        console.log(val)
         setTimeout(() => {
           if(val.length) this.unSancExpandedW = true
           else this.unSancExpandedW = false

@@ -33,7 +33,7 @@
     </v-tooltip>
     <v-dialog v-model="showRule"
       :max-width="800">
-      <v-card style="max-height: 600px; overflow-x: hidden; overflow-y: scroll; border-radius: 0px;">
+      <v-card class="alphabet-table-wrapper">
         <v-card-text class="pa-0 pb-9" style="position: relative;">
           <v-btn 
             @click="showRule = !showRule"
@@ -157,7 +157,10 @@
           <v-btn @click="makeActive('EDR')" 
             class="d-block white--text section-btn"
             :color="btnActv('EDR') ? 'grey darken-1' : 'grey darken-3'">
-            Єдиний державний реєстр&nbsp;-&nbsp;[<span :style="`color: ${edrList.length > 0 || edrListPerson.length > 0 ? '#e57373;' : ''}`">{{ edrList.length || edrListPerson.length }}</span>]
+            Єдиний державний реєстр&nbsp;-&nbsp;[
+            <span :class="{'btn-count': edrList.length}">
+              {{ edrList.length || edrListPerson.length }}
+            </span>]
             <v-icon 
               :class="btnActv('EDR') ? 'active' : ''" 
               color="white">{{ mdiMenuDown }}</v-icon>
@@ -165,7 +168,11 @@
           <v-scroll-x-transition hide-on-leave>
             <v-card v-show="btnActv('EDR')" class="mb-2 item-card">
               <v-card-text v-show="edrList.length || edrListPerson.length">
-                <div v-if="edrList.length" style="color: black; background: rgb(245, 245, 220); font-weight: bold; padding: 3px 4px;">{{'Юридичнi особи'.toUpperCase()}}</div>
+                <div 
+                  v-if="edrList.length" 
+                  class="table-title">
+                  {{ 'Юридичнi особи'.toUpperCase() }}
+                </div>
                 <v-data-table
                   v-if="edrList.length"
                   :headers="EDRTH"
@@ -181,20 +188,20 @@
                     <v-scroll-y-reverse-transition>
                       <td class="pa-0 custom-td" :colspan="headers.length" v-show="edrExpandedW">
                         <v-simple-table 
-                          v-if="item.beneficialOwners && item.beneficialOwners.length"
+                          v-if="item.signers && item.signers.length"
                           dense>
                           <template #default>
                             <thead>
                               <tr style="background: #f5f5dc!important;">
                                 <th class="text-left black--text">
-                                  Бенефiцiарний власник:
+                                  Пiдписант:
                                 </th>
                               </tr>
                             </thead>
                             <tbody>
-                              <tr v-for="(i, k) in item.beneficialOwners"
+                              <tr v-for="(i, k) in item.signers"
                                 :key="k">
-                                <td class="d-sm-table-cell">{{ k + 1 + ". " + i }}</td>
+                                <td class="d-sm-table-cell">{{ k + 1 + ". " + i.description +  ": " + i.name }}</td>
                               </tr>
                             </tbody>
                           </template>
@@ -213,13 +220,13 @@
                             <tbody>
                               <tr v-for="(i, k) in item.founders"
                                 :key="k">
-                                <td class="d-sm-table-cell">{{ k + 1 + ". " + i }}</td>
+                                <td class="d-sm-table-cell">{{ k + 1 + ". " + i.name }}</td>
                               </tr>
                             </tbody>
                           </template>
                         </v-simple-table>
                         <v-simple-table
-                          v-if="item.activity" 
+                          v-if="item.economicActivities" 
                           dense>
                           <template #default>
                             <thead>
@@ -230,8 +237,12 @@
                               </tr>
                             </thead>
                             <tbody>
-                              <tr>
-                                <td class="d-sm-table-cell">{{ item.activity }}</td>
+                              <tr 
+                                v-for="(item, key) in item.economicActivities" 
+                                :key="key">
+                                <td class="d-sm-table-cell">
+                                  {{ key + 1 + ". " + item.code + " - " + item.description }}
+                                </td>
                               </tr>
                             </tbody>
                           </template>
@@ -258,7 +269,11 @@
                     </v-scroll-y-reverse-transition>
                   </template>
                 </v-data-table>
-                <div v-if="edrListPerson.length" style="color: black; background: rgb(245, 245, 220); font-weight: bold; padding: 3px 4px;">{{'Фiзичнi особи'.toUpperCase()}}</div>
+                <div 
+                  v-if="edrListPerson.length" 
+                  class="table-title">
+                  {{ 'Фiзичнi особи'.toUpperCase() }}
+                </div>
                 <v-data-table
                   v-if="edrListPerson.length"
                   :headers="EDRTHperson"
@@ -323,7 +338,10 @@
           <v-btn @click="makeActive('PEP')" 
             class="d-block white--text section-btn"
             :color="btnActv('PEP') ? 'grey darken-1' : 'grey darken-3'">
-            Публiчнi особи&nbsp;-&nbsp;[<span :style="`color: ${pepList.length > 0 ? '#e57373;' : ''}`">{{ pepList.length }}</span>]
+            Публiчнi особи&nbsp;-&nbsp;[
+            <span :class="{'btn-count': pepList.length}">
+              {{ pepList.length }}
+            </span>]
             <v-icon 
               :class="btnActv('PEP') ? 'active' : ''" 
               color="white">{{ mdiMenuDown }}
@@ -366,6 +384,7 @@
                       </td>
                     </v-scroll-y-reverse-transition>
                   </template>
+                  <!-- eslint-disable-next-line -->
                   <template #item.action="{ item }">
                     <v-btn small @click="goToPage(item.url)">
                       <v-icon>{{ mdiTextBoxSearchOutline }}</v-icon>
@@ -381,7 +400,10 @@
           <v-btn @click="makeActive('ED')" 
             class="d-block white--text section-btn"
             :color="btnActv('ED') ? 'grey darken-1' : 'grey darken-3'">
-            Електронні декларації&nbsp;-&nbsp;[<span :style="`color: ${eDeclarationList.length > 0 ? '#e57373;' : ''}`">{{ eDeclarationList.length }}</span>]
+            Електронні декларації&nbsp;-&nbsp;[
+            <span :class="{'btn-count': eDeclarationList.length}">
+              {{ eDeclarationList.length }}
+            </span>]
             <v-icon 
               :class="btnActv('ED') ? 'active' : ''" 
               color="white">
@@ -397,6 +419,7 @@
                   :items-per-page="15" 
                   :hide-default-footer="eDeclarationList && eDeclarationList.length < 15"
                   dense>
+                  <!-- eslint-disable-next-line -->
                   <template #item.action="{ item }">
                     <v-btn small @click="goToPage(item.infocard.url)">
                       <v-icon>{{ mdiTextBoxSearchOutline }}</v-icon>
@@ -412,7 +435,8 @@
           <v-btn @click="makeActive('RNBO')" 
             class="d-block white--text section-btn"
             :color="btnActv('RNBO') ? 'grey darken-1' : 'grey darken-3'">
-            РНБО Санкцiї&nbsp;-&nbsp;[<span :style="`color: ${rnboList.length > 0 ? '#e57373;' : ''}`">
+            РНБО Санкцiї&nbsp;-&nbsp;[
+            <span :class="{'btn-count': rnboVariant.length}">
               {{ rnboVariant.length }}
             </span>]
             <v-icon 
@@ -440,8 +464,9 @@
           <v-btn @click="makeActive('UNSanc')" 
             class="d-block white--text section-btn"
             :color="btnActv('UNSanc') ? 'grey darken-1' : 'grey darken-3'">
-            ООН Санкцiї&nbsp;-&nbsp;[<span :style="`color: ${unSanctionList.length > 0 ? '#e57373;' : ''}`">
-              {{ validLength(unSanctionList).length}}
+            ООН Санкцiї&nbsp;-&nbsp;[
+            <span :class="{'btn-count': validLength(unSanctionList).length}">
+              {{ validLength(unSanctionList).length }}
             </span>]
             <v-icon 
               :class="btnActv('UNSanc') ? 'active' : ''" 
@@ -469,6 +494,7 @@
                   :items-per-page="15"
                   :hide-default-footer="unSanctionList && unSanctionList.length < 15"
                   dense>
+                  <!-- eslint-disable-next-line -->
                   <template #item.designation="{ item }">
                     <span>{{ item.designation || '--' }}</span>
                   </template>
@@ -618,7 +644,8 @@
           <v-btn @click="makeActive('UNTerror')" 
             class="d-block white--text section-btn"
             :color="btnActv('UNTerror') ? 'grey darken-1' : 'grey darken-3'">
-            ООН. Перелiк терористiв&nbsp;-&nbsp;[<span :style="`color: ${unTerrorList.length > 0 ? '#e57373;' : ''}`">
+            ООН. Перелiк терористiв&nbsp;-&nbsp;[
+            <span :class="{'btn-count': validLength(unTerrorList).length}">
               {{ validLength(unTerrorList).length }}
             </span>]
             <v-icon 
@@ -754,7 +781,8 @@
           <v-btn @click="makeActive('EUSanc')" 
             class="d-block white--text section-btn"
             :color="btnActv('EUSanc') ? 'grey darken-1' : 'grey darken-3'">
-            ЄС(Європейський союз) Санкцiї&nbsp;-&nbsp;[<span :style="`color: ${esSanctionList.length > 0 ? '#e57373;' : ''}`">
+            ЄС(Європейський союз) Санкцiї&nbsp;-&nbsp;[
+            <span :class="{'btn-count': esVariant.length}">
               {{esVariant.length}}
             </span>]
             <v-icon
@@ -782,7 +810,8 @@
           <v-btn @click="makeActive('USSanc')" 
             class="d-block white--text section-btn"
             :color="btnActv('USSanc') ? 'grey darken-1' : 'grey darken-3'">
-            Санкцiйний перелiк осiб (Юр./фiз.) США&nbsp;-&nbsp;[<span :style="`color: ${usSanctionList.length > 0 ? '#e57373;' : ''}`">
+            Санкцiйний перелiк осiб (Юр./фiз.) США&nbsp;-&nbsp;[
+            <span :class="{'btn-count': validLength(usSanctionList).length}">
               {{ validLength(usSanctionList).length }}
             </span>]
             <v-icon :class="btnActv('USSanc') ? 'active' : ''" 
@@ -810,6 +839,7 @@
                   :items-per-page="15"
                   :hide-default-footer="usSanctionList && usSanctionList.length < 15"
                   dense>
+                  <!-- eslint-disable-next-line -->
                   <template #item.title="{ item }">
                     <span>{{ item.title || '--' }}</span>
                   </template>
@@ -914,6 +944,7 @@
                   :items-per-page="15"
                   :hide-default-footer="usSanctionList && usSanctionList.length < 15"
                   dense>
+                  <!-- eslint-disable-next-line -->
                   <template #item.remarks="{ item }">
                     <span>{{ item.remarks || '--' }}</span>
                   </template>
@@ -1083,21 +1114,33 @@
     </v-col>
   </v-row>
 </template>
-
 <script>
 import { 
-    mdiClose, 
-    mdiAccountSearch,
-    mdiMenuDown,
-    mdiInformation,
-    mdiAxisZRotateClockwise,
-    mdiWindowMinimize,
-    mdiTextBoxSearchOutline,
-    mdiSortAlphabeticalAscendingVariant
+  mdiClose, 
+  mdiAccountSearch,
+  mdiMenuDown,
+  mdiInformation,
+  mdiAxisZRotateClockwise,
+  mdiWindowMinimize,
+  mdiTextBoxSearchOutline,
+  mdiSortAlphabeticalAscendingVariant
   } from '@mdi/js'
+import {
+  // eslint-disable-next-line
+  urlGetEdrLegalByEdrpou,
+  // eslint-disable-next-line
+  urlGetEdrLegalByInitials,
+  // eslint-disable-next-line
+  urlGetEdrPersonByINN,
+  urlGetEdrPersonByInitials,
+  } from '../urls'
+/* Temporary yourcontrol request */
+import { yourControlEdrByEdrpouRes, yourControlEdrByInitialsRes } from '../utils/utils'
 
 import { letters } from '@/utils/utils'
 import { transliteRule } from './translite'
+import axios from 'axios'
+
 const baseURL = process.env.NODE_ENV === "development" 
   ? 'http://127.0.0.1:4000' 
   : 'http://94.131.243.7:4000'
@@ -1105,14 +1148,7 @@ const baseURL = process.env.NODE_ENV === "development"
 export default {
   name: 'DeclarationForm',
   data: () => ({
-    controller: new AbortController(),
-    transliteRuleTH: [
-      {text: "Українська", value: "ua", sortable: false, align: "start"},
-      {text: "Початок слова (EN)", value: "en", sortable: false, align: "center"},
-      {text: "В iнших поз-iях (EN)", value: "position", sortable: false, align: "center"},
-      {text: "Приклад UK", value: "exampleUK", sortable: false, align: "center"},
-      {text: "Приклад EN", value: "exampleEN", sortable: false, align: "center"},
-    ],
+    apiKey: 'b00b0000a013607c3bc0acb76917a9f022f2b908',
     /* Individual */
     edrByInitials: {
       desc: 'edrByInitials',
@@ -1152,10 +1188,10 @@ export default {
     },
 
     /* Legals */
-    edrByEdrpou: {
-      desc: 'edrByEdrpou',
-      url: baseURL + '/get-edr-legals'
-    },
+    // edrByEdrpou: {
+    //   desc: 'edrByEdrpou',
+    //   url: baseURL + '/get-edr-legals'
+    // },
     rnboLegals: { // Partial searching
       desc: 'rnboLegals',
       url: baseURL + '/get-legal-sanctions'
@@ -1182,10 +1218,10 @@ export default {
     },
 
     EDRTH: [
-      { text: 'Назва', value: 'name', align: 'start', sortable: false},
-      { text: 'Керiвник', value: 'boss', align: 'center', sortable: false },
-      { text: 'Статус', value: 'condition', align: 'center', sortable: false },
-      { text: 'ЄДРПОУ', value: 'edrpou', align: 'center', sortable: false },
+      { text: 'Назва', value: 'name.shortName', align: 'start', sortable: false},
+      // { text: 'Керiвник', value: 'boss', align: 'center', sortable: false },
+      { text: 'Статус', value: 'status', align: 'center', sortable: false },
+      { text: 'ЄДРПОУ', value: 'code', align: 'center', sortable: false },
     ],
     EDRTHperson: [
       { text: 'ФОП', value: 'initials', align: 'start', sortable: false},
@@ -1255,6 +1291,13 @@ export default {
     usSanctionNested: [
       { text: 'Також вiдомий як', value: 'ALIAS_NAME', align: 'start', sortable: false},
     ],
+    transliteRuleTH: [
+      {text: "Українська", value: "ua", sortable: false, align: "start"},
+      {text: "Початок слова (EN)", value: "en", sortable: false, align: "center"},
+      {text: "В iнших поз-iях (EN)", value: "position", sortable: false, align: "center"},
+      {text: "Приклад UK", value: "exampleUK", sortable: false, align: "center"},
+      {text: "Приклад EN", value: "exampleEN", sortable: false, align: "center"},
+    ],
 
     letters: letters,
     currSection: null,
@@ -1287,12 +1330,15 @@ export default {
     usSanctionList: [],
 
     edrInitials: [],
+    edrLegals: [],
 
     lastName: null,
     firstName: null,
     patronymic: null,
     edrpou: null,
     companyName: null,
+
+    globalLegalObject: {},
 
     /* Data */
     pageUrl: null,
@@ -1312,8 +1358,6 @@ export default {
     mdiTextBoxSearchOutline,
     mdiSortAlphabeticalAscendingVariant
   }),
-
-
   methods: {
     switchHeader(list, index) {
       // initials lastFirstName lastName firstName patronymic
@@ -1345,7 +1389,7 @@ export default {
     btnActv(name) {
       return this.currSection === name
     },
-    async checkEntity() {
+    checkGroup(arrUrls, customObj, mark) {
       /* alowed requests from this.legalUrls without edrpou */
       const withoutEdrpou = [
         'unLegalSanctions', 
@@ -1354,100 +1398,168 @@ export default {
         'rnboLegals',
         'esLegalSanctions'
       ]
-
+      
       return Promise.all(
-        this.objectUrlsController
-          .map(async reqObj => {
-            const checkReq = !this.objCntr(reqObj.desc).edrpou // obj does not have edrpou
-              && !withoutEdrpou.includes(reqObj.desc) // and request is not present in array
-              && this.choosedLegal // and choosed legal handler
-            if (checkReq) return Promise.resolve([]) // return empty array
-          
-            let obj = await this.startRequest(
-              reqObj.url,
-              this.reqOption(
-                this.objCntr(reqObj.desc), // choosed right object by .desc property
-                'POST'
-              ),
-              /* If you provide callback you should always retun res object or modified res object */
-              res => reqObj.desc !== 'eDeclarations' 
-                ? res 
-                : reqObj.desc === 'eDeclarations' 
-                  && res?.results?.object_list.length ? res.results.object_list : []
-            )
-            let prop = reqObj.desc
-            return Array.isArray(obj) ? [[prop], obj || []] : [[prop], [obj] || []]
-          })
+        arrUrls.map(async object => {
+          const checkedObject = this.postObjectController(object.desc)
+          const checkReq = (!checkedObject.edrpou || !checkedObject.companyName) // obj does not have edrpou
+            && !withoutEdrpou.includes(object.desc) // and request is not present in array
+            && this.choosedLegal // and choosed legal handler
+
+          if (checkReq) return Promise.resolve([]) // return empty array
+
+          let controllerObj = this.postObjectController(object.desc, customObj, mark)
+          let obj = await axios.post(object.url, controllerObj)
+            .then(res => {
+              if (object.desc !== 'eDeclarations') return res.data
+              if (object.desc === 'eDeclarations') return res.data.results.object_list 
+              return []
+            })
+            .then(data => {
+              console.log({[object.desc + ": " + this.getEntityName(controllerObj)]: data})
+              return data
+            })
+            .catch(err => console.log(err))
+
+          let prop = object.desc
+          return Array.isArray(obj) ? [[prop], obj || []] : [[prop], [obj] || []]
+        })
       )
       .then(arr => arr.filter(v => v[1] && v[1].length))
       .then(arr => Object.fromEntries(arr))
     },
 
+    checkLegalByEdrpou() {
+      return this.checkGroup(this.legalUrls)
+    },
 
-    async getInitials() {
-      if(this.choosedLegal && !this.objCntr().edrpou) return Promise.resolve([])
-      return await this.startRequest(
-        this.requestController.edrUrl,
-        this.reqOption(this.objCntr(), 'POST'),
-        res => {
-          this.clearData()
-          return res
-        }
-      ).then(res => {
-        let arr = Array.isArray(res) ? res : [res]
-        return {
-          edrList: this.filterEdrPerson(arr),
-          edrInitials: this.choosedPerson 
-            ? this.initialArr.edrInitials 
-            : this.uniqArr(res)
-        }
+    checkLegalByCompanyName() {
+      return this.edrLegals.map(companyName => {
+        return this.checkGroup(this.legalUrls, {companyName: companyName}, "checkLegalName")
       })
     },
 
-    filterEdrPerson(arr) {
-      return arr
+    getEntityName(object) {
+      return this.transliterate(Object.values(object).join(" ")).replaceAll(" ", "").toLowerCase()
     },
 
-    uniqArr(res) {
-      if(!res || !res.length) return []
-      res = res[0]
+    async getEdrData() {
+      if(this.choosedLegal && !this.postObjectController().edrpou) return Promise.resolve([])
 
-      return [
-        ...new Set(
-          res.beneficialOwners
-            .concat(res.founders, [res.boss])
-            .filter(v => v)
-            // .map(v => v.toUpperCase())
+      const chooseEntity = () => {
+        switch (true) {
+          case this.choosedPerson: return this.getEdrLegalByInitials()
+          case this.choosedLegal: return this.getEdrLegalByEdrpou()
+        }
+      }
+
+      return chooseEntity()
+        .then(res => {
+          console.log({['getEdrData: ' + this.edrpou]: res})
+          let arr = Array.isArray(res) ? res : [res]
+          this.edrLegals.push(...this.getParticipant(res).legals)
+          this.edrInitials.push(...this.getParticipant(res).persons)
+          this.edrList.push(...arr)
+        })
+    },
+    checkPersonsFromLegal() {
+      if (!this.choosedLegal) return 
+
+      return Promise.all(this.getPersonFromLegal())
+        .then(arr => Object.fromEntries(arr))
+        .then(arr => {
+          this.eDeclarationList.push(...arr.eDeclarations)
+          this.rnboList.push(...arr.rnboList)
+          this.unSanctionList.push(...arr.unPersSanctions)
+          this.unTerrorList.push(...arr.unTerrors)
+          this.esSanctionList.push(...arr.USSancions)
+          this.usSanctionList.push(...arr.EUSunctions)
+        })
+    },
+    async checkPersonsFromLegalInPep(pepByEdrpou) {
+      let pepList = await this.getPepList()
+      this.pepList.push(...this.filterArrOfObj(pepByEdrpou.concat(pepList), '_id'))
+    },
+    getEdrLegalByEdrpou() {
+      /* this request should start from node.js */
+      if (!this.choosedLegal) return Promise.resolve([])
+      // return axios
+      //   .get(this.urlGetEdrLegalByEdrpou(this.edrpou, this.apiKey))
+      //   .then(res => console.log(res))
+      //   .catch(err => console.log(err))
+      console.log('yourControlEdrByEdrpouRes', yourControlEdrByEdrpouRes)
+      return Promise.resolve([yourControlEdrByEdrpouRes])
+    },
+    getEdrLegalByInitials() {
+      /* this request should start from node.js */
+      if (!this.choosedPerson) return Promise.resolve([])
+      // return axios
+      //   .get(this.urlGetEdrLegalByInitials(this.lastName, this.firstName, this.patronymic))
+      //   .then(res => console.log(res))
+      //   .catch(err => console.log(err))
+      return Promise.resolve([yourControlEdrByInitialsRes])
+    },
+    getEdrPersonByInitials() {
+      if(!this.choosedPerson) return Promise.resolve([])
+      return axios
+        .post(urlGetEdrPersonByInitials(this.baseURL),
+          {
+            firstName: this.capitalize(this.firstName),
+            lastName: this.capitalize(this.lastName),
+            patronymic: (this.patronymic ? this.capitalize(this.patronymic) : '')
+          },
         )
-      ]
-      
+        .then(res => res)
+        .catch(err => console.log(err))
     },
 
-    async getEdrPerson() {
-      if(this.choosedLegal) return Promise.resolve([])
+    getParticipant(res) {
+      if(!res || !res.length) return []
 
-      return await this.startRequest(
-        this.edrByInitial.url,
-        this.reqOption(this.objCntr(), 'POST'),
-      ).then(res => {
-        let arr = Array.isArray(res) ? res : [res]
-        return arr
-      })
+      const getEdrLegal = () => {
+        const persons = [
+          ...new Set(
+            res[0].founders
+              .filter(v => !v.name.includes('"') )
+              .map(v => v.name)
+              .concat(res[0].signers.map(v => v.name))
+          )
+        ]
+        const legals = [
+          ...new Set(
+            res[0].founders
+              .filter(v => v.name.includes('"') )
+              .map(v => v.name.split('"')[1])
+              .concat([res[0]?.name?.shortName.split('"')[1]])
+          )
+        ]
+
+        return { persons: persons, legals: legals }
+      }
+
+      const getEdrPerson = () => {
+        return []
+      }
+
+      switch (true) {
+        case this.choosedPerson: return getEdrPerson()
+        case this.choosedLegal: return getEdrLegal()
+      }
     },
-
+    // globalLegalObject
     async mapResult() {
-      this.loading = true
       this.clearData()
+      this.loading = true
       this.edrList.length = 0
       this.edrInitials.length = 0
       
       try {
-        let edrPerson = await this.getEdrPerson()
-        let {
-          edrList = [], 
-          edrInitials = []
-          } = await this.getInitials()
+        this.edrListPerson = await this.getEdrPersonByInitials()
 
+        // Legal - first step (ЕДР Компания ЕДРПОУ)
+        await this.getEdrData()
+
+        // Legal second step
         let {
           eDeclarations = [], 
           rnboList = [], 
@@ -1461,26 +1573,24 @@ export default {
           unLegalSanctions = [],
           rnboLegals = [],
           esLegalSanctions = []
-          } = await this.checkEntity()
+        } = await this.checkLegalByEdrpou()
 
-        this.edrInitials.push(...edrInitials.filter(v => v))
-        this.edrList.push(...edrList)
-        this.edrListPerson.push(...edrPerson)
+        this.checkLegalByCompanyName()
+
+        // checkLegalByCompanyName
         this.eDeclarationList.push(...eDeclarations)
         this.rnboList.push(...rnboList, ...rnboLegals)
         this.unSanctionList.push(...unPersSanctions, ...unLegalSanctions)
         this.unTerrorList.push(...unTerrors, ...unLegalTerrors)
         this.esSanctionList.push(...EUSunctions, ...esLegalSanctions)
         this.usSanctionList.push(...USSancions, ...usLegalSanctions)
-        let pepList = await this.getPepList()
-        this.pepList.push(
-          ...this.filterArrOfObj(
-            pepByEdrpou.concat(pepList), '_id'
-          )
-        )
         
+        // legal third step
+        this.checkPersonsFromLegal()
+        // Legal four step
+        await this.checkPersonsFromLegalInPep(pepByEdrpou)
 
-        this.consoleObjects // console result
+        // this.consoleObjects // console result
         this.dialog = true
         this.loading = false
 
@@ -1491,23 +1601,8 @@ export default {
     },
 
     getPepList() {
-      this.choosedLegal 
-        ? Promise.all(this.getPersonFromLegal())
-          .then(arr => Object.fromEntries(arr))
-          .then(arr => {
-            this.eDeclarationList.push(...arr.eDeclarations)
-            this.rnboList.push(...arr.rnboList) // not right
-            this.unSanctionList.push(...arr.unPersSanctions)
-            this.unTerrorList.push(...arr.unTerrors)
-            this.esSanctionList.push(...arr.USSancions)
-            this.usSanctionList.push(...arr.EUSunctions)
-          })
-        : false
-
       return Promise.all(this.edrInitials.map(this.postInitials))
-        .then(obj => this.objectFilter(obj))
-
-      // return [] // tempory then uncoment above
+        .then(arr => arr.filter(v => v instanceof Object))
     },
 
     filterArrOfObj(arr, id) {
@@ -1520,62 +1615,56 @@ export default {
       return filteredArr
     },
 
+    // Check all person from edrInitials
     getPersonFromLegal() {
       return this.personUrls.map(
         async obj => {
-          let urlRes = await Promise.all(
+          let res = await Promise.all(
             this.edrInitials
               .filter(v => v)
-              .map(
-                initial => {
-                  // in case if parsed initials is not correct abort request
-                  if(!this.objCntr(null, initial)) return Promise.resolve([])
-                  return this.startRequest(
-                    obj.url,
-                    this.reqOption(
-                      this.objCntr(obj.desc, initial),
-                      'POST'
-                    ),
-                    // callback to modify res
-                    res => obj.desc !== 'eDeclarations' 
-                      ? res 
-                      : obj.desc === 'eDeclarations' 
-                        && res?.results?.object_list.length 
-                          ? res.results.object_list 
-                          : []
-                  )
-                }
-            )
+              .map(initial => {
+                // in case if parsed initials is not correct abort request
+                const controllerObj = this.postObjectController(obj.desc, initial)
+                if(!controllerObj) return Promise.resolve([])
+
+                return axios
+                  .post(obj.url, controllerObj)
+                  .then(res => {
+                    if (obj.desc !== 'eDeclarations') return res.data
+                    if (obj.desc === 'eDeclarations') return res.data.results.object_list
+                    return []
+                  })
+                  .then(data => {
+                    console.log({[obj.desc + ": " + this.getEntityName(controllerObj)]: data})
+                    return data
+                  })
+                  .catch(err => console.log(err))
+              })
           )
-          return [[obj.desc], [].concat(...urlRes)]
+
+          return [[obj.desc], [].concat(...res)]
       })
     },
 
-    objectFilter(obj) {
-      return obj.filter(k => k instanceof Object)
-    },
-
     formatInitials(initials) {
-      return this.choosedPerson 
-        ? initials.replace(/\s/g, '').split('*') 
-        : initials.replace(/\*/g, '').split(' ')
+      switch (true) {
+        case this.choosedPerson: return initials.replace(/\s/g, '').split('*') 
+        case this.choosedLegal: return initials.replace(/\*/g, '').split(' ')
+      }
     },
 
-    async postInitials(initials) {
+    postInitials(initials) {
       // in case if parsed initials is not correct abort req
-      if(!this.objCntr(null, initials)) return Promise.resolve()
+      const controllerObj = this.postObjectController(null, initials)
+      if(!controllerObj) return Promise.resolve()
 
-      try {
-        return await this.startRequest(
-          this.pepByInitials.url,
-          this.reqOption(
-            this.objCntr(null, initials), 
-            'POST'
-          ),
-        ).then(v => v[0])
-      } catch(err) {
-        this.notify(this.err(err))
-      }
+      return axios
+        .post(this.pepByInitials.url, controllerObj)
+        .then(res => {
+          console.log({["pepByInitials: " + this.getEntityName(controllerObj)]: res.data[0]})
+          return res.data[0]
+        })
+        .catch(err => this.notify(this.err(err)))
     },
 
     initRequest(url, obj) {
@@ -1628,8 +1717,7 @@ export default {
       }
     },
     // customObj (optional) for individuals
-    objCntr(desc, customObj) {
-      let obj
+    postObjectController(desc, customObj, mark) {
       const arrEn = [
         'unPersSanctions', 
         'unTerrors', 
@@ -1639,55 +1727,55 @@ export default {
         'unLegalTerrors',
         'usLegalSanctions']
 
-      // translite object properties
-      const translite = desc 
-        ? arrEn.includes(desc) 
-        : false
+      const translite = desc ? arrEn.includes(desc) : false
+      const initials = customObj && !mark
+      const noTranslitePerson = !translite && this.choosedPerson
+      const translitePerson = translite && this.choosedPerson
+      const noTransliteLegalNoMark = this.choosedLegal && !translite && !mark
+      const transliteLegalNoMark = this.choosedLegal && translite && !mark
+      const legalCustomObject = this.choosedLegal && mark === "checkLegalName" && !!customObj
 
-      if(customObj) {
+      const getPersonInitials = (customObj) => {
         const [lastName, firstName, patronymic] = this.formatInitials(customObj)
         if(!lastName || !firstName || lastName.length <= 1 || firstName.length <= 1) return null
-        obj = {
+
+        return {
           firstName: this.capitalize(firstName),
           lastName: this.capitalize(lastName),
           patronymic: (patronymic ? this.capitalize(patronymic) : '')
         }
-        
-      } else if (!translite && this.choosedPerson) {
-        obj = {
+      }
+
+      switch (true) {
+        case initials: return getPersonInitials(customObj)
+        case noTranslitePerson: return {
           firstName: this.capitalize(this.firstName),
           lastName: this.capitalize(this.lastName),
           patronymic: (this.patronymic ? this.capitalize(this.patronymic) : '')
         } 
-      } else if (translite && this.choosedPerson) {
-        obj = {
+        case translitePerson:  return {
           firstName: this.transliterate(this.firstName),
           lastName: this.transliterate(this.lastName),
           patronymic: (this.patronymic ? this.transliterate(this.patronymic) : '')
         }
-      } else if (this.choosedLegal && !translite) {
-        obj = {
+        case noTransliteLegalNoMark: return {
           edrpou: this.edrpou ? this.edrpou.trim() : null,
           companyName: this.companyName
         }
-      }
-      else if (this.choosedLegal && translite) {
-        obj = { 
+        case transliteLegalNoMark: return { 
           edrpou: this.edrpou ? this.edrpou.trim() : null,
           companyName: this.transliterate(this.companyName)
         }
-      }
+        case legalCustomObject: return customObj
 
-      return obj
+        default: return
+      }
     },
 
     capitalize(str) {
       if(!str) return ''
 
-      str = str
-        .trim()
-        .replace(/\s+/g, ' ')
-        .split(' ')
+      str = str.trim().replace(/\s+/g, ' ').split(' ')
       return str.map(text => {
         return (text.charAt(0).toUpperCase() + text.slice(1).toLowerCase()).trim()
       }).join(' ')
@@ -1745,40 +1833,32 @@ export default {
 
     /* Controllers */
     markText(handler, text) {
-      let range
       switch(handler) {
-        case 'legalHandler': range = [
+        case 'legalHandler': return [
             this.edrpou ? text.indexOf(this.edrpou) : 0, 
             this.edrpou ? text.indexOf(this.edrpou) + this.edrpou.length : 0
           ]
-          break;
-        case 'personHandler': range = [
+        case 'personHandler': return [
             text.indexOf(this.lastName), 
             this.patronymic 
               ? text.indexOf(this.patronymic) + this.patronymic.length
               : this.firstName ? text.indexOf(this.firstName) + this.firstName.length : 0 
           ]
-          break;
-        case 'unLegalHandler': range = [
+        case 'unLegalHandler': return [
             this.edrpou ? text.indexOf(this.edrpou) : 0, 
             this.edrpou ? text.indexOf(this.edrpou) + this.edrpou.length : 0
           ]
-          break;
-        case 'unPersonHandler': range = [
+        case 'unPersonHandler': return [
             text.indexOf(this.transliterate(this.firstName)), 
             this.patronymic 
               ? text.indexOf(this.transliterate(this.patronymic)) + this.patronymic.length
               : this.lastName ? text.indexOf(this.transliterate(this.lastName)) + this.lastName.length : 0 
           ]
-          break;
       }
-      return range
     },
 
     markSearchedText(val, handler) {
-      let copy = JSON.parse(
-        JSON.stringify(val)
-      )
+      let copy = JSON.parse(JSON.stringify(val))
       
       return copy.filter(v => v._id)
         .map(v => {
@@ -1789,8 +1869,8 @@ export default {
           arr.push(text.substring(0, start))
           arr.push('<span class="search-text">' + text.substring(start, end) + '</span>')
           arr.push(text.substring(end, text.length))
-
           v.text = arr.join('')
+
           return v
         })
     },
@@ -1804,11 +1884,8 @@ export default {
     },
   },
 
-
   computed: {
-    transliteRule() {
-      return transliteRule
-    },
+    transliteRule() { return transliteRule },
     /* Objects */
     initialArr() {
       return  {
@@ -1823,6 +1900,7 @@ export default {
         ]
       }
     },
+    // checkLegalByEdrpou - persons
     personUrls() {
       return [
         this.eDeclarations,
@@ -1833,7 +1911,7 @@ export default {
         this.esPersonSunctions
       ]
     },
-
+    // checkLegalByEdrpou - legals
     legalUrls() {
       return [
         this.rnboLegals,
@@ -1844,42 +1922,20 @@ export default {
         this.pepByEdrpou
       ]
     },
-
     objectUrlsController() {
-      let obj
-      if (this.choosedPerson) { obj = this.personUrls }
-      else if (this.choosedLegal) { obj = this.legalUrls }
-      return obj
+      if (this.choosedPerson) return this.personUrls
+      if (this.choosedLegal) return this.legalUrls
+      return []
     },
-
-    requestController() {
-      let obj
-      if (this.choosedPerson) obj = {
-        edrUrl: this.edrByInitials.url
-      } 
-      else if (this.choosedLegal) obj = { 
-        edrUrl: this.edrByEdrpou.url
-      }
-      return obj
-    },
-
     rnboVariant() {
-      let arr
-      this.choosedPerson && this.rnboList.length > 0
-        ? arr = this.markSearchedText(this.rnboList, 'personHandler')
-        : this.choosedLegal && this.rnboList.length > 0
-          ? arr =  this.markSearchedText(this.rnboList, 'legalHandler')
-          : arr = []
-      return arr
+      if (this.choosedPerson && this.rnboList.length > 0) return this.markSearchedText(this.rnboList, 'personHandler')
+      if (this.choosedLegal && this.rnboList.length > 0) return this.markSearchedText(this.rnboList, 'legalHandler')
+      return []
     },
     esVariant() {
-      let arr
-      this.choosedPerson && this.esSanctionList.length > 0
-        ? arr = this.markSearchedText(this.esSanctionList, 'unPersonHandler')
-        : this.choosedLegal && this.esSanctionList.length > 0
-          ? arr =  this.markSearchedText(this.esSanctionList, 'unLegalHandler')
-          : arr = []
-      return arr
+      if (this.choosedPerson && this.esSanctionList.length > 0) return this.markSearchedText(this.esSanctionList, 'unPersonHandler')
+      if (this.choosedLegal && this.esSanctionList.length > 0) return this.markSearchedText(this.esSanctionList, 'unLegalHandler')
+      return []
     },
 
     requisites() {
@@ -2023,6 +2079,13 @@ export default {
   z-index: 1000
 }
 
+.alphabet-table-wrapper {
+  max-height: 600px; 
+  overflow-x: hidden; 
+  overflow-y: scroll; 
+  border-radius: 0px;
+}
+
 .v-card__text.req-info-wrapper {
   text-align: left; 
   font-size: 0.8rem; 
@@ -2121,9 +2184,12 @@ button.sbmt-btn.v-btn {
   justify-content: start;
   background: #424242!important;
   border-radius: 0!important;
-  margin: 1px 0!important;
+  margin: 2px 0!important;
   /* border-bottom: 2px solid black!important; */
   /* text-transform: none; */
+}
+.d-block.section-btn .btn-count {
+  color: #e57373;
 }
 
 .modal-card .v-icon {
@@ -2171,6 +2237,13 @@ button.sbmt-btn.v-btn {
 .alphabet-table.v-data-table tbody {
   background: #f5f5f5!important;
   color: #424242!important;
+}
+
+.table-title {
+  color: black; 
+  background: rgb(245, 245, 220); 
+  font-weight: bold; 
+  padding: 3px 4px;
 }
 
 .alphabet-table.v-data-table tbody td {

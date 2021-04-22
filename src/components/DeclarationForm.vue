@@ -1099,7 +1099,7 @@
             <v-slide-x-transition hide-on-leave>
               <v-btn 
                 v-show="requisites"
-                @click="mapResult()"
+                @click="mapResult(/* clearData */ true)"
                 color="grey darken-3"
                 class="white--text sbmt-btn"
                 small
@@ -1338,7 +1338,7 @@ export default {
     edrpou: null,
     companyName: null,
 
-    globalLegalObject: {},
+    globalObject: {},
 
     /* Data */
     pageUrl: null,
@@ -1356,7 +1356,10 @@ export default {
     mdiAxisZRotateClockwise,
     mdiWindowMinimize,
     mdiTextBoxSearchOutline,
-    mdiSortAlphabeticalAscendingVariant
+    mdiSortAlphabeticalAscendingVariant,
+
+    edrCodes: [],
+    globalKey: 0,
   }),
   methods: {
     switchHeader(list, index) {
@@ -1411,13 +1414,13 @@ export default {
           let controllerObj = this.postObjectController(object.desc, customObj, mark)
           let obj = await axios.post(object.url, controllerObj)
             .then(res => {
-              if (object.desc !== 'eDeclarations') return res.data
-              if (object.desc === 'eDeclarations') return res.data.results.object_list 
-              return []
+              if (object.desc !== 'eDeclarations') return {data: res.data, res: res}
+              if (object.desc === 'eDeclarations') return {data: res.data.results.object_list, res: res}
+              return {data: [], res: res}
             })
-            .then(data => {
-              console.log({[object.desc + ": " + this.getEntityName(controllerObj)]: data})
-              return data
+            .then(res => {
+              this.addLegalToGlobal(controllerObj, res.data, object, res.res)
+              return res.data
             })
             .catch(err => console.log(err))
 
@@ -1428,7 +1431,27 @@ export default {
       .then(arr => arr.filter(v => v[1] && v[1].length))
       .then(arr => Object.fromEntries(arr))
     },
+    /**
+     * @function addLegalToGlobal
+     * @param {{}} controllerObj - Object from "postObjectController" method
+     * @param {{}} data - Object returned from request
+     * @param {{}} object - Url object
+     * @param {{}} res - Response data
+     * @param {function} cd - Callback to modify global/nested mapped object
+     */
+    addLegalToGlobal(controllerObj, data, object, res, cb) {
+      const objName = this.getTranslitedName(controllerObj) 
+      let obj = this.globalObject[objName]
 
+      if (!obj) obj = this.$set(this.globalObject, objName, {})
+      if (!obj.name) obj.name = this.getName(controllerObj)
+      if (!obj[object.desc]) this.$set(obj, object.desc, {})
+      
+      obj[object.desc].data = data
+      obj[object.desc].res = res
+
+      if (typeof cb === "function") cb(data, obj)
+    },  
     checkLegalByEdrpou() {
       return this.checkGroup(this.legalUrls)
     },
@@ -1438,36 +1461,118 @@ export default {
         return this.checkGroup(this.legalUrls, {companyName: companyName}, "checkLegalName")
       })
     },
-
-    getEntityName(object) {
-      return this.transliterate(Object.values(object).join(" ")).replaceAll(" ", "").toLowerCase()
+    // transliterated name
+    getTranslitedName(object) {
+      return this.transliterate(Object.values(object).join(" "))
+        .replaceAll(/[^a-z0-9\u0400-\u04FF]/gi, "")
+        .toLowerCase()
     },
-
-    async getEdrData() {
+    getName(object) {
+      return Object.values(object).join(" ")
+    },
+    tranliterateStr(str) {
+      return this.transliterate(str.replaceAll(/[^a-z\u0400-\u04FF]/gi, "")).toLowerCase()
+    },
+    /**
+     * @param { string } mapedObject - Object on wich nested request triggered
+     * @param { string | number } code - EDRPOU code 
+     */
+    async getEdrData(mapedObject, code) {
+      this.globalKey ++
+      if(this.globalKey > 5) return
       if(this.choosedLegal && !this.postObjectController().edrpou) return Promise.resolve([])
 
       const chooseEntity = () => {
         switch (true) {
           case this.choosedPerson: return this.getEdrLegalByInitials()
-          case this.choosedLegal: return this.getEdrLegalByEdrpou()
+          case this.choosedLegal: return this.getEdrLegalByEdrpou(code)
         }
       }
 
       return chooseEntity()
-        .then(res => {
-          console.log({['getEdrData: ' + this.edrpou]: res})
-          let arr = Array.isArray(res) ? res : [res]
-          this.edrLegals.push(...this.getParticipant(res).legals)
-          this.edrInitials.push(...this.getParticipant(res).persons)
+        .then(object => {
+          let arr = Array.isArray(object.data) ? object.data : [object.data]
           this.edrList.push(...arr)
+
+          switch (true) {
+            case this.choosedPerson: {
+              // ...
+            } break
+            case this.choosedLegal: {
+              const callBack = (obj, globalObject) => {
+                let data = this.getCompanyParticipants(obj)
+
+                if (!mapedObject) {
+                  this.$set(globalObject, 'nested', {})
+                  globalObject.nested.codes = data.legals?.companyCodes.map(v => ({name: v}))
+                  globalObject.nested.companyNames = data.legals?.companyNames.map(v => ({name: v}))
+                  globalObject.nested.initials = data.persons.map(v => ({name: v}))
+
+                  if (globalObject.nested.codes.length) {
+                    let nestedReq = globalObject.nested.codes.map(code => {
+                      this.mapResult(false, code, code.name)
+                    })
+
+                    Promise.all(nestedReq).then(res => res)
+                  }
+                } else {
+                  this.$set(mapedObject, 'nested', {})
+                  mapedObject.nested.codes = data.legals?.companyCodes.map(v => ({name: v}))
+                  mapedObject.nested.companyNames = data.legals?.companyNames.map(v => ({name: v}))
+                  mapedObject.nested.initials = data.persons.map(v => ({name: v}))
+                  if (mapedObject.nested.codes.length) {
+                    let nestedReq = mapedObject.nested.codes.map(code => {
+                      this.mapResult(false, code, code.name)
+                    })
+
+                    Promise.all(nestedReq).then(res => res)
+                  }
+                }
+
+                // below temporary 
+                this.edrCodes.push(...data.legals?.companyCodes.map(code => ({code: code})))
+                this.edrLegals.push(...data.legals?.companyNames)
+                this.edrInitials.push(...data.persons)
+              }
+              
+              // const edrpou = mapedObject ? code : this.edrpou
+
+              this.addLegalToGlobal(
+                {edrpou: this.edrpou}, 
+                object.data, 
+                {desc: 'edrData', url: this.rnboLegals.url}, 
+                object.res,
+                callBack,
+              )
+            } break
+          }
         })
     },
-    checkPersonsFromLegal() {
-      if (!this.choosedLegal) return 
+    /* eslint-disable */
+    /**
+     * @param mapedObject — Object on wich nested request triggered
+     */
+    addPersonListsToGlobal(mapedObject) {
+      /* eslint-enable */
+      if (!this.choosedLegal) return
 
-      return Promise.all(this.getPersonFromLegal())
+      const setObject = (object, arr) => {
+        this.$set(object, 'legalPersons', {})
+        this.$set(object.legalPersons, 'eDeclarationList', arr.eDeclarations)
+        this.$set(object.legalPersons, 'rnboList', arr.rnboList)
+        this.$set(object.legalPersons, 'unPersSanctions', arr.unPersSanctions)
+        this.$set(object.legalPersons, 'unTerrorList', arr.unTerrors)
+        this.$set(object.legalPersons, 'esSanctionList', arr.EUSunctions)
+        this.$set(object.legalPersons, 'usSanctionList', arr.USSancions)
+      }
+
+      return Promise.all(this.checkPersonsFromLegal())
         .then(arr => Object.fromEntries(arr))
         .then(arr => {
+          if (! mapedObject) setObject(this.globalObject, arr);
+          if (mapedObject) setObject(mapedObject, arr);
+
+          // below temporary
           this.eDeclarationList.push(...arr.eDeclarations)
           this.rnboList.push(...arr.rnboList)
           this.unSanctionList.push(...arr.unPersSanctions)
@@ -1488,7 +1593,7 @@ export default {
       //   .then(res => console.log(res))
       //   .catch(err => console.log(err))
       console.log('yourControlEdrByEdrpouRes', yourControlEdrByEdrpouRes)
-      return Promise.resolve([yourControlEdrByEdrpouRes])
+      return Promise.resolve({data: yourControlEdrByEdrpouRes, res: {temporary: 'empty (yourControlEdrByEdrpouRes)'}})
     },
     getEdrLegalByInitials() {
       /* this request should start from node.js */
@@ -1513,26 +1618,31 @@ export default {
         .catch(err => console.log(err))
     },
 
-    getParticipant(res) {
-      if(!res || !res.length) return []
+    getCompanyParticipants(res) {
+      if(!res) return []
 
       const getEdrLegal = () => {
         const persons = [
           ...new Set(
-            res[0].founders
+            res.founders
               .filter(v => !v.name.includes('"') )
               .map(v => v.name)
-              .concat(res[0].signers.map(v => v.name))
+              .concat(res.signers.map(v => v.name))
           )
         ]
-        const legals = [
-          ...new Set(
-            res[0].founders
+        const legals = {
+          parent: this.tranliterateStr(res.legalPersonName),
+          companyNames: [...new Set(
+            res.founders
               .filter(v => v.name.includes('"') )
               .map(v => v.name.split('"')[1])
-              .concat([res[0]?.name?.shortName.split('"')[1]])
-          )
-        ]
+              .concat([res?.name?.shortName.split('"')[1]])
+          )],
+          companyCodes: [...new Set(
+            res.founders
+              .filter(v => v.code ).map(v => v.code)
+          )],
+        }
 
         return { persons: persons, legals: legals }
       }
@@ -1546,19 +1656,26 @@ export default {
         case this.choosedLegal: return getEdrLegal()
       }
     },
-    // globalLegalObject
-    async mapResult() {
-      this.clearData()
+    /**
+     * @param { boolean } clearData - Specifies whether the method should pre-clear the data
+     * @param { {} } mapedObject - Object on wich nested request triggered
+     * @param { string | number } code - EDRPOU code 
+     */
+    // eslint-disable-next-line
+    async mapResult(clearData = false, mapedObject = null, code = null) {
+      if (clearData) this.clearData()
       this.loading = true
       this.edrList.length = 0
       this.edrInitials.length = 0
       
       try {
-        this.edrListPerson = await this.getEdrPersonByInitials()
-
+        let edrListPerson = await this.getEdrPersonByInitials()
+        this.edrListPerson.push(...edrListPerson)
+        
+        if (! mapedObject) this.$set(this.globalObject, 'edrListPerson', edrListPerson);
+        if (mapedObject) this.$set(mapedObject, 'edrListPerson', edrListPerson);
         // Legal - first step (ЕДР Компания ЕДРПОУ)
-        await this.getEdrData()
-
+        await this.getEdrData(mapedObject, code)
         // Legal second step
         let {
           eDeclarations = [], 
@@ -1576,27 +1693,26 @@ export default {
         } = await this.checkLegalByEdrpou()
 
         this.checkLegalByCompanyName()
-
-        // checkLegalByCompanyName
+        // below temporary 
         this.eDeclarationList.push(...eDeclarations)
         this.rnboList.push(...rnboList, ...rnboLegals)
         this.unSanctionList.push(...unPersSanctions, ...unLegalSanctions)
         this.unTerrorList.push(...unTerrors, ...unLegalTerrors)
         this.esSanctionList.push(...EUSunctions, ...esLegalSanctions)
         this.usSanctionList.push(...USSancions, ...usLegalSanctions)
-        
+
         // legal third step
-        this.checkPersonsFromLegal()
+        this.addPersonListsToGlobal(mapedObject)
         // Legal four step
         await this.checkPersonsFromLegalInPep(pepByEdrpou)
 
         // this.consoleObjects // console result
         this.dialog = true
         this.loading = false
-
+        return
       } catch(err) {
         this.loading = false
-        this.notify(this.err(err))
+        console.log(err)
       }
     },
 
@@ -1616,7 +1732,7 @@ export default {
     },
 
     // Check all person from edrInitials
-    getPersonFromLegal() {
+    checkPersonsFromLegal() {
       return this.personUrls.map(
         async obj => {
           let res = await Promise.all(
@@ -1630,13 +1746,13 @@ export default {
                 return axios
                   .post(obj.url, controllerObj)
                   .then(res => {
-                    if (obj.desc !== 'eDeclarations') return res.data
-                    if (obj.desc === 'eDeclarations') return res.data.results.object_list
-                    return []
+                    if (obj.desc !== 'eDeclarations') return {data: res.data, res: res}
+                    if (obj.desc === 'eDeclarations') return {data: res.data.results.object_list, res: res}
+                    return {data: [], res: res}
                   })
-                  .then(data => {
-                    console.log({[obj.desc + ": " + this.getEntityName(controllerObj)]: data})
-                    return data
+                  .then(object => {
+                    this.addLegalToGlobal(controllerObj, object.data, obj, object.res)
+                    return object.data
                   })
                   .catch(err => console.log(err))
               })
@@ -1661,62 +1777,18 @@ export default {
       return axios
         .post(this.pepByInitials.url, controllerObj)
         .then(res => {
-          console.log({["pepByInitials: " + this.getEntityName(controllerObj)]: res.data[0]})
+          this.addLegalToGlobal(controllerObj, res.data, this.pepByInitials, res)
           return res.data[0]
         })
-        .catch(err => this.notify(this.err(err)))
-    },
-
-    initRequest(url, obj) {
-      return fetch(url, obj)
-    },
-
-    resHandler(url, obj) {
-      return this.initRequest(url, obj)
-        .then(res => {
-          if(res.ok) {
-            return res.json()
-          } else {
-            // this.controller.abort()
-            this.notify(this.err(res))
-            throw new Error('Network response was not ok')
-          }
-        })
-    },
-
-    err(res) {
-      if(res && res.status) return  (res.status, res.statusText)
-      else return res
-    },
-
-    resController(url, obj, callback) {
-      return this.resHandler(url, obj)
-        .then(res => {
-          if(typeof callback === 'function') return callback(res)
-          else return res
-        })
-    },
-
-    startRequest(url, obj, resCallback) {
-      return this.resController(url, obj, resCallback)
-        .catch(err => {
-          this.loading = false
-          this.notify(this.err(err))
-        })
-    },
-
-    reqOption(obj, method) {
-      return {
-        method: method,
-        headers: {
-          "Content-Type": "application/json"
-        },
-        mode: 'cors',
-        body: JSON.stringify(obj),
-        signal: this.controller.signal
-      }
+        .catch(err => console.log(err))
     },
     // customObj (optional) for individuals
+    /**
+     * @function postObjectController
+     * @param { string } desc - Description of url object
+     * @param {{}} [customObj] - Custom object that should be returned by the controller (with/without - modification) 
+     * @param { string } [mark] - Additional action labeling
+     */
     postObjectController(desc, customObj, mark) {
       const arrEn = [
         'unPersSanctions', 
@@ -1745,6 +1817,12 @@ export default {
           patronymic: (patronymic ? this.capitalize(patronymic) : '')
         }
       }
+      const transliterateObj = (object) => {
+        Object.keys(object).forEach(key => {
+          object[key] = this.transliterate(object[key])
+        })
+        return object
+      }
 
       switch (true) {
         case initials: return getPersonInitials(customObj)
@@ -1766,7 +1844,9 @@ export default {
           edrpou: this.edrpou ? this.edrpou.trim() : null,
           companyName: this.transliterate(this.companyName)
         }
-        case legalCustomObject: return customObj
+        case legalCustomObject: return translite 
+          ? transliterateObj(customObj) 
+          : customObj
 
         default: return
       }
@@ -1774,7 +1854,6 @@ export default {
 
     capitalize(str) {
       if(!str) return ''
-
       str = str.trim().replace(/\s+/g, ' ').split(' ')
       return str.map(text => {
         return (text.charAt(0).toUpperCase() + text.slice(1).toLowerCase()).trim()
@@ -1877,7 +1956,7 @@ export default {
 
     listenPressKey(e) {
       if (e.keyCode === 13) {
-        this.mapResult()
+        this.mapResult(/* clearData */ true)
       } else if (e.keyCode === 27) {
         this.dialog = false
       }
@@ -1987,6 +2066,9 @@ export default {
     },
   }, 
   watch: {
+    globalObject(val) {
+      console.log(val)
+    },
     edrExpanded(val) {
       setTimeout(() => {
         if(val.length) this.edrExpandedW = true

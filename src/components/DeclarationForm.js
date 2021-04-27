@@ -5,6 +5,7 @@ import {
   EdrLegal,
   Founder,
   Signer,
+  AxiosService,
 } from '../types'
 /* eslint-enable no-unused-vars */
 
@@ -34,8 +35,17 @@ import { yourControlEdrByEdrpouRes, yourControlEdrByInitialsRes } from '../utils
 import { letters } from '../utils/utils'
 import { transliteRule } from './translite'
 import axios from 'axios'
+/* eslint-disable no-unused-vars */
+import { AxiosResponse } from 'axios'
+/* eslint-enable no-unused-vars */
+
+// @ts-ignore
+import LegalThree from './legal/tree.vue'
 
 const legal =  {
+  components: {
+    LegalThree,
+  },
   name: 'DeclarationForm',
   data: () => ({
     apiKey: 'b00b0000a013607c3bc0acb76917a9f022f2b908',
@@ -189,56 +199,55 @@ const legal =  {
     /** @param {{companyName: string}} object */
     checkUsLegalSanctions(object) {
       const url = this.baseUrl + '/us-legal-sanctions'
-      console.log('URL', url)
-      return axios.post(url, object).then(res => res).catch(err => console.log(err))
+      return axios.post(url, object).then(res => res)
     },
     /** @param {{companyName: string}} object */
     checkUnLegalTerrors(object) {
       const url = this.baseUrl + '/un-legal-terrors'
-      return axios.post(url, object).then(res => res).catch(err => console.log(err))
+      return axios.post(url, object).then(res => res)
     },
     /** @param {{companyName: string}} object */
     checkUnLegalSanctions(object) {
       const url = this.baseUrl + '/un-legal-sanctions'
-      return axios.post(url, object).then(res => res).catch(err => console.log(err))
+      return axios.post(url, object).then(res => res)
     },
     /** @param {{edrpou: string | number, companyName: string}} object */
     checkEsLegalSanctions(object) { 
       const url = this.baseUrl + '/get-eu-legal-sanctions'
-      return axios.post(url, object).then(res => res).catch(err => console.log(err))
+      return axios.post(url, object).then(res => res)
     },
     /** @param {{edrpou: string | number}} object */
     checkRnboLegals(object) {
       const url = this.baseUrl + '/get-legal-sanctions'
-      return axios.post(url, object).then(res => res).catch(err => console.log(err))
+      return axios.post(url, object).then(res => res)
     },
     /** 
      * @function checkEDeclarations - Post capitalized person object
      * @param {{lastName: string, firstName: string, patronymic: string}} object */
     checkEDeclarations(object) { 
       const url = this.baseUrl + '/get-declarations'
-      return axios.post(url, object).then(res => res).catch(err => console.log(err))
+      return axios.post(url, object).then(res => res)
     },
     /** 
      * @function checkRnboPersons - Post capitalized person object
      * @param {{lastName: string, firstName: string, patronymic: string}} object */
     checkRnboPersons(object) {
       const url = this.baseUrl + '/get-person-sanctions'
-      return axios.post(url, object).then(res => res).catch(err => console.log(err))
+      return axios.post(url, object).then(res => res)
     },
     /** 
      * @function checkUnPersSanctions - Post transliterated person object
      * @param {{lastName: string, firstName: string, patronymic: string}} object */
     checkUnPersSanctions(object) {
       const url = this.baseUrl + '/un-person-sanctions'
-      return axios.post(url, object).then(res => res).catch(err => console.log(err))
+      return axios.post(url, object).then(res => res)
     },
     /** 
      * @function checkUsPersonSunctions - Post transliterated person object
      * @param {{lastName: string, firstName: string, patronymic: string}} object */
     checkUsPersonSunctions(object) {
       const url = this.baseUrl + '/us-person-sanctions'
-      return axios.post(url, object).then(res => res).catch(err => console.log(err))
+      return axios.post(url, object).then(res => res)
     },
     /** 
      * @function checkEsPersonSunctions - Post transliterated person object
@@ -255,20 +264,53 @@ const legal =  {
       return axios.post(url, object).then(res => res)
     },
     /**
+     * @param {{edrpou: string | number, apiKey: string}} object */ 
+    // eslint-disable-next-line
+    getEdrLegal(object) {
+      // const url = this.baseUrl + `/your-control/get-edr-legal`
+      // const response = axios.post(url, object).then(/** @param {AxiosService} res */ res => res)
+      // return response
+      /* below temporary */
+      // @ts-ignore
+      object.code = this.edrpou
+      this.handledEdrpous.push(object.edrpou)
+      return Promise.resolve({data: yourControlEdrByEdrpouRes, res: {temporary: 'empty (yourControlEdrByEdrpouRes)'}})
+
+    },
+    /** Needed edition to split on three separate function "EdrLegal", "Founder" & "{}" */
+    /**
      * @param {EdrLegal | Founder | {}} mapedObject
-     * @param {string | number} code - EDRPOU code */
+     * @param {string | number } code - EDRPOU code */
     getEdrData(mapedObject, code) {
-      return this.getEdrLegalByEdrpou(code)
+      const yourControlEdrLegal = {edrpou: code, apiKey: this.apiKey}  
+      return this.getEdrLegal(yourControlEdrLegal)
         .then(res => {
+          if (res.data.status === "Update in progress") {
+            return new Promise(resolve => {
+              setTimeout(() => resolve(this.getEdrData(mapedObject, code)), this.yourControlTimeOut)
+            })
+          }
+
           /** @type {EdrLegal} */
-          const legal = Object.assign(mapedObject, JSON.parse(JSON.stringify(res.data)))
-          const legalFounders = legal?.founders.filter(founder => founder.type === 0)
-          const personFounders = legal?.founders.filter(founder => founder.type === 1)
+          const legal = this.assignObject(mapedObject, JSON.parse(JSON.stringify(res.data)))
           const legalEnName = legal?.nameInEnglish?.shortName?.split('"')[1]
           const legalUaName = legal?.name?.shortName.split('"')[1]
-          const requisites = {nameEn: legalEnName, nameUa: legalUaName}
-
+          
+          // casting legal.name to string
+          let founderEnName, founderUaName
+          if (typeof legal.name === "string") {
+            /** @type {Founder} */
+            // @ts-ignore
+            founderEnName = mapedObject.name
+            // @ts-ignore
+            founderUaName = this.transliterate(mapedObject.name)
+          }
+          const requisites = {nameEn: legalEnName || founderEnName, nameUa: legalUaName || founderUaName}
           this.checkLegal(legal, requisites)
+
+          if (! legal.code) return
+          const legalFounders = legal?.founders.filter(founder => founder.type === 0)
+          const personFounders = legal?.founders.filter(founder => founder.type === 1)
 
           if (legalFounders?.length) {
             legalFounders.map(founder => {
@@ -357,22 +399,22 @@ const legal =  {
       const transliteratedPersonObj = this.getPersonInitials(name, {transliterate: true})
 
       this.checkEDeclarations(capitalizedPersonObj)
-        .then(res => Object.assign(mapedObject, {eDeclarations: res}))
+        .then(res => this.assignObject(mapedObject, {EDeclarations: res}))
         .catch(err => console.log(err))
       this.checkRnboPersons(capitalizedPersonObj)
-        .then(res => Object.assign(mapedObject, {rnboSanction: res}))
+        .then(res => this.assignObject(mapedObject, {RNBOSanctions: res}))
         .catch(err => console.log(err))
       this.checkUnPersSanctions(transliteratedPersonObj) 
-        .then(res => Object.assign(mapedObject, {UNPersonSanctions: res}))
+        .then(res => this.assignObject(mapedObject, {UNPersonSanctions: res}))
         .catch(err => console.log(err))
       this.checkUsPersonSunctions(transliteratedPersonObj) 
-        .then(res => Object.assign(mapedObject, {USPersonSanctions: res}))
+        .then(res => this.assignObject(mapedObject, {USPersonSanctions: res}))
         .catch(err => console.log(err))
       this.checkEsPersonSunctions(transliteratedPersonObj)
-        .then(res => Object.assign(mapedObject, {ESPersonSanctions: res}))
+        .then(res => this.assignObject(mapedObject, {ESPersonSanctions: res}))
         .catch(err => console.log(err))
       this.checkUnTerrors(transliteratedPersonObj)
-        .then(res => Object.assign(mapedObject, {UNTerrorPersonSanctions: res}))
+        .then(res => this.assignObject(mapedObject, {UNTerrorPersonSanctions: res}))
         .catch(err => console.log(err))
     },
     /**
@@ -380,21 +422,20 @@ const legal =  {
      * @param {string} founderName */
     checkLegalFounder(founder, founderName) {
       this.mapEdrLegal(founder, founder.code)
-
-      this.checkEsLegalSanctions({ edrpou: founder.code, companyName: this.transliterate(founderName) })
-        .then(res => Object.assign(founder, {ESLegalSanctions: res}))
+      this.checkEsLegalSanctions({edrpou: founder.code, companyName: this.transliterate(founderName)})
+        .then(res => this.assignObject(founder, {ESLegalSanctions: res}))
         .catch(err => console.log(err))
-      this.checkUsLegalSanctions({ companyName: this.transliterate(founderName) })
-        .then(res => Object.assign(founder, {USLegalSanctions: res}))
+      this.checkUsLegalSanctions({companyName: this.transliterate(founderName)})
+        .then(res => this.assignObject(founder, {USLegalSanctions: res}))
         .catch(err => console.log(err))
-      this.checkUnLegalTerrors({ companyName: this.transliterate(founderName) })
-        .then(res => Object.assign(founder, {UNLegalTerrors: res}))
+      this.checkUnLegalTerrors({companyName: this.transliterate(founderName)})
+        .then(res => this.assignObject(founder, {UNLegalTerrors: res}))
         .catch(err => console.log(err))
-      this.checkUnLegalSanctions({ companyName: this.transliterate(founderName) })
-        .then(res => Object.assign(founder, {UNLegalSanctions: res}))
+      this.checkUnLegalSanctions({companyName: this.transliterate(founderName)})
+        .then(res => this.assignObject(founder, {UNLegalSanctions: res}))
         .catch(err => console.log(err))
-      this.checkRnboLegals({ edrpou: founder.code })
-        .then(res => Object.assign(founder, {RNBOLegals: res}))
+      this.checkRnboLegals({edrpou: founder.code})
+        .then(res => this.assignObject(founder, {RNBOLegals: res}))
         .catch(err => console.log(err))
     },
     /**
@@ -404,36 +445,24 @@ const legal =  {
      * @param {string} requisites.nameEn */
     checkLegal(legal, requisites) {
       this.checkEsLegalSanctions({ edrpou: legal.code, companyName: requisites.nameEn })
-        .then(res => Object.assign(legal, {ESLegalSanctions: res}))
+        .then(res => this.assignObject(legal, {ESLegalSanctions: res}))
         .catch(err => console.log(err))
       this.checkUsLegalSanctions({ companyName: requisites.nameEn })
-        .then(res => Object.assign(legal, {USLegalSanctions: res}))
+        .then(res => this.assignObject(legal, {USLegalSanctions: res}))
         .catch(err => console.log(err))
       this.checkUnLegalTerrors({ companyName: requisites.nameEn })
-        .then(res => Object.assign(legal, {UNLegalTerrors: res}))
+        .then(res => this.assignObject(legal, {UNLegalTerrors: res}))
         .catch(err => console.log(err))
       this.checkUnLegalSanctions({ companyName: requisites.nameEn })
-        .then(res => Object.assign(legal, {UNLegalSanctions: res}))
+        .then(res => this.assignObject(legal, {UNLegalSanctions: res}))
         .catch(err => console.log(err))
       this.checkRnboLegals({ edrpou: legal.code })
-        .then(res => Object.assign(legal, {RNBOLegals: res}))
+        .then(res => this.assignObject(legal, {RNBOLegals: res}))
         .catch(err => console.log(err))
     },
-    /** @param { string | number } code - edrpou code  */
-    getEdrLegalByEdrpou(code) {
-      /* this request should start from node.js */
-      this.handledEdrpous.push(code)
-      // return axios
-      //   .get(this.urlGetEdrLegalByEdrpou(code, this.apiKey))
-      //   .then(res => console.log(res))
-      //   .catch(err => console.log(err))
-
-      // below temporary emulation of request to yourcontrol
-      let response = {}
-      response.data = yourControlEdrByEdrpouRes
-      response.data.requestClientDate = new Date().toString()
-      console.log('yourControlEdrByEdrpouRes', response)
-      return Promise.resolve(response)
+    assignObject (source, asignObject) {
+      Object.entries(asignObject).forEach(entry => this.$set(source, entry[0], entry[1]))
+      return source
     },
     getEdrLegalByInn() {
       /* this request should start from node.js */
@@ -496,9 +525,8 @@ const legal =  {
         .trim()
         .replace(/\s+/g, ' ')
         .split('')
-        .map(char => { 
-          return this.letters[char] || char
-        }).join("")
+        .map(char => this.letters[char] || char)
+        .join("")
         .replace(/[^a-zA-Z-`\s0-9().,]/gu, '')
     },
     goToPage(url) {

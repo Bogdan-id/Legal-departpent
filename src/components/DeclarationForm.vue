@@ -1,5 +1,6 @@
 <template>
   <v-row class="api-form text-center justify-center">
+    <LegalThree :legal="globalObject"></LegalThree>
     <v-tooltip bottom>
       <template v-slot:activator="{ on }">
         <v-fade-transition hide-on-leave>
@@ -1110,7 +1111,7 @@
   </v-row>
 </template>
 <script>
-import { legal } from "./DeclarationForm" 
+import { legal } from "./DeclarationForm.js" 
 export default legal
 </script>
 

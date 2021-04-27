@@ -1,6 +1,6 @@
 <template>
   <v-row class="api-form text-center justify-center">
-    <LegalThree :legal="globalObject"></LegalThree>
+    <LegalTree :legal="globalObject"></LegalTree>
     <v-tooltip bottom>
       <template v-slot:activator="{ on }">
         <v-fade-transition hide-on-leave>

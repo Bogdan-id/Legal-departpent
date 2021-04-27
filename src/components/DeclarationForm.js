@@ -40,11 +40,11 @@ import { AxiosResponse } from 'axios'
 /* eslint-enable no-unused-vars */
 
 // @ts-ignore
-import LegalThree from './legal/tree.vue'
+import LegalTree from './legal/tree.vue'
 
 const legal =  {
   components: {
-    LegalThree,
+    LegalTree,
   },
   name: 'DeclarationForm',
   data: () => ({

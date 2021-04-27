@@ -1,3 +1,7 @@
+/* eslint-disable no-unused-vars */
+import {AxiosResponse} from 'axios'
+/* eslint-enable no-unused-vars */
+
 /** 
  * @typedef { object } initials
  * @property { string } lastName
@@ -127,4 +131,15 @@ const data = {
  * }} EdrLegal
  */
 
-exports.mapedObjectTypes = {}
+/**
+ * @typedef {{
+ *  currentDataUrl: string,
+ *  status: string,
+ * }} UpdateEdrLegal 
+ * */
+
+/**
+ * @typedef {AxiosResponse<UpdateEdrLegal | EdrLegal>} AxiosService
+ */
+
+export default {}

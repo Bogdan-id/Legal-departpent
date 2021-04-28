@@ -194,6 +194,8 @@ const legal =  {
     edrCodes: [],
     /** @param { array } handledEdrpous - List of "edrpou" codes that have already been checked */
     handledEdrpous: [],
+    yourControlTimeOut: 3000,
+    legalDialog: false,
   }),
   methods: {
     /** @param {{companyName: string}} object */
@@ -267,6 +269,7 @@ const legal =  {
      * @param {{edrpou: string | number, apiKey: string}} object */ 
     // eslint-disable-next-line
     getEdrLegal(object) {
+      // if (! object.edrpou) return Promise.resolve()
       // const url = this.baseUrl + `/your-control/get-edr-legal`
       // const response = axios.post(url, object).then(/** @param {AxiosService} res */ res => res)
       // return response
@@ -285,20 +288,22 @@ const legal =  {
       const yourControlEdrLegal = {edrpou: code, apiKey: this.apiKey}  
       return this.getEdrLegal(yourControlEdrLegal)
         .then(res => {
-          if (res.data.status === "Update in progress") {
+          if (res?.data?.status === "Update in progress") {
             return new Promise(resolve => {
               setTimeout(() => resolve(this.getEdrData(mapedObject, code)), this.yourControlTimeOut)
             })
           }
-
           /** @type {EdrLegal} */
-          const legal = this.assignObject(mapedObject, JSON.parse(JSON.stringify(res.data)))
-          const legalEnName = legal?.nameInEnglish?.shortName?.split('"')[1]
-          const legalUaName = legal?.name?.shortName.split('"')[1]
+          let legal, legalEnName, legalUaName
+          if (res?.data) {
+            legal = this.assignObject(mapedObject, JSON.parse(JSON.stringify(res.data)))
+            legalEnName = legal?.nameInEnglish?.shortName?.split('"')[1]
+            legalUaName = legal?.name?.shortName.split('"')[1]
+          }
           
           // casting legal.name to string
           let founderEnName, founderUaName
-          if (typeof legal.name === "string") {
+          if (legal && typeof legal.name === "string") {
             /** @type {Founder} */
             // @ts-ignore
             founderEnName = mapedObject.name
@@ -309,8 +314,8 @@ const legal =  {
           this.checkLegal(legal, requisites)
 
           if (! legal.code) return
-          const legalFounders = legal?.founders.filter(founder => founder.type === 0)
-          const personFounders = legal?.founders.filter(founder => founder.type === 1)
+          const legalFounders = legal?.founders.filter(founder => founder.name.includes('"'))
+          const personFounders = legal?.founders.filter(founder => !founder.name.includes('"'))
 
           if (legalFounders?.length) {
             legalFounders.map(founder => {
@@ -350,7 +355,8 @@ const legal =  {
         this.loading = true
         await this.getEdrData(this.globalObject, code)
         this.loading = false
-        this.dialog = true
+        // this.dialog = true
+        this.legalDialog = true
         console.log(this.globalObject)
       } catch (err) {
         this.loading = false

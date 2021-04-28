@@ -1,12 +1,28 @@
 <template>
   <div class="node-tree">
+    <!-- Legal info -->
+    <ul>
+      <li 
+        v-if="legal.code"
+        @click.stop="toggleLegalInfo"
+        class="list-item">
+        <div>Iнформацiя про компанiю&nbsp;[{{showCompanyInfo ? '-' : '+'}}]</div>
+        <v-fade-transition hide-on-leave>
+          <div 
+            v-if="showCompanyInfo"
+            @click.prevent="toggleLegalInfo">
+            <CompanyInfo :company="legal" />
+          </div>
+        </v-fade-transition>
+      </li>
+    </ul>
     <!-- Legal verification -->
     <ul>
       <li 
         v-if="legal.code"
         @click.stop="toggleLegalVerification"
         class="list-item">
-        <div><a>Перевiрка</a></div>
+        <div>Перевiрка&nbsp;[{{showLegalVerification ? '-' : '+'}}]</div>
         <div 
           v-if="showLegalVerification"
           @click.prevent="toggleLegalVerification">
@@ -19,18 +35,19 @@
       <li
         @click.stop="toggleSigners"
         class="list-item">
-        <div><a>Пiдписанти</a></div>
+        <div>Пiдписанти&nbsp;[{{showSigners ? '-' : '+'}}]</div>
         <ul 
           v-if="showSigners"
           @click.prevent="toggleSigners">
           <li
-            @click="showSignerVerification(key)"
+            @click="toggleDescription(signerVerificationKeys, key)"
             v-for="(signer, key) in legal.signers"
             :key="'li-signer' + componentId + key">
-            <div>{{ signer.name + " [" + signer.description + "]" }}</div>
+            <span>{{ signer.name + " (" + signer.description + ")" }}&nbsp;</span>
+            <span>[{{ signerVerificationKeys.includes(key) ? "-" : "+" }}]</span>
             <div 
-              v-if="key === signerVerificationKey"
-              @click.prevent="showSignerVerification">
+              v-if="signerVerificationKeys.includes(key)"
+              @click.prevent="toggleDescription">
               <PersonVerification :person="signer" />
             </div>
           </li>
@@ -47,7 +64,7 @@
       <li
         @click.stop="toggleFounders"
         class="list-item">
-        <div><a>Засновники</a></div>
+        <div>Засновники&nbsp;[{{showFounders ? '-' : '+'}}]</div>
         <ul 
           @click.prevent="toggleFounders" 
           v-if="showFounders">
@@ -55,23 +72,22 @@
             v-for="(founder, key) in legal.founders"
             :class="{'have-nested': founder.founders}"
             @click="
-              showNestedLegal(key)
-              toggleFounderVerification(key)"
+              toggleDescription(founderVerificationKeys, key)
+              toggleFounderKey(key)"
             :key="'li-founder' + componentId + key">
-            <div>{{ founder.name.shortName || founder.name }}</div>
+            <span>{{ founder.name.shortName || founder.name }}&nbsp;</span>
+            <span>[{{ founderVerificationKeys.includes(key) ? "-" : "+" }}]</span>
             <div 
-              v-if="founderVerificationKey === key && !founder.code"
-              @click.prevent="toggleFounderVerification">
+              v-if="founderVerificationKeys.includes(key)"
+              @click.prevent="toggleDescription">
               <PersonVerification :person="founder" />
             </div>
           </li>
-          <ul>
-            <legal 
-              v-for="(founder, key) in legalFounders" 
-              :legal="founder"
-              :key="'leg-signer' + componentId + key">
-            </legal>
-          </ul>
+          <legal 
+            v-for="(founder, key) in legalFounders" 
+            :legal="founder"
+            :key="'legal-signer' + componentId + key">
+          </legal>
         </ul>
       </li>
     </ul>
@@ -81,11 +97,15 @@
 <script lang="ts">
 import PersonVerification from './person-verification.vue'
 import LegalVerification from './legal-verification.vue'
+import CompanyInfo from './company-info.vue'
+import { toggleDescription } from './helper.js'
+
 export default {
   name: "legal",
   components: {
     PersonVerification,
     LegalVerification,
+    CompanyInfo,
   },
   props: {
     legal: Object
@@ -94,9 +114,11 @@ export default {
     showSigners: false,
     showFounders: false,
     showLegalVerification: false,
+    showCompanyInfo: false,
+
     showFounderKey: null,
-    signerVerificationKey: null,
-    founderVerificationKey: null,
+    signerVerificationKeys: [],
+    founderVerificationKeys: [],
 
     componentId: null,
   }),
@@ -108,30 +130,23 @@ export default {
     },
   },
   methods: {
-    showNestedLegal (key) {
-      if (this.showFounderKey === key) {
-        this.showFounderKey = null
-      } else this.showFounderKey = key
-    },
     toggleFounders () {
       this.showFounders = !this.showFounders
+    },
+    toggleFounderKey (key) {
+      if (this.showFounderKey === key) this.showFounderKey = null
+      else this.showFounderKey = key
     },
     toggleSigners () {
       this.showSigners = !this.showSigners
     },
-    showSignerVerification(key) {
-      if (this.signerVerificationKey === key) {
-        this.signerVerificationKey = null
-      } else this.signerVerificationKey = key
-    },
     toggleLegalVerification() {
       this.showLegalVerification = !this.showLegalVerification
     },
-    toggleFounderVerification(key) {
-      if (this.founderVerificationKey === key){
-        this.founderVerificationKey = null
-      } else this.founderVerificationKey = key
+    toggleLegalInfo() {
+      this.showCompanyInfo = !this.showCompanyInfo
     },
+    toggleDescription,
   },
   mounted() {
     this.componentId = this._uid
@@ -140,12 +155,48 @@ export default {
 </script>
 
 <style>
- .list-item {
-   font-weight: bold;
-   cursor: pointer;
- }
- .have-nested {
-   text-decoration: underline;
-   cursor: pointer;
- }
+  .v-card__text > .node-tree {
+    max-height: 80vh;
+    overflow: hidden;
+    overflow-y: auto;
+  }
+  .list-item {
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .have-nested {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  .node-tree {
+    font-family: Menlo, Consolas, monospace;
+  }
+  .node-tree p {
+    margin-bottom: 8px!important;
+  }
+  .verification-text {
+    width: 95%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-decoration: underline;
+  }
+  .verification-text span {
+    display: none;
+  }
+  .verification-text span:first-child {
+    display: inline;
+  }
+  .verification-text.active :not(span:first-child) {
+    padding-left: 20px;
+    display: block;
+  }
+  .verification-text.active {
+    white-space: normal;
+    width: 100%;
+    text-decoration: none;
+  }
+  .verification-text.active span {
+    display: inline;
+  }
 </style>

@@ -30,11 +30,11 @@ import {
   } from '../urls'
 
 /* Temporary yourcontrol request */
-import { yourControlEdrByEdrpouRes, yourControlEdrByInitialsRes } from '../utils/utils'
+import { /* yourControlEdrByEdrpouRes, */ yourControlEdrByInitialsRes } from '../utils/utils'
 
 import { letters } from '../utils/utils'
 import { transliteRule } from './translite'
-import axios from 'axios'
+import axios from '../plugins/axios'
 /* eslint-disable no-unused-vars */
 import { AxiosResponse } from 'axios'
 /* eslint-enable no-unused-vars */
@@ -269,16 +269,10 @@ const legal =  {
      * @param {{edrpou: string | number, apiKey: string}} object */ 
     // eslint-disable-next-line
     getEdrLegal(object) {
-      // if (! object.edrpou) return Promise.resolve()
-      // const url = this.baseUrl + `/your-control/get-edr-legal`
-      // const response = axios.post(url, object).then(/** @param {AxiosService} res */ res => res)
-      // return response
-      /* below temporary */
-      // @ts-ignore
-      object.code = this.edrpou
-      this.handledEdrpous.push(object.edrpou)
-      return Promise.resolve({data: yourControlEdrByEdrpouRes, res: {temporary: 'empty (yourControlEdrByEdrpouRes)'}})
-
+      if (! object.edrpou) return Promise.resolve()
+      const url = this.baseUrl + `/your-control/get-edr-legal`
+      const response = axios.post(url, object).then(/** @param {AxiosService} res */ res => res)
+      return response
     },
     /** Needed edition to split on three separate function "EdrLegal", "Founder" & "{}" */
     /**
@@ -314,8 +308,8 @@ const legal =  {
           this.checkLegal(legal, requisites)
 
           if (! legal.code) return
-          const legalFounders = legal?.founders.filter(founder => founder.name.includes('"'))
-          const personFounders = legal?.founders.filter(founder => !founder.name.includes('"'))
+          const legalFounders = legal?.founders?.filter(founder => founder.name.includes('"'))
+          const personFounders = legal?.founders?.filter(founder => !founder.name.includes('"'))
 
           if (legalFounders?.length) {
             legalFounders.map(founder => {

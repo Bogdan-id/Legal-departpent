@@ -3,66 +3,85 @@
     <li 
       @click.stop="toggleEsSanctions" 
       class="list-item">
-      <div>
-        <a>Санкцiї європейського союзу:</a>
-        <span>&nbsp;[{{legal.ESLegalSanctions.data.length}}]</span>
-      </div>
-      <div 
+      <ListSigns 
+        title="Санкцiї ЕС"
+        :data="legal.ESLegalSanctions.data"
+        :state="showESLegalSanctions"
+        :config="legal.ESLegalSanctions.config"
+      />
+      <ul 
         v-show="showESLegalSanctions"
         @click.prevent="toggleEsSanctions">
-        <p
+        <li
           @click="toggleDescription(ESLegalSanctionsShowedList, key)"
+          class="verification-text"
           :class="{active: ESLegalSanctionsShowedList.includes(key)}"
           v-for="(item, key) in legal.ESLegalSanctions.data"
-          :key="key"
-          v-html="setText(item.text, key)">
-        </p>
-      </div>
+          :key="key">
+          <span>
+            {{ getInitials(item.text) }}&nbsp;
+            [{{ ESLegalSanctionsShowedList.includes(key) ? "-" : "+" }}]
+          </span>
+          <div 
+            v-show="ESLegalSanctionsShowedList.includes(key)"
+            class="info-text">
+            {{ getText(item.text, getInitials(item.text)) }}
+          </div>
+        </li>
+      </ul>
     </li>
     <li 
       @click.stop="toggleRNBOLegalSanctions" 
       class="list-item">
-      <div>
-        <a>Санкцiї РНБО:</a>
-        <span>&nbsp;[{{legal.RNBOLegals.data.length}}]</span>
-        <span 
-          v-show="legal.RNBOLegals.data.length">
-          [{{ showRNBOLegalSanctions ? "-" : "+" }}]
-        </span>
-      </div>
-      <div 
+      <ListSigns 
+        title="Санкцiї РНБО"
+        :data="legal.RNBOLegals.data"
+        :state="showRNBOLegalSanctions"
+        :config="legal.RNBOLegals.config"
+      />
+      <ul 
         v-show="showRNBOLegalSanctions"
         @click.prevent="toggleRNBOLegalSanctions">
-        <p
+        <li
           @click="toggleDescription(RNBOLegalsShowedList, key)"
+          class="verification-text"
           :class="{active: RNBOLegalsShowedList.includes(key)}"
           v-for="(item, key) in legal.RNBOLegals.data"
-          :key="key"
-          v-html="setText(item.text, key)">
-          {{ item.text }}
-        </p>
-      </div>
+          :key="key">
+          <span>
+            {{ getInitials(item.text) }}&nbsp;
+            [{{ RNBOLegalsShowedList.includes(key) ? "-" : "+" }}]
+          </span>
+          <div 
+            v-show="RNBOLegalsShowedList.includes(key)"
+            class="info-text">
+            {{ getText(item.text, getInitials(item.text)) }}
+          </div>
+        </li>
+      </ul>
     </li>
     <li 
       @click.stop="toggleUNLegalSanctions"
       class="list-item">
-      <div>
-        <a>Санкцiї ООН:</a>
-        <span>&nbsp;[{{legal.UNLegalSanctions.data.length}}]</span>
-        <span 
-          v-show="legal.UNLegalSanctions.data.length">
-          [{{ showUNLegalSanctions ? "-" : "+" }}]
-        </span>
-      </div>
-      <div 
+      <ListSigns 
+        title="Санкцiї ООН"
+        :data="legal.UNLegalSanctions.data"
+        :state="showUNLegalSanctions"
+        :config="legal.UNLegalSanctions.config"
+      />
+      <ul 
         v-show="showUNLegalSanctions"
         @click.prevent="toggleUNLegalSanctions">
-        <p
+        <li
           @click="toggleDescription(UNLegalSanctionsShowedList, key)"
+          class="verification-text"
           :class="{active: UNLegalSanctionsShowedList.includes(key)}"
           v-for="(item, key) in legal.UNLegalSanctions.data"
           :key="key">
-          <span>організація: {{ item.unListType }}</span>
+          <span>
+            {{ item.unListType }}&nbsp;
+            [{{ UNLegalSanctionsShowedList.includes(key) ? "-" : "+" }}]
+          </span>
           <span>Пiдроздiл: {{ item.firstName }}</span>
           <span v-if="item.ENTITY_ADDRESS && item.ENTITY_ADDRESS.length">
             <div>Адреси: </div>
@@ -75,80 +94,93 @@
           </span>
           <span v-if="item.ENTITY_ALIAS && item.ENTITY_ALIAS.length">
             <div>Також вiдомий як: </div>
-            <div 
-              v-for="(name, key) in item.ENTITY_ALIAS"
-              :key="key"
-              class="ml-4">
-              {{ name.ALIAS_NAME }}
-            </div>
+            <ul>
+              <li 
+                style="display: list-item"
+                v-for="(name, key) in item.ENTITY_ALIAS"
+                :key="key"
+                class="ml-4 info-text">
+                {{ name.ALIAS_NAME }}
+              </li>
+            </ul>
           </span>
           <span>Додаткова iнформацiя: {{ item.comment }}</span>
           <span>В санкцiйному списку з: {{ item.listedOn }}</span>
-        </p>
-      </div>
+        </li>
+      </ul>
     </li>
     <li 
       @click.stop="toggleUNTerrorLegalSanctions"
       class="list-item">
-      <div>
-        <a>ООН терористичнi організації:</a>
-        <span>&nbsp;[{{legal.UNLegalTerrors.data.length}}]</span>
-        <span 
-          v-show="legal.UNLegalTerrors.data.length">
-          [{{ showUNTerrorLegalSanctions ? "-" : "+" }}]
-        </span>
-      </div>
-      <div 
+      <ListSigns 
+        title="ООН терористи"
+        :data="legal.UNLegalTerrors.data"
+        :state="showUNTerrorLegalSanctions"
+        :config="legal.UNLegalTerrors.config"
+      />
+      <ul 
         v-show="showUNTerrorLegalSanctions"
         @click.prevent="toggleUNTerrorLegalSanctions">
-        <p
+        <li
           @click="toggleDescription(UNLegalTerrorsShowedList, key)"
+          class="verification-text"
           :class="{active: UNLegalTerrorsShowedList.includes(key)}"
           v-for="(item, key) in legal.UNLegalTerrors.data"
           :key="key">
-          <span>Назва організації: {{ item.fullName }}</span>
+          <span>
+            {{ item.fullName }}&nbsp;
+            [{{ UNLegalTerrorsShowedList.includes(key) ? "-" : "+" }}]
+          </span>
           <span>Адреса: {{ item['address-list']}}</span>
           <span>Резолюцiя: {{ item['program-entry'] }}</span>
           <span v-if="item.alsoKnown && item.alsoKnown.length">
             <div>Також вiдомий як:</div>
-            <div 
-              class="ml-4"
-              v-for="(name, key) in name.alsoKnown"
-              :key="key">
-              {{ name }}
-            </div>
+            <ul>
+              <li 
+                class="ml-4 info-text"
+                style="display: list-item"
+                v-for="(name, key) in name.alsoKnown"
+                :key="key">
+                {{ name }}
+              </li>
+            </ul>
           </span>
-        </p>
-      </div>
+        </li>
+      </ul>
     </li>
     <li
       @click.stop="toggleUSLegalSanctions" 
       class="list-item">
-      <div >
-        <a>Санкцiї США:</a>
-        <span>&nbsp;[{{legal.USLegalSanctions.data.length}}]</span>
-        <span 
-          v-show="legal.USLegalSanctions.data.length">
-          [{{ showUSLegalSanctions ? "-" : "+" }}]
-        </span>
-      </div>
-      <div 
+      <ListSigns 
+        title="Санкцiї США"
+        :data="legal.USLegalSanctions.data"
+        :state="showUSLegalSanctions"
+        :config="legal.USLegalSanctions.config"
+      />
+      <ul 
         v-show="showUSLegalSanctions"
         @click.prevent="toggleUSLegalSanctions">
-        <p
+        <li
           @click="toggleDescription(USLegalSanctionsShowedList, key)"
+          class="verification-text"
           :class="{active: USLegalSanctionsShowedList.includes(key)}"
           v-for="(item, key) in legal.USLegalSanctions.data"
           :key="key">
-          <span>Назва організації: {{ item.lastName }}</span>
+          <span>
+            {{ item.lastName }}&nbsp;
+            [{{ USLegalSanctionsShowedList.includes(key) ? "-" : "+" }}]
+          </span>
           <span v-if="item.akaList && item.akaList.length">
             <div>Також вiомий як</div>
-            <div 
-              class="ml-4"
-              v-for="(name, key) in item.akaList"
-              :key="key">
-              {{ name.fullName }}
-            </div>
+            <ul>
+              <li 
+                class="ml-4 info-text"
+                style="display: list-item"
+                v-for="(name, key) in item.akaList"
+                :key="key">
+                {{ name.fullName }}
+              </li>
+            </ul>
           </span>
           <span v-if="item.addressList && item.addressList.length">
             <div>Адреси: </div>
@@ -159,16 +191,23 @@
               {{ address.country ? address.country  + " " : "" + address.city ? address.city : "" }}
             </div>
           </span>
-        </p>
-      </div>
+        </li>
+      </ul>
     </li>
   </ul>
 </template>
 
 <script lang="ts">
-import { toggleDescription, setText, getCategoryName} from './helper'
+import {
+  toggleDescription, 
+  getInitials,
+  getText, 
+  getCategoryName} from './helper'
+
+import ListSigns from "./list-sign"
 
 export default {
+  components: {ListSigns},
   props: {legal: Object},
   data: () => ({
     showDeclarations: false,
@@ -183,6 +222,14 @@ export default {
     UNLegalSanctionsShowedList: [],
     UNLegalTerrorsShowedList: [],
     USLegalSanctionsShowedList: [],
+
+    textExceptions: [
+      'initials',
+      'lastFirstName', 
+      'lastName', 
+      'firstName', 
+      'patronymic',
+    ],
   }),
   methods: {
     toggleEsSanctions() {this.showESLegalSanctions = !this.showESLegalSanctions},
@@ -192,7 +239,8 @@ export default {
     toggleUSLegalSanctions() {this.showUSLegalSanctions = !this.showUSLegalSanctions},
     toggleDescription, 
     getCategoryName,
-    setText,
+    getInitials,
+    getText,
   },
 }
 </script>

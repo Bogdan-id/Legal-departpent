@@ -4,8 +4,13 @@
   :min-width="750"
   style="background: ghostwhite">
   <v-card-text 
-    class="text-left pt-8"
+    class="text-left pt-5"
     style="position: relative">
+    <v-card-title 
+      id="company-title"
+      class="pt-0 pb-1">
+      {{ legal.name.shortName }}
+    </v-card-title>
     <v-btn 
       @click="$emit('update:legalDialog', false)"
       style="position: absolute; right: 4px; top: 3px;"
@@ -13,7 +18,6 @@
       small>
       <v-icon small>{{ mdiClose }}</v-icon>
     </v-btn>
-    <!-- <strong>{{ "Компанiя: " + legal.name.shortName }}</strong> -->
     <Legal 
       :legal="legal">
     </Legal>
@@ -21,23 +25,14 @@
 </v-card>
 </template>
 <script>
-import { 
-  mdiClose, 
-} from '@mdi/js'
-
-// import Founder from './founder.vue'
+import {mdiClose} from '@mdi/js'
 import Legal from './legal.vue'
 export default {
-  components: {
-    // Founder,
-    Legal,
-  },
+  components: {Legal},
   props: {
     legal: {type: Object},
     legalDialog: {type: Boolean},
   },
-  data: () => ({
-    mdiClose,
-  })
+  data: () => ({mdiClose})
 }
 </script>

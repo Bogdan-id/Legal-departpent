@@ -18,16 +18,9 @@ import {
   mdiWindowMinimize,
   mdiTextBoxSearchOutline,
   mdiSortAlphabeticalAscendingVariant
-} from '@mdi/js'
+} from '@mdi/js' 
 
-import {
-  // eslint-disable-next-line
-  urlGetEdrLegalByEdrpou,
-  // eslint-disable-next-line
-  urlGetEdrLegalByInitials,
-  // eslint-disable-next-line
-  urlGetEdrPersonByINN,
-  } from '../urls'
+import { trimExceededLength } from '../utils/helper'
 
 /* Temporary yourcontrol request */
 import { /* yourControlEdrByEdrpouRes, */ yourControlEdrByInitialsRes } from '../utils/utils'
@@ -41,12 +34,33 @@ import { AxiosResponse } from 'axios'
 
 // @ts-ignore
 import LegalTree from './legal/tree.vue'
+import { validationMixin } from 'vuelidate'
+import { required } from 'vuelidate/lib/validators'
 
 const legal =  {
+  mixins: [validationMixin],
   components: {
     LegalTree,
   },
   name: 'DeclarationForm',
+  validations() {
+    const legalEdrpou = this.legalEdrpou ? {edrpou: { required }} : {}
+    const legalCompanyName = this.legalCompanyName ? {companyName: { required }} : {}
+    const personInn = this.personInn ? {inn: { required }} : {}
+    const personInitials = this.personInitials 
+      ? {
+          lastName: { required },
+          firstName: { required },
+          patronymic: { required },
+      } : {} 
+
+    return {
+      ...legalEdrpou,
+      ...legalCompanyName,
+      ...personInitials,
+      ...personInn,
+    }
+  },
   data: () => ({
     apiKey: 'b00b0000a013607c3bc0acb76917a9f022f2b908',
     baseUrl: null,
@@ -168,6 +182,7 @@ const legal =  {
     lastName: null,
     firstName: null,
     patronymic: null,
+    inn: null,
     edrpou: null,
     companyName: null,
 
@@ -176,6 +191,7 @@ const legal =  {
     /* Data */
     pageUrl: null,
     searchVariant: null,
+    searchType: null,
 
     /* Booleans */
     loading: false,
@@ -192,12 +208,16 @@ const legal =  {
     mdiSortAlphabeticalAscendingVariant,
 
     edrCodes: [],
+    attemptsToGetNewEdrLegal: 0,
+    maxAttempts: 3,
     /** @param { array } handledEdrpous - List of "edrpou" codes that have already been checked */
     handledEdrpous: [],
     yourControlTimeOut: 3000,
     legalDialog: false,
+    commonErr: "Поле обов`язкове",
   }),
   methods: {
+    trimExceededLength,
     /** @param {{companyName: string}} object */
     checkUsLegalSanctions(object) {
       const url = this.baseUrl + '/us-legal-sanctions'
@@ -218,7 +238,7 @@ const legal =  {
       const url = this.baseUrl + '/get-eu-legal-sanctions'
       return axios.post(url, object).then(res => res)
     },
-    /** @param {{edrpou: string | number}} object */
+    /** @param {{edrpou: string | number, companyName: string}} object */
     checkRnboLegals(object) {
       const url = this.baseUrl + '/get-legal-sanctions'
       return axios.post(url, object).then(res => res)
@@ -266,10 +286,14 @@ const legal =  {
       return axios.post(url, object).then(res => res)
     },
     /**
-     * @param {{edrpou: string | number, apiKey: string}} object */ 
+     * @param {{edrpou: string | number, apiKey: string, currentData?: boolean}} object */ 
     // eslint-disable-next-line
     getEdrLegal(object) {
       if (! object.edrpou) return Promise.resolve()
+      if (this.attemptsToGetNewEdrLegal === this.maxAttempts) {
+        this.attemptsToGetNewEdrLegal = 0
+        object.currentData = true
+      }
       const url = this.baseUrl + `/your-control/get-edr-legal`
       const response = axios.post(url, object).then(/** @param {AxiosService} res */ res => res)
       return response
@@ -283,6 +307,7 @@ const legal =  {
       return this.getEdrLegal(yourControlEdrLegal)
         .then(res => {
           if (res?.data?.status === "Update in progress") {
+            this.attemptsToGetNewEdrLegal ++
             return new Promise(resolve => {
               setTimeout(() => resolve(this.getEdrData(mapedObject, code)), this.yourControlTimeOut)
             })
@@ -291,8 +316,8 @@ const legal =  {
           let legal, legalEnName, legalUaName
           if (res?.data) {
             legal = this.assignObject(mapedObject, JSON.parse(JSON.stringify(res.data)))
-            legalEnName = legal?.nameInEnglish?.shortName?.split('"')[1]
-            legalUaName = legal?.name?.shortName.split('"')[1]
+            legalEnName = legal?.nameInEnglish?.shortName?.split('"').filter(v => v)[0]
+            legalUaName = legal?.name?.shortName?.split('"').filter(v => v)[1]
           }
           
           // casting legal.name to string
@@ -300,9 +325,9 @@ const legal =  {
           if (legal && typeof legal.name === "string") {
             /** @type {Founder} */
             // @ts-ignore
-            founderEnName = mapedObject.name
+            founderEnName = this.transliterate(mapedObject.name)
             // @ts-ignore
-            founderUaName = this.transliterate(mapedObject.name)
+            founderUaName = mapedObject.name
           }
           const requisites = {nameEn: legalEnName || founderEnName, nameUa: legalUaName || founderUaName}
           this.checkLegal(legal, requisites)
@@ -434,7 +459,7 @@ const legal =  {
       this.checkUnLegalSanctions({companyName: this.transliterate(founderName)})
         .then(res => this.assignObject(founder, {UNLegalSanctions: res}))
         .catch(err => console.log(err))
-      this.checkRnboLegals({edrpou: founder.code})
+      this.checkRnboLegals({edrpou: founder.code, companyName: founderName})
         .then(res => this.assignObject(founder, {RNBOLegals: res}))
         .catch(err => console.log(err))
     },
@@ -456,7 +481,7 @@ const legal =  {
       this.checkUnLegalSanctions({ companyName: requisites.nameEn })
         .then(res => this.assignObject(legal, {UNLegalSanctions: res}))
         .catch(err => console.log(err))
-      this.checkRnboLegals({ edrpou: legal.code })
+      this.checkRnboLegals({ edrpou: legal.code, companyName: requisites.nameUa })
         .then(res => this.assignObject(legal, {RNBOLegals: res}))
         .catch(err => console.log(err))
     },
@@ -614,8 +639,20 @@ const legal =  {
     choosedPerson() {
       return this.searchVariant === 1
     },
+    personInitials() {
+      return this.searchType === "searchByInitials"
+    },
+    personInn() {
+      return this.searchType === "searchByInn"
+    },
     choosedLegal() {
       return this.searchVariant === 2
+    },
+    legalEdrpou() {
+      return this.searchType === "searchByEdrpou"
+    },
+    legalCompanyName() {
+      return this.searchType === "searchByCompanyName"
     },
     /* Styles */
     cardOverflow() {
@@ -630,6 +667,31 @@ const legal =  {
     },
     maxCardHeight() {
       return this.$vuetify.breakpoint.height / 10 * 9
+    },
+    // validations
+    edrpouErr() { 
+      if (! this.$v.edrpou.$error) return
+      else return this.commonErr
+    }, 
+    companyNameErr() {
+      if (! this.$v.companyName.$error) return
+      else return this.commonErr
+    },
+    lastNameErr() {
+      if (! this.$v.lastName.$error) return
+      else return this.commonErr
+    }, 
+    firstNameErr() {
+      if (! this.$v.firstName.$error) return
+      else return this.commonErr
+    }, 
+    patronymicErr() {
+      if (! this.$v.patronymic.$error) return
+      else return this.commonErr
+    },
+    innErr() {
+      if (! this.$v.inn.$error) return
+      else return this.commonErr
     },
   }, 
   watch: {
@@ -675,7 +737,10 @@ const legal =  {
         this.ukVersion = true
         this.showRequisite = false
       }
-    }
+    },
+    searchVariant() {
+      this.searchType = null
+    },
   },
   mounted() {
     window.addEventListener('keydown', this.listenPressKey)

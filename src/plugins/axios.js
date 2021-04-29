@@ -3,10 +3,13 @@ import axios from 'axios';
 import {AxiosResponse, AxiosError} from 'axios'
 /* eslint-enable no-unused-vars */
 
+/** 
+ * @typedef {{config: {clientDate?: string}}} ExtendedAxiosResponse */
+
+/** @param {AxiosResponse & ExtendedAxiosResponse} res */
 function setClientDate(res) {
   const date = new Date().toString()
   res.config.clientDate = date
-  console.log('RES', res)
   return res
 }
 

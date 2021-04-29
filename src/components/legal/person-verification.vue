@@ -1,21 +1,75 @@
 <template>
   <ul>
+    <!-- Signer -->
+    <li 
+      v-if="person.hasOwnProperty('appointDate')"
+      @click.stop="toggleSignerInfo" 
+      class="list-item">
+      <div>
+        <span>Iнформацiя про пiдписанта</span>
+        <span>&nbsp;[{{ showSignerInfo ? "-" : "+" }}]</span>
+      </div>
+      <div 
+        v-show="showSignerInfo"
+        @click.prevent="toggleSignerInfo">
+        <div v-show="person.appointDate">
+          Дата пiдписання: <span class="info-text">{{ person.appointDate }}</span>
+        </div>
+        <div>
+          Роль: <span class="info-text">{{ person.role }}</span>
+        </div>
+      </div>
+    </li>
+    <!-- Founder -->
+    <li 
+      v-if="person.hasOwnProperty('ownershipType')"
+      @click.stop="toggleFounderInfo" 
+      class="list-item">
+      <div>
+        <span>Iнформацiя про засновника</span>
+        <span>&nbsp;[{{ showFounderInfo ? "-" : "+" }}]</span>
+      </div>
+      <div 
+        v-show="showFounderInfo"
+        @click.prevent="toggleFounderInfo">
+        <div v-show="person.role">
+          Роль: <span class="info-text">{{ person.role }}</span>
+        </div>
+        <div v-show="person.country">
+          Країна: <span class="info-text">{{ person.country }}</span>
+        </div>
+        <div v-show="person.address">
+          Адреса: <span class="info-text">{{ person.address }}</span>
+        </div>
+        <div v-show="person.type">
+          Власник: <span class="info-text">{{ person.type ? "Так" : "Нi" }}</span>
+        </div>
+        <div v-show="person.type && person.code">
+          Власник компанiї: <span class="info-text">{{ person.code }}</span>
+        </div>
+        <div v-show="person.capital">
+          Доля в статутному капiталi (грн): <span class="info-text">{{ person.capital }}</span>
+        </div>
+        <div v-show="person.ownershipPercent">
+          Доля в статутному капiталi (%): <span class="info-text">{{ person.ownershipPercent }}</span>
+        </div>
+      </div>
+    </li>
+    <!-- Declarations -->
     <li 
       v-if="person.EDeclarations"
       @click.stop="toggleDeclarations" 
       class="list-item">
-      <div>
-        <a>Електронні декларації:</a>
-        <span>&nbsp;[{{person.EDeclarations.data.results.object_list.length}}]</span>
-        <span 
-          v-show="person.EDeclarations.data.results.object_list.length">
-          [{{ showDeclarations ? "-" : "+" }}]
-        </span>
-      </div>
-      <div 
+      <ListSigns 
+        title="Електронні декларації"
+        :data="person.EDeclarations.data.results.object_list"
+        :state="showDeclarations"
+        :config="person.EDeclarations.config"
+      />
+      <ul 
         v-show="showDeclarations"
         @click.prevent="toggleDeclarations">
-        <p
+        <li
           @click="toggleDescription(EDeclarationsShowedList, key)"
           :class="{active: EDeclarationsShowedList.includes(key)}"
           class="verification-text"
@@ -23,192 +77,220 @@
           :key="key">
           <span>
             {{ item.infocard.last_name + " " + item.infocard.first_name + " " + item.infocard.patronymic }}
+            &nbsp;[{{ EDeclarationsShowedList.includes(key) ? "-" : "+" }}]
           </span>
-          <span>Мiсце роботи: {{ item.infocard.office }}</span>
-          <span>Посада: {{ item.infocard.position }}</span>
-          <span>Дата декларації: {{ item.infocard.created_date }}</span>
-          <span>Тип декларації: {{ item.infocard.document_type }}</span>
-          <span>Посилання: {{ item.infocard.url }}</span>
-        </p>
-      </div>
+          <span>Мiсце роботи: <span class="info-text">{{ item.infocard.office }}</span></span>
+          <span>Посада: <span class="info-text">{{ item.infocard.position }}</span></span>
+          <span>Дата декларації: <span class="info-text">{{ item.infocard.created_date }}</span></span>
+          <span>Тип декларації: <span class="info-text">{{ item.infocard.document_type }}</span></span>
+          <span>Посилання: <span class="info-text">{{ item.infocard.url }}</span></span>
+        </li>
+      </ul>
     </li>
     <li 
       v-if="person.ESPersonSanctions"
       @click.stop="toggleEsSanctions" 
       class="list-item">
-      <div>
-        <a>Санкцiї європейського союзу:</a>
-        <span v-show="person.ESPersonSanctions.data.length">&nbsp;
-          (Спiвпадiння за {{getCategoryName(person.ESPersonSanctions.data)}} - &nbsp;{{person.ESPersonSanctions.data.length}})
-        </span>
-        <span 
-          v-show="person.ESPersonSanctions.data.length">
-          [{{ showEsSanctions ? "-" : "+" }}]
-        </span>
-      </div>
-      <div 
+      <ListSigns 
+        title="ЕС санкцiї"
+        :data="person.ESPersonSanctions.data"
+        :state="showEsSanctions"
+        :config="person.ESPersonSanctions.config"
+      />
+      <ul 
         v-show="showEsSanctions"
         @click.prevent="toggleEsSanctions">
-        <p
+        <li
           @click="toggleDescription(ESPersonSanctionsShowedList, key)"
           :class="{active: ESPersonSanctionsShowedList.includes(key)}"
           class="verification-text"
-          v-for="(item, key) in person.ESPersonSanctions.data"
-          :key="key"
-          v-html="setText(item.text, key)">
-        </p>
-      </div>
+          v-for="(item, key) in person.ESPersonSanctions.data.filter(item => !textExceptions.includes(item))"
+          :key="key">
+          <span>
+            {{ getInitials(item.text) }}&nbsp;
+            [{{ ESPersonSanctionsShowedList.includes(key) ? "-" : "+" }}]
+          </span>
+          <div 
+            v-show="ESPersonSanctionsShowedList.includes(key)"
+            class="info-text">
+            {{ getText(item.text, getInitials(item.text)) }}
+          </div>
+        </li>
+      </ul>
     </li>
     <li
       v-if="person.RNBOSanctions"
       @click.stop="toggleRNBOSanctions" 
       class="list-item">
-      <div>
-        <a>Санкцiї РНБО:</a>
-        <span v-show="person.RNBOSanctions.data.length">&nbsp;
-          (Спiвпадiння за {{getCategoryName(person.RNBOSanctions.data)}} - &nbsp;{{person.RNBOSanctions.data.length}})
-        </span>
-        <span 
-          v-show="person.RNBOSanctions.data.length">
-          [{{ showRnboSunctions ? "-" : "+" }}]
-        </span>
-      </div>
-      <div 
+      <ListSigns 
+        title="РНБО санкцiї"
+        :data="person.RNBOSanctions.data"
+        :state="showRnboSunctions"
+        :config="person.RNBOSanctions.config"
+      />
+      <ul 
         v-show="showRnboSunctions"
         @click.prevent="toggleRNBOSanctions">
-        <p 
+        <li
           @click="toggleDescription(RNBOSanctionsShowedList, key)"
           :class="{active: RNBOSanctionsShowedList.includes(key)}"
           class="verification-text"
-          v-for="(item, key) in person.RNBOSanctions.data"
-          :key="key"
-          v-html="setText(item.text, key)">
-        </p>
-      </div>
+          v-for="(item, key) in person.RNBOSanctions.data.filter(item => !textExceptions.includes(item))"
+          :key="key">
+          <span>
+            {{ getInitials(item.text) }}&nbsp;
+            [{{ RNBOSanctionsShowedList.includes(key) ? "-" : "+" }}]
+          </span>
+          <div class="info-text" v-show="RNBOSanctionsShowedList.includes(key)">
+            {{ getText(item.text, getInitials(item.text)) }}
+          </div>
+        </li>
+      </ul>
     </li>
     <li 
       v-if="person.UNPersonSanctions"
       @click.stop="toggleUNPersonSanctions"
       class="list-item">
-      <div>
-        <a>Санкцiї ООН:</a>
-        <span v-show="person.UNPersonSanctions.data.length">&nbsp;
-          (Спiвпадiння за {{getCategoryName(person.UNPersonSanctions.data)}} - &nbsp;{{person.UNPersonSanctions.data.length}})
-        </span>
-        <span 
-          v-show="person.UNPersonSanctions.data.length">
-          [{{ showUNPersonSanctions ? "-" : "+" }}]
-        </span>
-      </div>
-      <div 
+      <ListSigns 
+        title="ООН санкцiї"
+        :data="person.UNPersonSanctions.data"
+        :state="showUNPersonSanctions"
+        :config="person.UNPersonSanctions.config"
+      />
+      <ul 
         v-show="showUNPersonSanctions"
         @click.prevent="toggleUNPersonSanctions">
-        <p
+        <li
           @click="toggleDescription(UNPersonSanctionsShowedList, key)"
           :class="{active: UNPersonSanctionsShowedList.includes(key)}"
           class="verification-text"
-          v-for="(item, key) in person.UNPersonSanctions.data"
+          v-for="(item, key) in person.UNPersonSanctions.data.filter(item => !textExceptions.includes(item))"
           :key="key">
-          <span>ПIБ: {{ item.fullName }}</span>
-          <span>Дата нородження: {{ item.dateOfBirth }}</span>
-          <span>Нацiональнiсть: {{ item.nationality }}</span>
-          <span>Посада: {{ item.designation }}</span>
+          <span>
+            {{ item.fullName }}&nbsp;
+            [{{ UNPersonSanctionsShowedList.includes(key) ? "-" : "+" }}]
+          </span>
+          <span>Дата нородження: <span class="info-text">{{ item.dateOfBirth }}</span></span>
+          <span>Нацiональнiсть: <span class="info-text">{{ item.nationality }}</span></span>
+          <span>Посада: <span class="info-text">{{ item.designation }}</span></span>
           <span v-if="item['INDIVIDUAL_ALIAS'] && item['INDIVIDUAL_ALIAS'].length">
             <div>Також вiдомий як:</div>
-            <div 
-              v-for="(item, key) in item['INDIVIDUAL_ALIAS']"
-              :key="key">
-              {{ item['ALIAS_NAME'] }}
-            </div>
+            <ul>
+              <li 
+                style="display: list-item"
+                class="info-text"
+                v-for="(item, key) in item['INDIVIDUAL_ALIAS']"
+                :key="key">
+                {{ item['ALIAS_NAME'] }}
+              </li>
+            </ul>
           </span>
-        </p>
-      </div>
+        </li>
+      </ul>
     </li>
     <li 
       v-if="person.UNTerrorPersonSanctions"
       @click.stop="toggleUNTerrorPersonSanctions"
       class="list-item">
-      <div>
-        <a>ООН (терористи):</a>
-        <span v-show="person.UNTerrorPersonSanctions.data.length">&nbsp;
-          (Спiвпадiння за {{getCategoryName(person.UNTerrorPersonSanctions.data)}} - &nbsp;{{person.UNTerrorPersonSanctions.data.length}})
-        </span>
-        <span>&nbsp;[{{person.UNTerrorPersonSanctions.data.length}}]</span>
-        <span 
-          v-show="person.UNTerrorPersonSanctions.data.length">
-          [{{ showUNTerrorPersonSanctions ? "-" : "+" }}]
-        </span>
-      </div>
-      <div 
+      <ListSigns 
+        title="ООН терорист"
+        :data="person.UNTerrorPersonSanctions.data"
+        :state="showUNTerrorPersonSanctions"
+        :config="person.UNTerrorPersonSanctions.config"
+      />
+      <ul 
         v-show="showUNTerrorPersonSanctions"
         @click.prevent="toggleUNTerrorPersonSanctions">
-        <p
+        <li
           @click="toggleDescription(UNTerrorPersonSanctionsShowedList, key)"
           :class="{active: UNTerrorPersonSanctionsShowedList.includes(key)}"
           class="verification-text"
-          v-for="(item, key) in person.UNTerrorPersonSanctions.data"
+          v-for="(item, key) in person.UNTerrorPersonSanctions.data.filter(item => !textExceptions.includes(item))"
           :key="key">
-          <span>ПIБ: {{ item.fullName }}</span>
-          <span>Резолюцiя: {{ item['program-entry'] }}</span>
-          <span>Дата народження: {{ item['date-of-birth-list'] }}</span>
-          <span>Мiсце народження: {{ item['place-of-birth-list'] }}</span>
-          <span>Нацiональнiсть: {{ item['nationality-list'] }}</span>
-          <span>Додатково: {{ item['comments'] }}</span>
-        </p>
-      </div>
+          <span>
+            {{ item.fullName }}&nbsp;
+            [{{ UNTerrorPersonSanctionsShowedList.includes(key) ? "-" : "+" }}]
+          </span>
+          <span>Резолюцiя: <span class="info-text">{{ item['program-entry'] }}</span></span>
+          <span v-show="item['date-of-birth-list']">
+            Дата народження: <span class="info-text">{{ item['date-of-birth-list'] }}</span>
+          </span>
+          <span v-show="item['place-of-birth-list']">
+            Мiсце народження: <span class="info-text">{{ item['place-of-birth-list'] }}</span>
+          </span>
+          <span v-show="item['nationality-list']">
+            Нацiональнiсть: <span class="info-text">{{ item['nationality-list'] }}</span>
+          </span>
+          <span v-show="item['comments']">
+            Додатково: <span class="info-text">{{ item['comments'] }}</span>
+          </span>
+        </li>
+      </ul>
     </li>
     <li
       v-if="person.USPersonSanctions"
       @click.stop="toggleUSPersonSanctions" 
       class="list-item">
-      <div >
-        <a>Санкцiї США:</a>
-        <span v-show="person.USPersonSanctions.data.length">&nbsp;
-          (Спiвпадiння за {{getCategoryName(person.USPersonSanctions.data)}} - &nbsp;{{person.USPersonSanctions.data.length}})
-        </span>
-        <span 
-          v-show="person.USPersonSanctions.data.length">
-          [{{ showUSPersonSanctions ? "-" : "+" }}]
-        </span>
-      </div>
-      <div 
+      <ListSigns 
+        title="Санкцiї США"
+        :data="person.USPersonSanctions.data"
+        :state="showUSPersonSanctions"
+        :config="person.USPersonSanctions.config"
+      />
+      <ul 
         v-show="showUSPersonSanctions"
         @click.prevent="toggleUSPersonSanctions">
-        <p
+        <li
           @click="toggleDescription(USPersonSanctionShowedList, key)"
           :class="{active: USPersonSanctionShowedList.includes(key)}"
           class="verification-text"
-          v-for="(item, key) in person.USPersonSanctions.data"
+          v-for="(item, key) in person.USPersonSanctions.data.filter(item => !textExceptions.includes(item))"
           :key="key">
-          <span v-if="item.initials">{{ item.initials }}</span>
+          <span v-if="item.initials">
+            {{ item.initials }}
+            &nbsp;[{{ USPersonSanctionShowedList.includes(key) ? "-" : "+" }}]
+          </span>
           <span v-if="!item.initials && item.lastName">{{ item.lastName }}</span>
           <span>{{ item.title }}</span>
           <span v-if="item.addressList && item.addressList.length">
-            <div 
+            <div
               v-for="(item, key) in item.addressList"
               :key="key">
-              Країна: {{ item.country ? item.country : "" + " " + item.city ? item.city : "" }}
+              Країна: 
+              <span class="info-text">
+                {{ item.country ? item.country : "" + " " + item.city ? item.city : "" }}
+              </span>
             </div>
           </span>
           <span v-if="item.akaList && item.akaList.length">
             <div>Також вiдомий як: </div>
-            <div 
-              class="ml-3"
-              v-for="(item, key) in item.akaList"
-              :key="key">
-              {{ item.initials }}
-            </div>
+            <ul>
+              <li 
+                class="ml-3 info-text"
+                style="display: list-item"
+                v-for="(item, key) in item.akaList"
+                :key="key">
+                {{ item.initials }}
+              </li>
+            </ul>
           </span>
-        </p>
-      </div>
+        </li>
+      </ul>
     </li>
   </ul>
 </template>
 
 <script lang="ts">
-import { toggleDescription, setText, getCategoryName } from './helper'
+import { 
+  toggleDescription, 
+  getInitials,
+  getText, 
+  getCategoryName } from "./helper"
+
+import ListSigns from "./list-sign"
 
 export default {
+  components: {ListSigns},
   props: {person: Object},
   data: () => ({
     showDeclarations: false,
@@ -217,6 +299,8 @@ export default {
     showUNPersonSanctions: false,
     showUNTerrorPersonSanctions: false,
     showUSPersonSanctions: false,
+    showFounderInfo: false,
+    showSignerInfo: false,
 
     USPersonSanctionShowedList: [],
     UNTerrorPersonSanctionsShowedList: [],
@@ -224,8 +308,18 @@ export default {
     RNBOSanctionsShowedList: [],
     ESPersonSanctionsShowedList: [],
     EDeclarationsShowedList: [],
+
+    textExceptions: [
+      'initials',
+      'lastFirstName', 
+      'lastName', 
+      'firstName', 
+      'patronymic',
+    ],
   }),
   methods: {
+    toggleSignerInfo() {this.showSignerInfo = !this.showSignerInfo},
+    toggleFounderInfo() {this.showFounderInfo = !this.showFounderInfo},
     toggleDeclarations() {this.showDeclarations = !this.showDeclarations},
     toggleEsSanctions() {this.showEsSanctions = !this.showEsSanctions},
     toggleRNBOSanctions() {this.showRnboSunctions = !this.showRnboSunctions},
@@ -234,7 +328,8 @@ export default {
     toggleUSPersonSanctions() {this.showUSPersonSanctions = !this.showUSPersonSanctions},
     getCategoryName,
     toggleDescription, 
-    setText,
+    getInitials,
+    getText,
   },
 }
 </script>

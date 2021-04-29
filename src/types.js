@@ -133,6 +133,45 @@ const data = {
 
 /**
  * @typedef {{
+ *  fullName: string,
+ *  personInformation: string,
+ *  sanctionsBasis: string | null,
+ *  restrictiveMeasure: string,
+ *  periodOfApplication: string,
+ *  note: string | null,
+ *  personCategory: string | null,
+ *  source: string,
+ *  documentBasis: string,
+ * }} YourControlPerson
+ */
+
+/**
+ * @typedef {{
+ *  date: string,
+ *  source: string,
+ *  description: string,
+ *  details: string,
+ * }} YCSanctionEntity
+ */
+/**
+ * @typedef {Array<{
+ *  date: string,
+ *  source: string,
+ *  description: string,
+ *  details: string,
+ * }>} YourControlSanctions
+ */
+
+/**
+ * @typedef {{
+ *  data?: Array<YourControlPerson>,
+ *  result?: Array<[]>,
+ *  registryUpdateTime: string,
+ * }} YourControlRNBOResult
+ */
+
+/**
+ * @typedef {{
  *  currentDataUrl: string,
  *  status: string,
  * }} UpdateEdrLegal 

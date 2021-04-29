@@ -31,6 +31,36 @@
       </ul>
     </li>
     <li 
+      @click.stop="toggleYourControlSanctions" 
+      class="list-item">
+      <ListSigns 
+        title="Санкцiї - yourControl (ЕС, США)"
+        :data="legal.YourControlSanctions.data"
+        :state="showYourControlSanctions"
+        :config="legal.YourControlSanctions.config"
+      />
+      <ul 
+        v-show="showYourControlSanctions"
+        @click.prevent="toggleYourControlSanctions"
+        class="mb-3">
+        <li
+          @click="toggleDescription(YourControlSanctionsShowedList, key)"
+          :class="{active: RNBOLegalsShowedList.includes(key)}"
+          v-for="(item, key) in legal.YourControlSanctions.data"
+          :key="key">
+          <span>
+            {{ item.source }}&nbsp;
+            [{{ YourControlSanctionsShowedList.includes(key) ? "-" : "+" }}]
+          </span>
+          <div v-show="YourControlSanctionsShowedList.includes(key)">
+            <div>Характеристика: <span class="info-text">{{ item.description }}</span></div>
+            <div>Опис: <span class="info-text">{{ item.details }}</span></div>
+            <div>Дата: <span class="info-text">{{ item.date }}</span></div>
+          </div>
+        </li>
+      </ul>
+    </li>
+    <li 
       @click.stop="toggleRNBOLegalSanctions" 
       class="list-item">
       <ListSigns 
@@ -216,12 +246,14 @@ export default {
     showUNLegalSanctions: false,
     showUNTerrorLegalSanctions: false,
     showUSLegalSanctions: false,
+    showYourControlSanctions: false,
 
     ESLegalSanctionsShowedList: [],
     RNBOLegalsShowedList: [],
     UNLegalSanctionsShowedList: [],
     UNLegalTerrorsShowedList: [],
     USLegalSanctionsShowedList: [],
+    YourControlSanctionsShowedList: [],
 
     textExceptions: [
       'initials',
@@ -237,6 +269,7 @@ export default {
     toggleUNLegalSanctions() {this.showUNLegalSanctions = !this.showUNLegalSanctions},
     toggleUNTerrorLegalSanctions() {this.showUNTerrorLegalSanctions = !this.showUNTerrorLegalSanctions},
     toggleUSLegalSanctions() {this.showUSLegalSanctions = !this.showUSLegalSanctions},
+    toggleYourControlSanctions() {this.showYourControlSanctions = !this.showYourControlSanctions},
     toggleDescription, 
     getCategoryName,
     getInitials,

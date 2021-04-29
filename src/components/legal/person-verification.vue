@@ -88,6 +88,55 @@
       </ul>
     </li>
     <li 
+      v-if="person.YourControlRNBO"
+      @click.stop="toggleYourControlRNBO" 
+      class="list-item">
+      <ListSigns 
+        title="РНБО санкції (Your-control)"
+        :data="person.YourControlRNBO.data.data"
+        :state="showYourControl"
+        :config="person.YourControlRNBO.config"
+      />
+      <ul 
+        v-if="showYourControl && person.YourControlRNBO.data"
+        @click.prevent="toggleYourControlRNBO">
+        <li
+          @click="toggleDescription(YourControlShowedList, key)"
+          :class="{active: YourControlShowedList.includes(key)}"
+          class="verification-text"
+          v-for="(item, key) in person.YourControlRNBO.data.data"
+          :key="key">
+          <span>
+            {{ item.fullName }}&nbsp;
+            [{{ YourControlShowedList.includes(key) ? "-" : "+" }}]
+          </span>
+          <div v-show="YourControlShowedList.includes(key)">
+            <span v-show="item.sanctionsBasis">
+              Характеристика: <span class="info-text">{{ item.sanctionsBasis }}</span>
+            </span>
+            <span v-show="item.restrictiveMeasure">
+              Обмеження: <span class="info-text">{{ item.restrictiveMeasure }}</span>
+            </span>
+            <span v-show="item.periodOfApplication">
+              Термiн дії: <span class="info-text">{{ item.periodOfApplication }}</span>
+            </span>
+            <span v-show="item.note">
+              Замiтка: <span class="info-text">{{ item.note }}</span>
+            </span>
+            <span v-show="item.personCategory">
+              Категорiя: <span class="info-text">{{ item.personCategory }}</span>
+            </span>
+            <span v-show="item.source">
+              Джерело Iнформацiї: <span class="info-text">{{ item.source }}</span>
+            </span>
+            <span v-show="item.documentBasis">
+              Юридична постанова: <span class="info-text">{{ item.documentBasis }}</span>
+            </span>
+          </div>
+        </li>
+      </ul>
+    </li>
+    <li 
       v-if="person.ESPersonSanctions"
       @click.stop="toggleEsSanctions" 
       class="list-item">
@@ -301,6 +350,7 @@ export default {
     showUSPersonSanctions: false,
     showFounderInfo: false,
     showSignerInfo: false,
+    showYourControl: false,
 
     USPersonSanctionShowedList: [],
     UNTerrorPersonSanctionsShowedList: [],
@@ -308,6 +358,7 @@ export default {
     RNBOSanctionsShowedList: [],
     ESPersonSanctionsShowedList: [],
     EDeclarationsShowedList: [],
+    YourControlShowedList: [],
 
     textExceptions: [
       'initials',
@@ -318,6 +369,7 @@ export default {
     ],
   }),
   methods: {
+    toggleYourControlRNBO() {this.showYourControl = !this.showYourControl},
     toggleSignerInfo() {this.showSignerInfo = !this.showSignerInfo},
     toggleFounderInfo() {this.showFounderInfo = !this.showFounderInfo},
     toggleDeclarations() {this.showDeclarations = !this.showDeclarations},

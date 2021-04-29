@@ -1047,12 +1047,12 @@
               <v-radio
                 :value="1"
                 color="grey darken-2"
-                label="Пошук за ПIБ">
+                label="Фiзична особа">
               </v-radio>
               <v-radio
                 :value="2"
                 color="grey darken-2"
-                label="Пошук за ЕДРПОУ">
+                label="Юридична особа">
               </v-radio>
             </v-radio-group>
             <a  
@@ -1062,32 +1062,89 @@
               target="_blank">
             </a>
             <v-fade-transition hide-on-leave>
-              <div v-show="searchVariant === 1">
-                <v-text-field
-                  v-model="lastName"
-                  label="Прiзвище"
-                  color="black">
-                </v-text-field>
-                <v-text-field
-                  v-model="firstName"
-                  label="Iм`я"
-                  color="black">
-                </v-text-field>
-                <v-text-field
-                  v-model="patronymic"
-                  label="По батьковi"
-                  color="black">
-                </v-text-field>
+              <div v-show="choosedPerson">
+                <v-radio-group 
+                  v-model="searchType"
+                  dense 
+                  single-line>
+                  <v-radio
+                    :value="'searchByInitials'"
+                    color="grey darken-2"
+                    label="Пошук за ПIБ">
+                  </v-radio>
+                  <v-radio
+                    :value="'searchByInn'"
+                    color="grey darken-2"
+                    label="Пошук за IНН">
+                  </v-radio>
+                </v-radio-group>
+                <div v-if="personInitials">
+                  <v-text-field
+                    @blur="$v.lastName.$touch()"
+                    :error-messages="lastNameErr"
+                    v-model="lastName"
+                    label="Прiзвище"
+                    color="black">
+                  </v-text-field>
+                  <v-text-field
+                    v-model="firstName"
+                    @blur="$v.firstName.$touch()"
+                    :error-messages="firstNameErr"
+                    label="Iм`я"
+                    color="black">
+                  </v-text-field>
+                  <v-text-field
+                    @blur="$v.patronymic.$touch()"
+                    :error-messages="patronymicErr"
+                    v-model="patronymic"
+                    label="По батьковi"
+                    color="black">
+                  </v-text-field>
+                </div>
+                <div v-if="personInn">
+                  <v-text-field
+                    @input="trimExceededLength('inn', 10, (value) => value.replace(/[^\d.]/g, ''))"
+                    @blur="$v.inn.$touch()"
+                    :error-messages="innErr"
+                    v-model="inn"
+                    id="inn"
+                    label="IНН"
+                    color="black">
+                  </v-text-field>
+                </div>
               </div>
             </v-fade-transition>
             <v-fade-transition hide-on-leave>
-              <div v-show="searchVariant === 2">
+              <div v-show="choosedLegal">
+                <v-radio-group 
+                  v-model="searchType"
+                  dense 
+                  single-line>
+                  <v-radio
+                    :value="'searchByEdrpou'"
+                    color="grey darken-2"
+                    label="Пошук за ЕДРПОУ">
+                  </v-radio>
+                  <v-radio
+                    :value="'searchByCompanyName'"
+                    color="grey darken-2"
+                    label="За назвою">
+                  </v-radio>
+                </v-radio-group>
                 <v-text-field
+                  v-if="legalEdrpou"
                   v-model="edrpou"
+                  :error-messages="edrpouErr"
+                  @blur="$v.edrpou.$touch()"
+                  @input="trimExceededLength('edrpou', 8, (value) => value.replace(/[^\d.]/g, ''))"
                   :label="'ЄДРПОУ'"
+                  id="edrpou"
                   color="black">
                 </v-text-field>
                 <v-text-field
+                  v-if="legalCompanyName"
+                  :error-messages="companyNameErr"
+                  @blur="$v.companyName.$touch()"
                   v-model="companyName"
                   :label="'Назва компанiї'"
                   color="black">

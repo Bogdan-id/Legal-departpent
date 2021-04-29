@@ -43,7 +43,7 @@
             @click="toggleDescription(signerVerificationKeys, key)"
             v-for="(signer, key) in legal.signers"
             :key="'li-signer' + componentId + key">
-            <span>{{ signer.name + " (" + signer.description + ")" }}&nbsp;</span>
+            <span>{{ signer.name }}&nbsp;</span>
             <span>[{{ signerVerificationKeys.includes(key) ? "-" : "+" }}]</span>
             <div 
               v-if="signerVerificationKeys.includes(key)"
@@ -164,22 +164,11 @@ export default {
     font-weight: bold;
     cursor: pointer;
   }
-  .have-nested {
-    text-decoration: underline;
-    cursor: pointer;
-  }
   .node-tree {
     font-family: Menlo, Consolas, monospace;
   }
   .node-tree p {
     margin-bottom: 8px!important;
-  }
-  .verification-text {
-    width: 95%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    text-decoration: underline;
   }
   .verification-text span {
     display: none;
@@ -188,7 +177,6 @@ export default {
     display: inline;
   }
   .verification-text.active :not(span:first-child) {
-    padding-left: 20px;
     display: block;
   }
   .verification-text.active {
@@ -198,5 +186,11 @@ export default {
   }
   .verification-text.active span {
     display: inline;
+  }
+  .info-text {
+    font-weight: 500;
+  }
+  .info-label {
+    /** */
   }
 </style>

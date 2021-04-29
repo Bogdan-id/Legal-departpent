@@ -6,11 +6,10 @@
 </template>
 
 <script>
-import DeclarationForm from './components/DeclarationForm'
+import DeclarationForm from './components/DeclarationForm.vue'
 
 export default {
   name: 'App',
-
   components: {
     DeclarationForm,
   },

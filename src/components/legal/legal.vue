@@ -1,0 +1,196 @@
+<template>
+  <div class="node-tree">
+    <!-- Legal info -->
+    <ul>
+      <li 
+        v-if="legal.code"
+        @click.stop="toggleLegalInfo"
+        class="list-item">
+        <div>Iнформацiя про компанiю&nbsp;[{{showCompanyInfo ? '-' : '+'}}]</div>
+        <v-fade-transition hide-on-leave>
+          <div 
+            v-if="showCompanyInfo"
+            @click.prevent="toggleLegalInfo">
+            <CompanyInfo :company="legal" />
+          </div>
+        </v-fade-transition>
+      </li>
+    </ul>
+    <!-- Legal verification -->
+    <ul>
+      <li 
+        v-if="legal.code"
+        @click.stop="toggleLegalVerification"
+        class="list-item">
+        <div>Перевiрка&nbsp;[{{showLegalVerification ? '-' : '+'}}]</div>
+        <div 
+          v-if="showLegalVerification"
+          @click.prevent="toggleLegalVerification">
+          <LegalVerification :legal="legal" />
+        </div>
+      </li>
+    </ul>
+    <!-- Signers -->
+    <ul v-if="legal.signers && legal.signers.length">
+      <li
+        @click.stop="toggleSigners"
+        class="list-item">
+        <div>Пiдписанти&nbsp;[{{showSigners ? '-' : '+'}}]</div>
+        <ul 
+          v-if="showSigners"
+          @click.prevent="toggleSigners">
+          <li
+            @click="toggleDescription(signerVerificationKeys, key)"
+            v-for="(signer, key) in legal.signers"
+            :key="'li-signer' + componentId + key">
+            <span>{{ signer.name }}&nbsp;</span>
+            <span>[{{ signerVerificationKeys.includes(key) ? "-" : "+" }}]</span>
+            <div 
+              v-if="signerVerificationKeys.includes(key)"
+              @click.prevent="toggleDescription">
+              <PersonVerification :person="signer" />
+            </div>
+          </li>
+          <legal v-for="(signer, key) in legal.signers" 
+            :legal="signer"
+            :key="'lg-signer' + componentId + key">
+            <span>{{ signer.name }}</span>
+          </legal>
+        </ul>
+      </li>
+    </ul>
+    <!-- Founders -->
+    <ul v-if="legal.founders && legal.founders.length">
+      <li
+        @click.stop="toggleFounders"
+        class="list-item">
+        <div>Засновники&nbsp;[{{showFounders ? '-' : '+'}}]</div>
+        <ul 
+          @click.prevent="toggleFounders" 
+          v-if="showFounders">
+          <li 
+            v-for="(founder, key) in legal.founders"
+            :class="{'have-nested': founder.founders}"
+            @click="
+              toggleDescription(founderVerificationKeys, key)
+              toggleFounderKey(key)"
+            :key="'li-founder' + componentId + key">
+            <span>{{ founder.name.shortName || founder.name }}&nbsp;</span>
+            <span>[{{ founderVerificationKeys.includes(key) ? "-" : "+" }}]</span>
+            <div 
+              v-if="founderVerificationKeys.includes(key)"
+              @click.prevent="toggleDescription">
+              <PersonVerification :person="founder" />
+            </div>
+          </li>
+          <legal 
+            v-for="(founder, key) in legalFounders" 
+            :legal="founder"
+            :key="'legal-signer' + componentId + key">
+          </legal>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</template>
+
+<script lang="ts">
+import PersonVerification from './person-verification.vue'
+import LegalVerification from './legal-verification.vue'
+import CompanyInfo from './company-info.vue'
+import { toggleDescription } from './helper.js'
+
+export default {
+  name: "legal",
+  components: {
+    PersonVerification,
+    LegalVerification,
+    CompanyInfo,
+  },
+  props: {
+    legal: Object
+  },
+  data: () => ({
+    showSigners: false,
+    showFounders: false,
+    showLegalVerification: false,
+    showCompanyInfo: false,
+
+    showFounderKey: null,
+    signerVerificationKeys: [],
+    founderVerificationKeys: [],
+
+    componentId: null,
+  }),
+  computed: {
+    legalFounders () {
+      if (this.showFounderKey) return this.legal.founders
+        .filter((_, key) => key === this.showFounderKey)
+      return []
+    },
+  },
+  methods: {
+    toggleFounders () {
+      this.showFounders = !this.showFounders
+    },
+    toggleFounderKey (key) {
+      if (this.showFounderKey === key) this.showFounderKey = null
+      else this.showFounderKey = key
+    },
+    toggleSigners () {
+      this.showSigners = !this.showSigners
+    },
+    toggleLegalVerification() {
+      this.showLegalVerification = !this.showLegalVerification
+    },
+    toggleLegalInfo() {
+      this.showCompanyInfo = !this.showCompanyInfo
+    },
+    toggleDescription,
+  },
+  mounted() {
+    this.componentId = this._uid
+  },
+};
+</script>
+
+<style>
+  .v-card__text > .node-tree {
+    max-height: 80vh;
+    overflow: hidden;
+    overflow-y: auto;
+  }
+  .list-item {
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .node-tree {
+    font-family: Menlo, Consolas, monospace;
+  }
+  .node-tree p {
+    margin-bottom: 8px!important;
+  }
+  .verification-text span {
+    display: none;
+  }
+  .verification-text span:first-child {
+    display: inline;
+  }
+  .verification-text.active :not(span:first-child) {
+    display: block;
+  }
+  .verification-text.active {
+    white-space: normal;
+    width: 100%;
+    text-decoration: none;
+  }
+  .verification-text.active span {
+    display: inline;
+  }
+  .info-text {
+    font-weight: 500;
+  }
+  .info-label {
+    /** */
+  }
+</style>

@@ -1,30 +1,37 @@
-function toggleDescription(array, key) {
+function toggleDescription (array, key) {
   if (array.includes(key)) {
     const clearedArr = array.filter(k => key !== k)
     array.splice(0)
     array.push(...clearedArr)
   } else array.push(key)
 }
-function setText(text, key) {
+function getText (text, initials) {
   if (! text) return
-  let splitedSting = text.split(" ").filter(str => str)
-  const initialsArr = splitedSting.filter((_, k) => k <= 2)
-  splitedSting = splitedSting.filter((item, k) => k >= 2 && !initialsArr.includes(item))
-  const finalString = "<span>" + (parseInt(key) + 1) + ". " + initialsArr.join(" ") + " </span>" + "<span>" + splitedSting.join(" ") + "</span>"
-  return finalString
+  const initialsArr = initials.split(" ")
+  let splitedString = text.split(" ")
+    splitedString = splitedString.filter((item, k) => k >= 2 && !initialsArr.includes(item))
+  return splitedString.join(" ")
+}
+function getInitials (text) {
+  if (! text) return
+  let splitedString = text.split(" ").filter(str => str)
+  const initialsArr = splitedString.filter((_, k) => k <= 2)
+  return initialsArr.join(" ")
 }
 function getCategoryName (data) {
   switch (true) {
     case data.includes("initials"): return "ПIБ"
-    case data.includes("lastFirstName"): return "Прiзвищем та iм`ям"
-    case data.includes("lastName"): return "Прiзвищем"
-    case data.includes("firstName"): return "Iм`ям"
+    case data.includes("lastFirstName"): return "Прiзвище та iм`я"
+    case data.includes("lastName"): return "Прiзвище"
+    case data.includes("firstName"): return "Iм`я"
     case data.includes("patronymic"): return "По батьковi"
+    default: ""
   }
 }
 
 export {
   toggleDescription,
   getCategoryName,
-  setText,
+  getInitials,
+  getText,
 }

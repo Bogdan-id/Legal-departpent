@@ -15,6 +15,7 @@ function setClientDate (res) {
 }
 /** @param {AxiosResponse} res @param {Store} store */
 function cacheResponse (res, store) {
+  if (res.data.code === "InvalidParameters") return Promise.resolve(res)
   const key = getRequestKey(res.config)
   store.commit('assignObject', {key: key, data: res})
   return Promise.resolve(res)
@@ -56,14 +57,12 @@ function getRequestKey (config) {
 function handleRequest (req, store) {
   return checkRequest(req, store)
     .then(req => saveKey(req, store))
-    .then(req => req)
     .catch(err => handleRequestErr(err))
 }
 /** @param {AxiosResponse} res @param {Store} store */
 function handleResponse (res, store) {
   return setClientDate(res)
     .then(res => cacheResponse(res, store))
-    .then(res => res)
     .catch(err => handleResponseErr(err))
 }
 /**

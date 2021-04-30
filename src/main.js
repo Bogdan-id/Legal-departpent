@@ -19,7 +19,4 @@ const vm = Vue.prototype
 vm.$axios = axios(store)
 vm.$store = store
 
-new Vue({
-  vuetify,
-  render: h => h(App)
-}).$mount('#app')
+new Vue({vuetify, render: h => h(App)}).$mount('#app')

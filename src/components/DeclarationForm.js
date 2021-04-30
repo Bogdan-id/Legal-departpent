@@ -29,15 +29,14 @@ import { /* yourControlEdrByEdrpouRes, */ yourControlEdrByInitialsRes } from '..
 
 import { letters } from '../utils/utils'
 import { transliteRule } from './translite'
-import axios from '../plugins/axios'
 /* eslint-disable no-unused-vars */
-import { AxiosResponse, AxiosError } from 'axios'
+import { AxiosResponse, AxiosError, Cancel } from 'axios'
 /* eslint-enable no-unused-vars */
 
 // @ts-ignore
 import LegalTree from './legal/tree.vue'
 import { validationMixin } from 'vuelidate'
-import { required } from 'vuelidate/lib/validators'
+import { minLength, required } from 'vuelidate/lib/validators'
 
 const legal =  {
   mixins: [validationMixin],
@@ -46,7 +45,14 @@ const legal =  {
   },
   name: 'DeclarationForm',
   validations() {
-    const legalEdrpou = this.choosedLegal ? {edrpou: {required}} : {}
+    const legalEdrpou = this.choosedLegal 
+      ? {
+          edrpou: {
+            required,
+            minLength: minLength(8),
+          },
+        } 
+      : {}
     const personInn = this.personInn ? {inn: {required}} : {}
     const personInitials = this.personInitials 
       ? {
@@ -160,7 +166,6 @@ const legal =  {
     unSancExpandedW: false,
     unTerrorExpandedW: false,
     usSanctionExpandedW: false,
-
     
     edrList: [],
     edrListPerson: [],
@@ -205,7 +210,7 @@ const legal =  {
 
     edrCodes: [],
     attemptsToGetNewEdrLegal: 0,
-    maxAttempts: 3,
+    maxAttempts: 0,
     /** @param { array } handledEdrpous - List of "edrpou" codes that have already been checked */
     handledEdrpous: [],
     yourControlTimeOut: 3000,
@@ -217,82 +222,104 @@ const legal =  {
     /** @param {{companyName: string}} object */
     checkUsLegalSanctions(object) {
       const url = this.baseUrl + '/us-legal-sanctions'
-      return axios.post(url, object).then(res => res)
+      return this.$axios
+        .post(url, object).then(res => res).catch(err => this.getRejectedKey(err))
     },
     /** @param {{companyName: string}} object */
     checkUnLegalTerrors(object) {
       const url = this.baseUrl + '/un-legal-terrors'
-      return axios.post(url, object).then(res => res)
+      return this.$axios
+        .post(url, object).then(res => res).catch(err => this.getRejectedKey(err))
     },
     /** @param {{companyName: string}} object */
     checkUnLegalSanctions(object) {
       const url = this.baseUrl + '/un-legal-sanctions'
-      return axios.post(url, object).then(res => res)
+      return this.$axios
+        .post(url, object).then(res => res).catch(err => this.getRejectedKey(err))
     },
     /** @param {{edrpou: string | number, companyName: string}} object */
     checkEsLegalSanctions(object) { 
       const url = this.baseUrl + '/get-eu-legal-sanctions'
-      return axios.post(url, object).then(res => res)
+      return this.$axios
+        .post(url, object).then(res => res).catch(err => this.getRejectedKey(err))
     },
     /** @param {{edrpou: string | number, companyName: string}} object */
     checkRnboLegals(object) {
       const url = this.baseUrl + '/get-legal-sanctions'
-      return axios.post(url, object).then(res => res)
+      return this.$axios
+        .post(url, object).then(res => res).catch(err => this.getRejectedKey(err))
     },
     /** 
      * @function checkEDeclarations - Post capitalized person object
      * @param {{lastName: string, firstName: string, patronymic: string}} object */
     checkEDeclarations(object) { 
       const url = this.baseUrl + '/get-declarations'
-      return axios.post(url, object).then(res => res)
+      return this.$axios
+        .post(url, object).then(res => res).catch(err => this.getRejectedKey(err))
     },
     /** 
      * @function checkRnboPersons - Post capitalized person object
      * @param {{lastName: string, firstName: string, patronymic: string}} object */
     checkRnboPersons(object) {
       const url = this.baseUrl + '/get-person-sanctions'
-      return axios.post(url, object).then(res => res)
+      return this.$axios
+        .post(url, object).then(res => res).catch(err => this.getRejectedKey(err))
     },
     /** 
      * @function checkUnPersSanctions - Post transliterated person object
      * @param {{lastName: string, firstName: string, patronymic: string}} object */
     checkUnPersSanctions(object) {
       const url = this.baseUrl + '/un-person-sanctions'
-      return axios.post(url, object).then(res => res)
+      return this.$axios
+        .post(url, object).then(res => res).catch(err => this.getRejectedKey(err))
     },
     /** 
      * @function checkUsPersonSunctions - Post transliterated person object
      * @param {{lastName: string, firstName: string, patronymic: string}} object */
     checkUsPersonSunctions(object) {
       const url = this.baseUrl + '/us-person-sanctions'
-      return axios.post(url, object).then(res => res)
+      return this.$axios
+        .post(url, object).then(res => res).catch(err => this.getRejectedKey(err))
     },
     /** 
      * @function checkEsPersonSunctions - Post transliterated person object
      * @param {{lastName: string, firstName: string, patronymic: string}} object */
     checkEsPersonSunctions(object) {
       const url = this.baseUrl + '/get-eu-person-sanctions'
-      return axios.post(url, object).then(res => res)
+      return this.$axios
+        .post(url, object).then(res => res).catch(err => this.getRejectedKey(err))
     },
     /** 
      * @function checkUnTerrors - Post transliterated person object
      * @param {{lastName: string, firstName: string, patronymic: string}} object */
     checkUnTerrors(object) {
       const url = this.baseUrl + '/un-person-terror'
-      return axios.post(url, object).then(res => res)
+      return this.$axios
+        .post(url, object).then(res => res).catch(err => this.getRejectedKey(err))
     },
     /**
-     * @param {{edrpou: string | number, apiKey: string, currentData?: boolean}} object */ 
+     * @param {{edrpou: string | number, apiKey: string, currentData?: boolean}} object 
+     * @returns {Promise<AxiosResponse<EdrLegal>>} */ 
     // eslint-disable-next-line
     getEdrLegal(object) {
+      console.log('getEdrLegal', object)
+      // @ts-ignore
       if (! object.edrpou) return Promise.resolve()
       if (this.attemptsToGetNewEdrLegal === this.maxAttempts) {
         this.attemptsToGetNewEdrLegal = 0
         object.currentData = true
       }
       const url = this.baseUrl + `/your-control/get-edr-legal`
-      const response = axios.post(url, object).then(/** @param {AxiosService} res */ res => res)
-      return response
+      return this.$axios
+        .post(url, object)
+        .then(res => {
+          if (res?.data?.code === "InvalidParameters") {
+            this.$snotify.simple(res.data.message)
+            throw new Error(res.data.message)
+          }
+          return res
+        })
+        .catch(err => this.getRejectedKey(err))
     },
     /**
      * @typedef {{status: string, resultUrl: string}} YourControlRNBOUrl */
@@ -300,18 +327,35 @@ const legal =  {
      * @function getResultUrl - return link with resultId 
      * @param {{lastName: string, firstName: string, middleName: string, apiKey: string}} object
      * @return {Promise<AxiosResponse<YourControlRNBOUrl>>} */
-    // @ts-ignore
+    // eslint-disable-next-line
     getResultUrl(object) {
-      const url = this.baseUrl + '/your-control/rnbo/get-person-url'
-      return axios.post(url, object).then(res => res)
+      // const url = this.baseUrl + '/your-control/rnbo/get-person-url'
+      // return this.$axios
+        // .post(url, object).then(res => res).catch(err => this.getRejectedKey(err))
+      
+      /* below temporary */
+      // @ts-ignore
+      return Promise.resolve({data: {
+          status: 'string',
+          resultUrl: 'string',
+      }})
     },
-    /** 
     /** 
      * @param {{resultUrl: string, apiKey: string}} object
      * @return {Promise<AxiosResponse<YourControlRNBOResult>>} */ // AxiosResponse["data"]
+     // eslint-disable-next-line
     getResult(object) {
-      const url = this.baseUrl + '/your-control/rnbo/get-person-result'
-      return axios.post(url, object).then(res => res)
+      // const url = this.baseUrl + '/your-control/rnbo/get-person-result'
+      // return this.$axios
+        // .post(url, object).then(res => res).catch(err => this.getRejectedKey(err))
+
+      /* below temporary */
+      // @ts-ignore
+      return Promise.resolve({data: {
+        data: [],
+        result: [],
+        registryUpdateTime: [],
+      }})
     },
     
     /** 
@@ -319,7 +363,8 @@ const legal =  {
      * @return {Promise<AxiosResponse<YourControlSanctions>>} */
     yourControlSanctionList(object) {
       const url = this.baseUrl + '/your-control/sanctions'
-      return axios.post(url, object).then(res => res)
+      return this.$axios
+        .post(url, object).then(res => res).catch(err => this.getRejectedKey(err))
     },
     /** @param {string} str */
     getLegalName(str) {
@@ -330,6 +375,16 @@ const legal =  {
         (a, b) => a.length > b.length ? a : b
       )
     },
+    /** 
+     * @param {Cancel} cancel - Axios cancel object */
+    getRejectedKey (cancel) {
+      if (! cancel) Promise.reject(new Error ('"getRejectedKey": "cancel"/"object" parameter required '))
+      if (! cancel?.message) Promise.reject(cancel)
+      if (cancel?.message) {
+        const key = cancel.message
+        return Promise.resolve(this.$store.state[key])
+      }
+    },
     /**
      * @param {EdrLegal | Founder | {}} mapedObject
      * @param {string | number } code - EDRPOU code */
@@ -337,6 +392,7 @@ const legal =  {
       const yourControlEdrLegal = {edrpou: code, apiKey: this.apiKey}  
       return this.getEdrLegal(yourControlEdrLegal)
         .then(res => {
+          console.log('getEdrLegal RES', res)
           if (res?.data?.status === "Update in progress") {
             this.attemptsToGetNewEdrLegal ++
             return new Promise(resolve => {
@@ -420,6 +476,11 @@ const legal =  {
     },
     /** @param {string} code */
     async mapGlobalLegal(code) {
+      if (this.$v.$invalid) {
+        this.$snotify.simple('Невiрний Код ЄДРПОУ: ' + this.edrpou)
+        return
+      }
+
       try {
         this.handledEdrpous.length = 0
         this.globalObject = {}
@@ -489,26 +550,19 @@ const legal =  {
         })
         .then(res => this.getResult({resultUrl: res.data.resultUrl, apiKey: this.apiKey}))
         .then(res => this.assignObject(mapedObject, {YourControlRNBO: res}))
-        .catch(err => console.log(err))
 
       this.checkEDeclarations(capitalizedPersonObj)
         .then(res => this.assignObject(mapedObject, {EDeclarations: res}))
-        .catch(err => console.log(err))
       this.checkRnboPersons(capitalizedPersonObj)
         .then(res => this.assignObject(mapedObject, {RNBOSanctions: res}))
-        .catch(err => console.log(err))
       this.checkUnPersSanctions(transliteratedPersonObj) 
         .then(res => this.assignObject(mapedObject, {UNPersonSanctions: res}))
-        .catch(err => console.log(err))
       this.checkUsPersonSunctions(transliteratedPersonObj) 
         .then(res => this.assignObject(mapedObject, {USPersonSanctions: res}))
-        .catch(err => console.log(err))
       this.checkEsPersonSunctions(transliteratedPersonObj)
         .then(res => this.assignObject(mapedObject, {ESPersonSanctions: res}))
-        .catch(err => console.log(err))
       this.checkUnTerrors(transliteratedPersonObj)
         .then(res => this.assignObject(mapedObject, {UNTerrorPersonSanctions: res}))
-        .catch(err => console.log(err))
     },
     /**
      * @param {Founder} founder
@@ -517,22 +571,16 @@ const legal =  {
       this.mapEdrLegal(founder, founder.code)
       this.checkEsLegalSanctions({edrpou: founder.code, companyName: this.transliterate(founderName)})
         .then(res => this.assignObject(founder, {ESLegalSanctions: res}))
-        .catch(err => console.log(err))
       this.checkUsLegalSanctions({companyName: this.transliterate(founderName)})
         .then(res => this.assignObject(founder, {USLegalSanctions: res}))
-        .catch(err => console.log(err))
       this.checkUnLegalTerrors({companyName: this.transliterate(founderName)})
         .then(res => this.assignObject(founder, {UNLegalTerrors: res}))
-        .catch(err => console.log(err))
       this.checkUnLegalSanctions({companyName: this.transliterate(founderName)})
         .then(res => this.assignObject(founder, {UNLegalSanctions: res}))
-        .catch(err => console.log(err))
       this.checkRnboLegals({edrpou: founder.code, companyName: founderName})
         .then(res => this.assignObject(founder, {RNBOLegals: res}))
-        .catch(err => console.log(err))
       this.yourControlSanctionList({edrpou: founder.code, apiKey: this.apiKey})
         .then(res => this.assignObject(founder, {YourControlSanctions: res}))
-        .catch(err => console.log(err))
     },
     /**
      * @param {EdrLegal} legal
@@ -542,22 +590,16 @@ const legal =  {
     checkLegal (legal, requisites) {
       this.checkEsLegalSanctions({edrpou: legal.code, companyName: requisites.nameEn})
         .then(res => this.assignObject(legal, {ESLegalSanctions: res}))
-        .catch(err => console.log(err))
       this.checkUsLegalSanctions({companyName: requisites.nameEn})
         .then(res => this.assignObject(legal, {USLegalSanctions: res}))
-        .catch(err => console.log(err))
       this.checkUnLegalTerrors({companyName: requisites.nameEn})
         .then(res => this.assignObject(legal, {UNLegalTerrors: res}))
-        .catch(err => console.log(err))
       this.checkUnLegalSanctions({companyName: requisites.nameEn})
         .then(res => this.assignObject(legal, {UNLegalSanctions: res}))
-        .catch(err => console.log(err))
       this.checkRnboLegals({edrpou: legal.code, companyName: requisites.nameUa})
         .then(res => this.assignObject(legal, {RNBOLegals: res}))
-        .catch(err => console.log(err))
       this.yourControlSanctionList({edrpou: legal.code, apiKey: this.apiKey})
         .then(res => this.assignObject(legal, {YourControlSanctions: res}))
-        .catch(err => console.log(err))
     },
     assignObject (source, asignObject) {
       Object.entries(asignObject).forEach(entry => this.$set(source, entry[0], entry[1]))
@@ -690,7 +732,6 @@ const legal =  {
         : 'https://94.131.243.7:4000'
     }
   },
-
   computed: {
     transliteRule() { return transliteRule },
     rnboVariant() {
@@ -741,8 +782,11 @@ const legal =  {
     },
     // validations
     edrpouErr() { 
-      if (! this.$v.edrpou.$error) return
-      else return this.commonErr
+      const errors = []
+      if (!this.$v.$invalid) return errors
+      !this.$v.edrpou.required && errors.push('Невiрний код ЄДРПОУ')
+      !this.$v.edrpou.minLength && errors.push('Не вiрна кiлькiсть знакiв')
+      return errors
     }, 
     lastNameErr() {
       if (! this.$v.lastName.$error) return

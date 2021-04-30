@@ -16,7 +16,7 @@
           </v-icon>
         </a>
       </template>
-      <v-card>
+      <!-- <v-card>
         <v-card-text class="config-info pt-6">
           <v-card-title class="subtitle-1 pl-1 pt-0 pb-2">
             {{ title }}
@@ -44,7 +44,7 @@
             <span class="info-data">{{ config.url }}</span>
           </div> 
         </v-card-text>
-      </v-card>
+      </v-card> -->
     </v-menu>
     <span v-show="data && data.length">&nbsp;[{{ state ? "-" : "+" }}]</span>
   </div>

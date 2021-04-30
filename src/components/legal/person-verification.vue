@@ -98,7 +98,7 @@
         :config="person.YourControlRNBO.config"
       />
       <ul 
-        v-if="showYourControl && person.YourControlRNBO.data"
+        v-if="showYourControl && person.YourControlRNBO.data.data"
         @click.prevent="toggleYourControlRNBO">
         <li
           @click="toggleDescription(YourControlShowedList, key)"

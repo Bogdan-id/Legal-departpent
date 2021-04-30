@@ -46,8 +46,7 @@ const legal =  {
   },
   name: 'DeclarationForm',
   validations() {
-    const legalEdrpou = this.legalEdrpou ? {edrpou: {required}} : {}
-    const legalCompanyName = this.legalCompanyName ? {companyName: {required}} : {}
+    const legalEdrpou = this.choosedLegal ? {edrpou: {required}} : {}
     const personInn = this.personInn ? {inn: {required}} : {}
     const personInitials = this.personInitials 
       ? {
@@ -58,7 +57,6 @@ const legal =  {
 
     return {
       ...legalEdrpou,
-      ...legalCompanyName,
       ...personInitials,
       ...personInn,
     }
@@ -76,7 +74,6 @@ const legal =  {
       { text: 'ФОП', value: 'initials', align: 'start', sortable: false},
       { text: 'Статус', value: 'condition', align: 'center', sortable: false },
     ],
-
     EDTH: [
       { text: 'Прiзвище', value: 'infocard.last_name', align: 'start', sortable: false},
       { text: 'Iм`я', value: 'infocard.first_name', align: 'center', sortable: false },
@@ -86,7 +83,6 @@ const legal =  {
       { text: 'Тип', value: 'infocard.document_type', align: 'center', sortable: false },
       { text: "Детально", value: 'action', align: 'center', sortable: false}
     ],
-
     PEPTH: [
       { text: 'ПIБ', value: 'full_name', align: 'start', sortable: false },
       { text: 'Дата нар-ння', value: 'date_of_birth', align: 'center', sortable: false},
@@ -117,7 +113,6 @@ const legal =  {
     UNOsancPersonNested: [
       { text: 'Також вiдомий як', value: 'ALIAS_NAME', align: 'start', sortable: false},
     ],
-
     UNOterrorPersonTH: [
       { text: 'ПIБ', value: 'fullName', align: 'start', sortable: false},
       { text: 'Мiсце народження', value: 'place-of-birth-list', align: 'center', sortable: false },
@@ -128,7 +123,6 @@ const legal =  {
       { text: 'Назва органiзації', value: 'fullName', align: 'start', sortable: false},
       { text: 'Адреса', value: 'address-list.address', align: 'center', sortable: false },
     ],
-
     usSanctionPersonTH: [
       { text: 'ПIБ', value: 'initials', align: 'start', sortable: false},
       { text: 'Дiяльнiсть', value: 'title', align: 'center', sortable: false },
@@ -306,6 +300,7 @@ const legal =  {
      * @function getResultUrl - return link with resultId 
      * @param {{lastName: string, firstName: string, middleName: string, apiKey: string}} object
      * @return {Promise<AxiosResponse<YourControlRNBOUrl>>} */
+    // @ts-ignore
     getResultUrl(object) {
       const url = this.baseUrl + '/your-control/rnbo/get-person-url'
       return axios.post(url, object).then(res => res)
@@ -318,6 +313,7 @@ const legal =  {
       const url = this.baseUrl + '/your-control/rnbo/get-person-result'
       return axios.post(url, object).then(res => res)
     },
+    
     /** 
      * @param {{edrpou: string | number, apiKey: string}} object
      * @return {Promise<AxiosResponse<YourControlSanctions>>} */
@@ -327,7 +323,7 @@ const legal =  {
     },
     /** @param {string} str */
     getLegalName(str) {
-      if (! str) return
+      if (! str || typeof str !== "string") return
       if (! str.includes('"')) return str
 
       return str.split('"').reduce(
@@ -410,7 +406,8 @@ const legal =  {
         })
     },
     /**
-     * @param { EdrLegal | Founder | {}} mapedObject - Object on wich nested request triggered
+     * @template T
+     * @param { T } mapedObject - Object on wich nested request triggered
      * @param { string | number } code - EDRPOU code */
     async mapEdrLegal(mapedObject, code) {
       try {
@@ -690,7 +687,7 @@ const legal =  {
     setBaseUrl() {
       this.baseUrl = process.env.NODE_ENV === "development" 
         ? 'http://127.0.0.1:4000' 
-        : 'http://94.131.243.7:4000'
+        : 'https://94.131.243.7:4000'
     }
   },
 
@@ -728,9 +725,6 @@ const legal =  {
     legalEdrpou() {
       return this.searchType === "searchByEdrpou"
     },
-    legalCompanyName() {
-      return this.searchType === "searchByCompanyName"
-    },
     /* Styles */
     cardOverflow() {
       return `
@@ -750,10 +744,6 @@ const legal =  {
       if (! this.$v.edrpou.$error) return
       else return this.commonErr
     }, 
-    companyNameErr() {
-      if (! this.$v.companyName.$error) return
-      else return this.commonErr
-    },
     lastNameErr() {
       if (! this.$v.lastName.$error) return
       else return this.commonErr

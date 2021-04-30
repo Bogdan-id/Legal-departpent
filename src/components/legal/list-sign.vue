@@ -6,7 +6,7 @@
       :close-on-content-click="false">
       <template v-slot:activator="{ on, attrs }">
         <a style="position: relative" icon>
-          {{title.trim()}} {{data.length ? getCategoryName(data) : "[" + data.length + "]"}}
+          {{title.trim()}} {{(data && data.length ? data.length : "") || true ? getCategoryName(data) : "[" + data && data.length ? data.length : 0 + "]"}}
           <v-icon 
             style="vertical-align: top;"
             v-bind="attrs"
@@ -46,7 +46,7 @@
         </v-card-text>
       </v-card>
     </v-menu>
-    <span v-show="data.length">&nbsp;[{{ state ? "-" : "+" }}]</span>
+    <span v-show="data && data.length">&nbsp;[{{ state ? "-" : "+" }}]</span>
   </div>
 </template>
 <script>

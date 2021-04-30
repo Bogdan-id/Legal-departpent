@@ -24,9 +24,6 @@ import {
 
 import { trimExceededLength } from '../utils/helper'
 
-/* Temporary yourcontrol request */
-import { /* yourControlEdrByEdrpouRes, */ yourControlEdrByInitialsRes } from '../utils/utils'
-
 import { letters } from '../utils/utils'
 import { transliteRule } from './translite'
 /* eslint-disable no-unused-vars */
@@ -329,33 +326,33 @@ const legal =  {
      * @return {Promise<AxiosResponse<YourControlRNBOUrl>>} */
     // eslint-disable-next-line
     getResultUrl(object) {
-      // const url = this.baseUrl + '/your-control/rnbo/get-person-url'
-      // return this.$axios
-        // .post(url, object).then(res => res).catch(err => this.getRejectedKey(err))
-      
-      /* below temporary */
+      const url = this.baseUrl + '/your-control/rnbo/get-person-url'
+      return this.$axios
+        .post(url, object).then(res => res).catch(err => this.getRejectedKey(err))
+
+      /* below temporary for debug purposes */
       // @ts-ignore
-      return Promise.resolve({data: {
-          status: 'string',
-          resultUrl: 'string',
-      }})
+      // return Promise.resolve({data: {
+      //     status: 'string',
+      //     resultUrl: 'string',
+      // }})
     },
     /** 
      * @param {{resultUrl: string, apiKey: string}} object
      * @return {Promise<AxiosResponse<YourControlRNBOResult>>} */ // AxiosResponse["data"]
      // eslint-disable-next-line
     getResult(object) {
-      // const url = this.baseUrl + '/your-control/rnbo/get-person-result'
-      // return this.$axios
-        // .post(url, object).then(res => res).catch(err => this.getRejectedKey(err))
+      const url = this.baseUrl + '/your-control/rnbo/get-person-result'
+      return this.$axios
+        .post(url, object).then(res => res).catch(err => this.getRejectedKey(err))
 
-      /* below temporary */
-      // @ts-ignore
-      return Promise.resolve({data: {
-        data: [],
-        result: [],
-        registryUpdateTime: [],
-      }})
+      /* below for debug purposes */
+      // // @ts-ignore
+      // return Promise.resolve({data: {
+      //   data: [],
+      //   result: [],
+      //   registryUpdateTime: [],
+      // }})
     },
     
     /** 
@@ -604,15 +601,6 @@ const legal =  {
     assignObject (source, asignObject) {
       Object.entries(asignObject).forEach(entry => this.$set(source, entry[0], entry[1]))
       return source
-    },
-    getEdrLegalByInn() {
-      /* this request should start from node.js */
-      if (!this.choosedPerson) return Promise.resolve([])
-      // return axios
-      //   .get(this.urlGetEdrLegalByInitials(this.lastName, this.firstName, this.patronymic))
-      //   .then(res => console.log(res))
-      //   .catch(err => console.log(err))
-      return Promise.resolve([yourControlEdrByInitialsRes])
     },
     switchHeader (list, index) {
       // initials lastFirstName lastName firstName patronymic

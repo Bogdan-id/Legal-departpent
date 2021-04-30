@@ -19,6 +19,7 @@ function getInitials (text) {
   return initialsArr.join(" ")
 }
 function getCategoryName (data) {
+  if (! data) return
   switch (true) {
     case data.includes("initials"): return "ПIБ"
     case data.includes("lastFirstName"): return "Прiзвище та iм`я"

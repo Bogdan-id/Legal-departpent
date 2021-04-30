@@ -375,6 +375,7 @@ const legal =  {
     /** 
      * @param {Cancel} cancel - Axios cancel object */
     getRejectedKey (cancel) {
+      if (cancel instanceof Error) throw new Error(cancel)
       if (! cancel) Promise.reject(new Error ('"getRejectedKey": "cancel"/"object" parameter required '))
       if (! cancel?.message) Promise.reject(cancel)
       if (cancel?.message) {

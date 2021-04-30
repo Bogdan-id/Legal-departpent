@@ -153,6 +153,31 @@ const data = {
  *  details: string,
  * }} YCSanctionEntity
  */
+
+/* eslint-disable no-unused-vars */
+/**  @template T @param {T} val @returns {Promise<T>} */ // generic
+function selfResolved(val) {
+  return Promise.resolve(val)
+}
+
+/* eslint-enable no-unused-vars */
+
+// default parameters
+/**
+ * @typedef {{
+ *  one: string,
+ *  two: 2,
+ * }} defParam
+ */
+
+/**
+ * @typedef {defParam & YCSanctionEntity} ExtendObject
+ */
+
+/**
+ * @typedef {ExtendObject & {objectProperty: string}} Child // extending with child property
+ */
+
 /**
  * @typedef {Array<{
  *  date: string,

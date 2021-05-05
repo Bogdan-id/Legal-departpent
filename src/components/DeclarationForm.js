@@ -18,7 +18,6 @@ import {
   mdiInformation,
   mdiAxisZRotateClockwise,
   mdiWindowMinimize,
-  mdiTextBoxSearchOutline,
   mdiSortAlphabeticalAscendingVariant
 } from '@mdi/js' 
 
@@ -32,6 +31,8 @@ import { AxiosResponse, AxiosError, Cancel } from 'axios'
 
 // @ts-ignore
 import LegalTree from './legal/tree.vue'
+// @ts-ignore
+import PersonInfo from './person/person.vue'
 import { validationMixin } from 'vuelidate'
 import { minLength, required } from 'vuelidate/lib/validators'
 
@@ -39,6 +40,7 @@ const legal =  {
   mixins: [validationMixin],
   components: {
     LegalTree,
+    PersonInfo,
   },
   name: 'DeclarationForm',
   validations() {
@@ -50,7 +52,14 @@ const legal =  {
           },
         } 
       : {}
-    const personInn = this.personInn ? {inn: {required}} : {}
+    const personInn = this.personInn 
+      ? {
+          inn: {
+            required,
+            minLength: minLength(10),
+          }
+        } 
+      : {}
     const personInitials = this.personInitials 
       ? {
           lastName: {required},
@@ -65,136 +74,31 @@ const legal =  {
     }
   },
   data: () => ({
-    apiKey: 'b00b0000a013607c3bc0acb76917a9f022f2b908',
-    baseUrl: null,
-    EDRTH: [
-      { text: 'Назва', value: 'name.shortName', align: 'start', sortable: false},
-      // { text: 'Керiвник', value: 'boss', align: 'center', sortable: false },
-      { text: 'Статус', value: 'status', align: 'center', sortable: false },
-      { text: 'ЄДРПОУ', value: 'code', align: 'center', sortable: false },
-    ],
-    EDRTHperson: [
-      { text: 'ФОП', value: 'initials', align: 'start', sortable: false},
-      { text: 'Статус', value: 'condition', align: 'center', sortable: false },
-    ],
-    EDTH: [
-      { text: 'Прiзвище', value: 'infocard.last_name', align: 'start', sortable: false},
-      { text: 'Iм`я', value: 'infocard.first_name', align: 'center', sortable: false },
-      { text: 'По батьковi', value: 'infocard.patronymic', align: 'center', sortable: false },
-      { text: 'Посада', value: 'infocard.position', align: 'center', sortable: false },
-      { text: 'Рiк', value: 'infocard.declaration_year', align: 'center', sortable: false},
-      { text: 'Тип', value: 'infocard.document_type', align: 'center', sortable: false },
-      { text: "Детально", value: 'action', align: 'center', sortable: false}
-    ],
-    PEPTH: [
-      { text: 'ПIБ', value: 'full_name', align: 'start', sortable: false },
-      { text: 'Дата нар-ння', value: 'date_of_birth', align: 'center', sortable: false},
-      { text: 'Посада', value: 'last_job_title', align: 'center', sortable: false },
-      { text: 'Оф. тип.', value: 'type_of_official', align: 'center', sortable: false },
-      { text: "Детально", value: 'action', align: 'center', sortable: false}
-    ],
-    pepNestedLegal: [
-      { text: "Юр. особа", value: 'to_company_uk', align: 'start', sortable: false},
-      { text: "Тип зв`язку", value: 'relationship_type_uk', align: 'start', sortable: false},
-      { text: "ЄДРПОУ", value: 'to_company_edrpou', align: 'start', sortable: false},
-    ],
-    pepNestedPerson: [
-      { text: "ПIБ", value: 'person_uk', align: 'start', sortable: false},
-      { text: "Тип зв`язку", value: 'relationship_type', align: 'start', sortable: false},
-    ],
-
-    UNOsancPerson: [
-      { text: 'ПIБ', value: 'fullName', align: 'start', sortable: false},
-      { text: 'Нацiональнiсть', value: 'nationality', align: 'center', sortable: false },
-      { text: 'День н-ння', value: 'dateOfBirth', align: 'center', sortable: false },
-      { text: 'Посада', value: 'designation', align: 'center', sortable: false },
-    ],
-    UNOsancLegal: [
-      { text: 'Пiдроздiл', value: 'firstName', align: 'start', sortable: false},
-      { text: 'Органiзацiя', value: 'unListType', align: 'center', sortable: false },
-    ],
-    UNOsancPersonNested: [
-      { text: 'Також вiдомий як', value: 'ALIAS_NAME', align: 'start', sortable: false},
-    ],
-    UNOterrorPersonTH: [
-      { text: 'ПIБ', value: 'fullName', align: 'start', sortable: false},
-      { text: 'Мiсце народження', value: 'place-of-birth-list', align: 'center', sortable: false },
-      { text: 'Мiсце проживання', value: 'address-list.address', align: 'center', sortable: false },
-      { text: 'Дата народження', value: 'date-of-birth-list', align: 'center', sortable: false },
-    ],
-    UNOterrorLegalTH: [
-      { text: 'Назва органiзації', value: 'fullName', align: 'start', sortable: false},
-      { text: 'Адреса', value: 'address-list.address', align: 'center', sortable: false },
-    ],
-    usSanctionPersonTH: [
-      { text: 'ПIБ', value: 'initials', align: 'start', sortable: false},
-      { text: 'Дiяльнiсть', value: 'title', align: 'center', sortable: false },
-    ],
-    usSanctionLegalTH: [
-      { text: 'Назва компанiї', value: 'lastName', align: 'start', sortable: false},
-      { text: 'Контакти', value: 'remarks', align: 'center', sortable: false },
-    ],
-    usSanctionNested: [
-      { text: 'Також вiдомий як', value: 'ALIAS_NAME', align: 'start', sortable: false},
-    ],
-    transliteRuleTH: [
-      {text: "Українська", value: "ua", sortable: false, align: "start"},
-      {text: "Початок слова (EN)", value: "en", sortable: false, align: "center"},
-      {text: "В iнших поз-iях (EN)", value: "position", sortable: false, align: "center"},
-      {text: "Приклад UK", value: "exampleUK", sortable: false, align: "center"},
-      {text: "Приклад EN", value: "exampleEN", sortable: false, align: "center"},
-    ],
-
-    letters: letters,
-    currSection: null,
-    ukVersion: true,
-    showRequisite: false,
-    showRule: false,
-
-    edrExpanded: [],
-    edrPersonExpanded: [],
-    pepExpanded: [],
-    unSancExpanded: [],
-    unTerrorExpanded: [],
-    usSanctionExpanded: [],
-    edrExpandedW: false,
-    edrPersonExpandedW: false,
-    pepExpandedW: false,
-    unSancExpandedW: false,
-    unTerrorExpandedW: false,
-    usSanctionExpandedW: false,
-    
-    edrList: [],
-    edrListPerson: [],
-    pepList: [],
-    eDeclarationList: [],
-    rnboList: [],
-    unSanctionList: [],
-    unTerrorList: [],
-    esSanctionList: [],
-    usSanctionList: [],
-
-    edrInitials: [],
-    edrLegals: [],
-
+    /* Bindings */
     lastName: null,
     firstName: null,
     patronymic: null,
     inn: null,
     edrpou: null,
     companyName: null,
-
     globalObject: {},
-
+    /* Person items */
+    edrListPerson: [],
+    eDeclarationList: [],
+    rnboList: [],
+    unSanctionList: [],
+    unTerrorList: [],
+    esSanctionList: [],
+    usSanctionList: [],
+    yourControlRnboList: [],
+    yourControlDsfmuList: [],
+    yourControlSanctionList: [],
     /* Data */
-    pageUrl: null,
     searchVariant: null,
     searchType: null,
-
     /* Booleans */
     loading: false,
-    dialog: false,
-
+    personDialog: false,
     /* Icons */
     mdiClose,
     mdiAccountSearch,
@@ -202,19 +106,43 @@ const legal =  {
     mdiInformation,
     mdiAxisZRotateClockwise,
     mdiWindowMinimize,
-    mdiTextBoxSearchOutline,
     mdiSortAlphabeticalAscendingVariant,
-
-    edrCodes: [],
-    attemptsToGetNewEdrLegal: 0,
+    attemptsToGetNewEdr: 0,
     maxAttempts: 0,
     /** @param { array } handledEdrpous - List of "edrpou" codes that have already been checked */
     handledEdrpous: [],
     yourControlTimeOut: 3000,
     legalDialog: false,
     commonErr: "Поле обов`язкове",
+    apiKey: 'b00b0000a013607c3bc0acb76917a9f022f2b908',
+    baseUrl: null,
+    letters: letters,
+    /* Request hint */
+    ukVersion: true,
+    showRequisite: false,
+    showRule: false,
+    /* Table */
+    transliteRuleTH: [
+      {text: "Українська", value: "ua", sortable: false, align: "start"},
+      {text: "Початок слова (EN)", value: "en", sortable: false, align: "center"},
+      {text: "В iнших поз-iях (EN)", value: "position", sortable: false, align: "center"},
+      {text: "Приклад UK", value: "exampleUK", sortable: false, align: "center"},
+      {text: "Приклад EN", value: "exampleEN", sortable: false, align: "center"},
+    ],
   }),
   methods: {
+    clearPersonData() {
+      this.edrListPerson.splice(0)
+      this.eDeclarationList.splice(0)
+      this.rnboList.splice(0)
+      this.unSanctionList.splice(0)
+      this.unTerrorList.splice(0)
+      this.esSanctionList.splice(0)
+      this.usSanctionList.splice(0)
+      this.yourControlRnboList.splice(0)
+      this.yourControlDsfmuList.splice(0)
+      this.yourControlSanctionList.splice(0)
+    },
     trimExceededLength,
     /** @param {{companyName: string}} object */
     checkUsLegalSanctions(object) {
@@ -295,18 +223,17 @@ const legal =  {
         .post(url, object).then(res => res).catch(err => this.getRejectedKey(err))
     },
     /**
-     * @param {{edrpou: string | number, apiKey: string, currentData?: boolean}} object 
+     * @param {{apiKey: string, inn?: string | number, edrpou?: string | number, currentData?: boolean}} object 
      * @returns {Promise<AxiosResponse<EdrLegal>>} */ 
     // eslint-disable-next-line
-    getEdrLegal(object) {
-      console.log('getEdrLegal', object)
+    getEdr(object) {
       // @ts-ignore
-      if (! object.edrpou) return Promise.resolve()
-      if (this.attemptsToGetNewEdrLegal === this.maxAttempts) {
-        this.attemptsToGetNewEdrLegal = 0
+      if (!object.edrpou && !object.inn) return Promise.resolve()
+      if (this.attemptsToGetNewEdr === this.maxAttempts) {
+        this.attemptsToGetNewEdr = 0
         object.currentData = true
       }
-      const url = this.baseUrl + `/your-control/get-edr-legal`
+      const url = this.baseUrl + `/your-control/get-edr`
       return this.$axios
         .post(url, object)
         .then(res => {
@@ -321,11 +248,10 @@ const legal =  {
     /**
      * @typedef {{status: string, resultUrl: string}} YourControlRNBOUrl */
     /** 
-     * @function getResultUrl - return link with resultId 
+     * @function getRnboResultUrl - return link with resultId (RNBO - sanctions)
      * @param {{lastName: string, firstName: string, middleName: string, apiKey: string}} object
      * @return {Promise<AxiosResponse<YourControlRNBOUrl>>} */
-    // eslint-disable-next-line
-    getResultUrl(object) {
+    getRnboResultUrl(object) {
       const url = this.baseUrl + '/your-control/rnbo/get-person-url'
       return this.$axios
         .post(url, object).then(res => res).catch(err => this.getRejectedKey(err))
@@ -338,27 +264,28 @@ const legal =  {
       // }})
     },
     /** 
-     * @param {{resultUrl: string, apiKey: string}} object
-     * @return {Promise<AxiosResponse<YourControlRNBOResult>>} */ // AxiosResponse["data"]
-     // eslint-disable-next-line
-    getResult(object) {
-      const url = this.baseUrl + '/your-control/rnbo/get-person-result'
+     * @function getDsfmuResultUrl - return link with resultId (DSMFU - terros)
+     * @param {{lastName: string, firstName: string, middleName: string, apiKey: string}} object
+     * @return {Promise<AxiosResponse<YourControlRNBOUrl>>} */
+    getDsfmuResultUrl(object) {
+      const url = this.baseUrl + '/your-control/dsfmu/get-person-url'
       return this.$axios
         .post(url, object).then(res => res).catch(err => this.getRejectedKey(err))
-
-      /* below for debug purposes */
-      // // @ts-ignore
-      // return Promise.resolve({data: {
-      //   data: [],
-      //   result: [],
-      //   registryUpdateTime: [],
-      // }})
+    },
+    /** 
+     * @param {{resultUrl: string, apiKey: string}} object
+     * @return {Promise<AxiosResponse<YourControlRNBOResult>>} */ // AxiosResponse["data"]
+    getResult(object) {
+      const url = this.baseUrl + '/your-control/get-person-result'
+      return this.$axios
+        .post(url, object).then(res => res).catch(err => this.getRejectedKey(err))
     },
     
     /** 
+     * @function checkYourControlSanctions - Foreign sanctions (USA, Japan, EU)
      * @param {{edrpou: string | number, apiKey: string}} object
      * @return {Promise<AxiosResponse<YourControlSanctions>>} */
-    yourControlSanctionList(object) {
+    checkYourControlSanctions(object) {
       const url = this.baseUrl + '/your-control/sanctions'
       return this.$axios
         .post(url, object).then(res => res).catch(err => this.getRejectedKey(err))
@@ -375,6 +302,7 @@ const legal =  {
     /** 
      * @param {Cancel} cancel - Axios cancel object */
     getRejectedKey (cancel) {
+      // @ts-ignore
       if (cancel instanceof Error) throw new Error(cancel)
       if (! cancel) Promise.reject(new Error ('"getRejectedKey": "cancel"/"object" parameter required '))
       if (! cancel?.message) Promise.reject(cancel)
@@ -387,12 +315,12 @@ const legal =  {
      * @param {EdrLegal | Founder | {}} mapedObject
      * @param {string | number } code - EDRPOU code */
     getEdrData(mapedObject, code) {
-      const yourControlEdrLegal = {edrpou: code, apiKey: this.apiKey}  
-      return this.getEdrLegal(yourControlEdrLegal)
+      const yourControlEdrLegal = {edrpou: code, apiKey: this.apiKey, inn: null}  
+      return this.getEdr(yourControlEdrLegal)
         .then(res => {
-          console.log('getEdrLegal RES', res)
+          console.log('getEdr RES', res)
           if (res?.data?.status === "Update in progress") {
-            this.attemptsToGetNewEdrLegal ++
+            this.attemptsToGetNewEdr ++
             return new Promise(resolve => {
               setTimeout(() => resolve(this.getEdrData(mapedObject, code)), this.yourControlTimeOut)
             })
@@ -472,26 +400,145 @@ const legal =  {
         console.log(err)
       }
     },
+    submit() {
+      if (this.$v.$invalid) return
+
+      this.handledEdrpous.length = 0
+      this.globalObject = {}
+
+      switch (true) {
+        case this.choosedLegal: return this.mapGlobalLegal(this.edrpou)
+        case this.choosedPerson && this.personInn: return this.mapGlobalPersonInn(this.inn)
+        case this.choosedPerson && this.personInitials: return this.mapGlobalPersonInitials({
+          lastName: this.lastName,
+          firstName: this.firstName,
+          patronymic: this.patronymic, 
+        })
+      }
+    },
     /** @param {string} code */
     async mapGlobalLegal(code) {
-      if (this.$v.$invalid) {
-        this.$snotify.simple('Невiрний Код ЄДРПОУ: ' + this.edrpou)
-        return
-      }
-
       try {
-        this.handledEdrpous.length = 0
-        this.globalObject = {}
         this.loading = true
         await this.getEdrData(this.globalObject, code)
         this.loading = false
-        // this.dialog = true
+        // this.personDialog = true
         this.legalDialog = true
         console.log(this.globalObject)
       } catch (err) {
         this.loading = false
         console.log(err)
       }
+    },
+    /** @param {string | number} inn */
+    // eslint-disable-next-line
+    async mapGlobalPersonInn(inn) {
+      this.clearPersonData()
+      this.loading = true
+
+      const personData = await this.getEdr({
+        apiKey: this.apiKey,
+        inn: inn,
+      })
+
+      this.edrListPerson.splice(0)
+      this.edrListPerson.push(personData)
+      // @ts-ignore
+      const {lastName, firstName, patronymic} = this.getPersonInitials(personData.data.name)
+      const person = {lastName: lastName, firstName: firstName, patronymic: patronymic}
+      // @ts-ignore
+      const transliteratedPerson = this.getPersonInitials(personData.data.name, {transliterate: true})
+      // eslint-disable-next-line
+      const yourControlPerson = {
+        lastName: lastName,
+        firstName: firstName,
+        middleName: patronymic,
+        apiKey: this.apiKey
+      }
+
+      const requests = [
+        this.checkEDeclarations(person)
+          .then(res => this.eDeclarationList.push(...res.data.results.object_list)),
+        this.checkRnboPersons(person)
+          .then(res => this.rnboList.push(...res.data)),
+        this.checkUnTerrors(transliteratedPerson)
+          .then(res => this.unTerrorList.push(...res.data)),
+        this.getRnboResultUrl(yourControlPerson)
+          .then(res => this.getResult({resultUrl: res.data.resultUrl, apiKey: this.apiKey})
+          .then(rnboRes => {
+            rnboRes?.data?.data && this.yourControlRnboList.push(...rnboRes.data.data)
+          })),
+        this.getDsfmuResultUrl(yourControlPerson)
+          .then(res => this.getResult({resultUrl: res.data.resultUrl, apiKey: this.apiKey})
+          .then(rnboRes => {
+            rnboRes?.data?.data && this.yourControlDsfmuList.push(...rnboRes.data.data)
+          })),
+        this.checkUsPersonSunctions(transliteratedPerson)
+          .then(res => this.usSanctionList.push(...res.data)),
+        this.checkEsPersonSunctions(transliteratedPerson)
+          .then(res => this.esSanctionList.push(...res.data)),
+        this.checkUnPersSanctions(transliteratedPerson)
+          .then(res => this.unSanctionList.push(...res.data)),
+      ]
+
+      return await Promise.all(requests)
+        .then(() => {
+          this.loading = false
+          this.personDialog = true
+        })
+        .catch(err => {
+          console.log(err)
+          this.loading = false
+        })
+    }, 
+    /** @param {{lastName: string, firstName: string, patronymic: string}} person */
+    // eslint-disable-next-line
+    async mapGlobalPersonInitials(person) {
+      this.clearPersonData()
+      this.loading = true
+      // eslint-disable-next-line
+      const yourControlPerson = {
+        lastName: person.lastName,
+        firstName: person.firstName,
+        middleName: person.patronymic,
+        apiKey: this.apiKey,
+      }
+      const transliteratedPerson = this.getPersonInitials(`${person.lastName} ${person.firstName} ${person.patronymic}`, {transliterate: true})
+
+      const requests = [
+        this.checkEDeclarations(person)
+          .then(res => this.eDeclarationList.push(...res.data.results.object_list)),
+        this.checkRnboPersons(person)
+          .then(res => this.rnboList.push(...res.data)),
+        this.checkUnTerrors(transliteratedPerson)
+          .then(res => this.unTerrorList.push(...res.data)),
+        this.getRnboResultUrl(yourControlPerson)
+          .then(res => this.getResult({resultUrl: res.data.resultUrl, apiKey: this.apiKey})
+          .then(rnboRes => {
+            this.yourControlRnboList.push(...rnboRes.data.data)
+          })),
+        this.getDsfmuResultUrl(yourControlPerson)
+          .then(res => this.getResult({resultUrl: res.data.resultUrl, apiKey: this.apiKey})
+          .then(rnboRes => {
+            this.yourControlDsfmuList.push(...rnboRes.data.data)
+          })),
+        this.checkUsPersonSunctions(transliteratedPerson)
+          .then(res => this.usSanctionList.push(...res.data)),
+        this.checkEsPersonSunctions(transliteratedPerson)
+          .then(res => this.esSanctionList.push(...res.data)),
+        this.checkUnPersSanctions(transliteratedPerson)
+          .then(res => this.unSanctionList.push(...res.data)),
+      ]
+
+      return await Promise.all(requests)
+        .then(() => {
+          this.loading = false
+          this.personDialog = true
+        })
+        .catch(err => {
+          console.log(err)
+          this.loading = false
+        })
     },
     /**
      * @param {string} person
@@ -540,7 +587,7 @@ const legal =  {
       const transliteratedPersonObj = this.getPersonInitials(name, {transliterate: true})
       // const personObj = this.getPersonInitials(name)
 
-      this.getResultUrl({
+      this.getRnboResultUrl({
           lastName: capitalizedPersonObj.lastName, 
           firstName: capitalizedPersonObj.firstName, 
           middleName: capitalizedPersonObj.patronymic, 
@@ -577,7 +624,7 @@ const legal =  {
         .then(res => this.assignObject(founder, {UNLegalSanctions: res}))
       this.checkRnboLegals({edrpou: founder.code, companyName: founderName})
         .then(res => this.assignObject(founder, {RNBOLegals: res}))
-      this.yourControlSanctionList({edrpou: founder.code, apiKey: this.apiKey})
+      this.checkYourControlSanctions({edrpou: founder.code, apiKey: this.apiKey})
         .then(res => this.assignObject(founder, {YourControlSanctions: res}))
     },
     /**
@@ -596,44 +643,13 @@ const legal =  {
         .then(res => this.assignObject(legal, {UNLegalSanctions: res}))
       this.checkRnboLegals({edrpou: legal.code, companyName: requisites.nameUa})
         .then(res => this.assignObject(legal, {RNBOLegals: res}))
-      this.yourControlSanctionList({edrpou: legal.code, apiKey: this.apiKey})
+      this.checkYourControlSanctions({edrpou: legal.code, apiKey: this.apiKey})
         .then(res => this.assignObject(legal, {YourControlSanctions: res}))
     },
     assignObject (source, asignObject) {
       Object.entries(asignObject).forEach(entry => this.$set(source, entry[0], entry[1]))
       return source
     },
-    switchHeader (list, index) {
-      // initials lastFirstName lastName firstName patronymic
-      switch(list[index]) {
-        case 'initials': return 'спiвпадiння за ПIП';
-        case 'lastFirstName': return 'спiвпадiння за Прiзвищем та Iм`ям';
-        case 'lastName' : return 'спiвпадiння за Прiзвищем'; 
-        case 'firstName': return 'спiвпадiння за Iм`ям'; 
-        case 'patronymic': return 'спiвпадiння По батьковi'; 
-      }
-    },
-    validLength(arr) {
-      let items = [
-        'initials',
-        'lastFirstName',
-        'lastName',
-        'firstName',
-        'patronymic'
-      ]
-      return arr
-        .filter(
-          v => items.includes(v)
-        )
-    },
-    makeActive(e) {
-      if(e === this.currSection) this.currSection = null 
-      else this.currSection = e
-    },
-    btnActv(name) {
-      return this.currSection === name
-    },
-
     capitalize(str) {
       if(!str) return ''
       str = str.trim().replace(/\s+/g, ' ').split(' ')
@@ -650,6 +666,7 @@ const legal =  {
       str.forEach((v, i) => {
         if(Object.keys(fI).includes(v) && i !== 0) str.splice(i, 1, fI[v])
       })
+
       return str.join("")
         .replace(/зг/g, 'ZGH')
         .trim()
@@ -659,14 +676,8 @@ const legal =  {
         .join("")
         .replace(/[^a-zA-Z-`\s0-9().,]/gu, '')
     },
-    goToPage(url) {
-      if(!url) return
-      this.pageUrl = url
-      setTimeout(() => {
-        this.$refs.targetLink.click()
-        this.pageUrl = null
-        }, 0)
-    },
+
+    // Need refactoring
     markText(handler, text) {
       switch(handler) {
         case 'legalHandler': return [
@@ -691,30 +702,13 @@ const legal =  {
           ]
       }
     },
-    markSearchedText(val /*, handler */) {
-      let copy = JSON.parse(JSON.stringify(val))
-      
-      return copy.filter(v => v._id)
-        .map(v => {
-          // let arr = []
-          // let text = v.text
-          // let [start, end] = this.markText(handler, text)
-
-          // arr.push(text.substring(0, start))
-          // arr.push('<span class="search-text">' + text.substring(start, end) + '</span>')
-          // arr.push(text.substring(end, text.length))
-          // v.text = arr.join('')
-
-          return v
-        })
+    listenPressKey(e) {
+      if (e.keyCode === 13) {
+        this.mapGlobalLegal(this.edrpou)
+      } else if (e.keyCode === 27) {
+        this.personDialog = false
+      }
     },
-    // listenPressKey(e) {
-    //   if (e.keyCode === 13) {
-    //     this.mapEdrLegal(/* clearData */ true)
-    //   } else if (e.keyCode === 27) {
-    //     this.dialog = false
-    //   }
-    // },
     setBaseUrl() {
       this.baseUrl = process.env.NODE_ENV === "development" 
         ? 'http://127.0.0.1:4000' 
@@ -723,22 +717,8 @@ const legal =  {
   },
   computed: {
     transliteRule() { return transliteRule },
-    rnboVariant() {
-      if (this.choosedPerson && this.rnboList.length > 0) return this.markSearchedText(this.rnboList, 'personHandler')
-      if (this.choosedLegal && this.rnboList.length > 0) return this.markSearchedText(this.rnboList, 'legalHandler')
-      return []
-    },
-    esVariant() {
-      if (this.choosedPerson && this.esSanctionList.length > 0) return this.markSearchedText(this.esSanctionList, 'unPersonHandler')
-      if (this.choosedLegal && this.esSanctionList.length > 0) return this.markSearchedText(this.esSanctionList, 'unLegalHandler')
-      return []
-    },
     requisites() {
-      return this.choosedPerson 
-        ? this.firstName && this.lastName
-        : this.choosedLegal 
-          ? this.edrpou || this.companyName
-          : false
+      return !this.$v.$invalid
     },
     choosedPerson() {
       return this.searchVariant === 1
@@ -754,20 +734,6 @@ const legal =  {
     },
     legalEdrpou() {
       return this.searchType === "searchByEdrpou"
-    },
-    /* Styles */
-    cardOverflow() {
-      return `
-        position: relative; overflow-x: hidden; 
-        overflow-y: scroll; background: #f5f0f0`
-    },
-    closeAbsBtn() {
-      return `
-        position: absolute; top: -35px; 
-        right: ${this.$vuetify.breakpoint.xs ? '-8px' : '-28px;'}`
-    },
-    maxCardHeight() {
-      return this.$vuetify.breakpoint.height / 10 * 9
     },
     // validations
     edrpouErr() { 
@@ -790,50 +756,16 @@ const legal =  {
       else return this.commonErr
     },
     innErr() {
-      if (! this.$v.inn.$error) return
-      else return this.commonErr
+      const errors = []
+      if (! this.$v.$invalid) return
+      !this.$v.inn.required && errors.push('Невiрний код IНН')
+      !this.$v.inn.minLength && errors.push('Не вiрна кiлькiсть знакiв')
+      return errors
     },
   }, 
   watch: {
-    edrExpanded(val) {
-      setTimeout(() => {
-        if(val.length) this.edrExpandedW = true
-        else this.edrExpandedW = false
-      }, 0)
-    },
-    edrPersonExpanded(val) {
-      setTimeout(() => {
-        if(val.length) this.edrPersonExpandedW = true
-        else this.edrPersonExpandedW = false
-      }, 0)
-    },
-    pepExpanded(val) {
-      setTimeout(() => {
-        if(val.length) this.pepExpandedW = true
-        else this.pepExpandedW = false
-      }, 0)
-    },
-    unSancExpanded(val) {
-      setTimeout(() => {
-        if(val.length) this.unSancExpandedW = true
-        else this.unSancExpandedW = false
-      }, 0)
-    },
-    unTerrorExpanded(val) {
-      setTimeout(() => {
-        if(val.length) this.unTerrorExpandedW = true
-        else this.unTerrorExpandedW = false
-      }, 0)
-    },
-    usSanctionExpanded(val) {
-      setTimeout(() => {
-        if(val.length) this.usSanctionExpandedW = true
-        else this.usSanctionExpandedW = false
-      }, 0)
-    },
-    dialog(val) {
+    personDialog(val) {
       if(!val) {
-        this.currSection = null
         this.ukVersion = true
         this.showRequisite = false
       }

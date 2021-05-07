@@ -18,10 +18,10 @@ import {
   mdiInformation,
   mdiAxisZRotateClockwise,
   mdiWindowMinimize,
-  mdiSortAlphabeticalAscendingVariant
+  mdiSortAlphabeticalAscendingVariant,
 } from '@mdi/js' 
 
-import { trimExceededLength } from '../utils/helper'
+import { trimExceededLength, isPep } from '../utils/helper'
 
 import { letters } from '../utils/utils'
 import { transliteRule } from './translite'
@@ -131,6 +131,7 @@ const legal =  {
     ],
   }),
   methods: {
+    isPep,
     clearPersonData() {
       this.edrListPerson.splice(0)
       this.eDeclarationList.splice(0)
@@ -178,9 +179,47 @@ const legal =  {
      * @function checkEDeclarations - Post capitalized person object
      * @param {{lastName: string, firstName: string, patronymic: string}} object */
     checkEDeclarations(object) { 
-      const url = this.baseUrl + '/get-declarations'
-      return this.$axios
-        .post(url, object).then(res => res).catch(err => this.getRejectedKey(err))
+      /** @param {AxiosResponse} res */
+      const checkPublicity = async (res) => {
+        const list = res.data?.results?.object_list
+        if (! list?.length) return
+
+        const requests = list.map(async object => {
+          const isPep = this.isPep(object.infocard.position) ? 'Так' : 'Нi'
+          object.infocard.isPep = isPep
+          const family = object?.related_entities?.people?.family
+
+          if (family.length) {
+            const nested = family.map(async p => {
+              object.infocard.family = []
+              if (p.trim() === "") return
+              const initials = this.getPersonInitials(p)
+
+              return getDeclarations(initials).then(res => {
+                let nestedDeclar = res.data.results.object_list
+                if (nestedDeclar.length) {
+                  nestedDeclar.forEach(obj => {
+                    const nestedPep = this.isPep(obj.infocard.position)
+                    obj.infocard.isPep = nestedPep
+                  })
+                  nestedDeclar = nestedDeclar.filter(o => o.infocard.isPep)
+                  object.infocard.family.push(...nestedDeclar)
+                }
+              })
+            })
+            return await Promise.all(nested)
+          }
+        })
+
+        return await Promise.all(requests).then(() => res)
+      }
+
+      const getDeclarations = (object) => {
+        const url = this.baseUrl + '/get-declarations'
+        return this.$axios
+          .post(url, object).then(res => res)
+      }
+      return getDeclarations(object).then(res => checkPublicity(res)).catch(err => this.getRejectedKey(err))
     },
     /** 
      * @function checkRnboPersons - Post capitalized person object
@@ -251,34 +290,51 @@ const legal =  {
      * @function getRnboResultUrl - return link with resultId (RNBO - sanctions)
      * @param {{lastName: string, firstName: string, middleName: string, apiKey: string}} object
      * @return {Promise<AxiosResponse<YourControlRNBOUrl>>} */
+    // eslint-disable-next-line
     getRnboResultUrl(object) {
-      const url = this.baseUrl + '/your-control/rnbo/get-person-url'
-      return this.$axios
-        .post(url, object).then(res => res).catch(err => this.getRejectedKey(err))
+      // const url = this.baseUrl + '/your-control/rnbo/get-person-url'
+      // return this.$axios
+      //   .post(url, object).then(res => res).catch(err => this.getRejectedKey(err))
 
       /* below temporary for debug purposes */
       // @ts-ignore
-      // return Promise.resolve({data: {
-      //     status: 'string',
-      //     resultUrl: 'string',
-      // }})
+      return Promise.resolve({data: {
+          status: 'string',
+          resultUrl: 'string',
+      }})
     },
     /** 
      * @function getDsfmuResultUrl - return link with resultId (DSMFU - terros)
      * @param {{lastName: string, firstName: string, middleName: string, apiKey: string}} object
      * @return {Promise<AxiosResponse<YourControlRNBOUrl>>} */
+    // eslint-disable-next-line
     getDsfmuResultUrl(object) {
-      const url = this.baseUrl + '/your-control/dsfmu/get-person-url'
-      return this.$axios
-        .post(url, object).then(res => res).catch(err => this.getRejectedKey(err))
+      // const url = this.baseUrl + '/your-control/dsfmu/get-person-url'
+      // return this.$axios
+      //   .post(url, object).then(res => res).catch(err => this.getRejectedKey(err))
+      
+      /* below temporary for debug purposes */
+      // @ts-ignore
+      return Promise.resolve({data: {
+        status: 'string',
+        resultUrl: 'string',
+      }})
     },
     /** 
      * @param {{resultUrl: string, apiKey: string}} object
      * @return {Promise<AxiosResponse<YourControlRNBOResult>>} */ // AxiosResponse["data"]
+    // eslint-disable-next-line
     getResult(object) {
-      const url = this.baseUrl + '/your-control/get-person-result'
-      return this.$axios
-        .post(url, object).then(res => res).catch(err => this.getRejectedKey(err))
+      // const url = this.baseUrl + '/your-control/get-person-result'
+      // return this.$axios
+      //   .post(url, object).then(res => res).catch(err => this.getRejectedKey(err))
+
+      /* below for debug purposes */
+      return Promise.resolve({data: {
+        data: [],
+        result: [],
+        registryUpdateTime: 'string',
+      }})
     },
     
     /** 
@@ -546,6 +602,7 @@ const legal =  {
      * @param {boolean} [config.capitalize]
      * @param {boolean} [config.transliterate]  */
     getPersonInitials(person, config) {
+      console.log('PERSON', person)
       let capitalize, transliterate 
 
       if (config) {
@@ -583,6 +640,7 @@ const legal =  {
      * @param {string} name
      */
     checkLegalPerson(mapedObject, name) {
+      console.log('checkLegalPerson', name)
       const capitalizedPersonObj = this.getPersonInitials(name, {capitalize: true})
       const transliteratedPersonObj = this.getPersonInitials(name, {transliterate: true})
       // const personObj = this.getPersonInitials(name)

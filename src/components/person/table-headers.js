@@ -13,6 +13,8 @@ export default {
     { text: 'Прiзвище', value: 'infocard.last_name', align: 'start', sortable: false},
     { text: 'Iм`я', value: 'infocard.first_name', align: 'center', sortable: false },
     { text: 'По батьковi', value: 'infocard.patronymic', align: 'center', sortable: false },
+    { text: 'PEP', value: 'infocard.isPep', align: 'center', sortable: false },
+    { text: 'Зв`язки з PEP', value: 'infocard.family', align: 'center', sortable: false },
     { text: 'Посада', value: 'infocard.position', align: 'center', sortable: false },
     { text: 'Рiк', value: 'infocard.declaration_year', align: 'center', sortable: false},
     { text: 'Тип', value: 'infocard.document_type', align: 'center', sortable: false },

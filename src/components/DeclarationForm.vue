@@ -484,7 +484,7 @@ tr.v-data-table__expanded.v-data-table__expanded__content {
 }
 
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
   height: 8px;
   background-color: #F5F5F5;
 }

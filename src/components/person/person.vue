@@ -1,15 +1,17 @@
 <template>
   <v-dialog
+    ref="dialog"
     v-model="dialog"
-    :max-width="800">
+    :max-width="800"
+    :max-height="600">
     <a  
       :href="pageUrl"
       ref="targetLink"
       style="display: none;"
       target="_blank">
     </a>
-    <div style="position: relative;">
-      <v-hover #default="{ hover }" >
+    <div class="check-wrapper">
+      <!-- <v-hover #default="{ hover }" >
         <v-btn 
           :style="closeAbsBtn"
           @click="$emit('update:dialog', !dialog)" 
@@ -20,7 +22,7 @@
           icon>
           <v-icon>{{ mdiClose }}</v-icon>
         </v-btn>
-      </v-hover>
+      </v-hover> -->
       <v-card-text class="pl-1 pr-1 pt-3 custom-bg modal-card" elevation="0">
         <!-- EDR -->
         <v-btn @click="makeActive('EDR')" 
@@ -228,6 +230,7 @@
           <v-card v-show="btnActv('ED')" class="mb-2 item-card">
             <v-card-text v-show="eDeclarationList.length">
               <v-data-table
+                ref="edthTable"
                 :headers="EDTH"
                 :items="eDeclarationList"
                 :items-per-page="15" 
@@ -235,9 +238,49 @@
                 dense>
                 <!-- eslint-disable-next-line -->
                 <template #item.action="{ item }">
-                  <v-btn small @click="goToPage(item.infocard.url)">
-                    <v-icon>{{ mdiTextBoxSearchOutline }}</v-icon>
+                  <v-btn x-small @click="goToPage(item.infocard.url)">
+                    <v-icon size="18">{{ mdiTextBoxSearchOutline }}</v-icon>
                   </v-btn>
+                </template>
+                <!-- eslint-disable-next-line -->
+                <template #item.infocard.family="{ item }">
+                  <span v-if="!item.infocard.family || !item.infocard.family.length">{{ "Нi" }}</span>
+                  <v-menu
+                    v-if="item.infocard.family && item.infocard.family.length"
+                    :close-on-content-click="false"
+                    top
+                    offset-y>
+                    <template v-slot:activator="{ on }">
+                      <v-btn 
+                        v-on="on"
+                        color="grey darken-3" 
+                        class="white--text"
+                        style="text-transform: none"
+                        small>
+                        Так
+                      </v-btn>
+                    </template>
+                    <v-card 
+                      min-width="120" 
+                      max-height="400"
+                      style="overflow: scroll">
+                      <v-card-text style="position: relative" class="pt-6">
+                        <div class="text-right">
+                          <v-btn 
+                            @click="$refs.edthTable.$el.click()"
+                            style="position: fixed; right: 10px; top: 5px;"
+                            icon 
+                            small>
+                            <v-icon size="19">
+                              {{ mdiClose }}
+                            </v-icon>
+                          </v-btn>
+                        </div>
+                        Сiм`я:
+                        <pre>{{ JSON.stringify(item.infocard.family, null, 2) }}</pre>
+                      </v-card-text>
+                    </v-card>
+                  </v-menu>
                 </template>
               </v-data-table>
             </v-card-text>
@@ -776,3 +819,11 @@ export default {
   },
 }
 </script>
+
+<style>
+.check-wrapper {
+  position: relative; 
+  max-height: 600px;
+  overflow-y: auto;
+}
+</style>

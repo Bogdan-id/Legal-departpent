@@ -10,7 +10,7 @@
       <template v-slot:activator="{ on }">
         <v-fade-transition hide-on-leave>
           <v-btn 
-            v-show="dialog && !showRequisite"
+            v-show="personDialog && !showRequisite"
             @click="showRequisite = !showRequisite"
             v-on="on"
             class="toggle-hint-btn" 
@@ -25,7 +25,7 @@
       <template v-slot:activator="{ on }">
         <v-scroll-x-transition hide-on-leave>
           <v-btn 
-            v-show="!dialog && !showRule && (choosedPerson || choosedLegal)"
+            v-show="!personDialog && !showRule && (choosedPerson || choosedLegal)"
             @click="showRule = !showRule"
             v-on="on"
             class="toggle-hint-btn white--text"
@@ -57,7 +57,7 @@
       </v-card>
     </v-dialog>
     <v-scroll-y-transition>
-      <v-card v-show="dialog && showRequisite" class="card-req-info">
+      <v-card v-show="personDialog && showRequisite" class="card-req-info">
         <v-card-text class="req-info-wrapper">
           <!-- temporary mdi-close -->
           <v-tooltip bottom>
@@ -159,12 +159,6 @@
                 label="Юридична особа">
               </v-radio>
             </v-radio-group>
-            <a  
-              :href="pageUrl"
-              ref="targetLink"
-              style="display: none;"
-              target="_blank">
-            </a>
             <v-fade-transition hide-on-leave>
               <div v-show="choosedPerson">
                 <v-radio-group 
@@ -237,7 +231,7 @@
             <v-slide-x-transition hide-on-leave>
               <v-btn 
                 v-show="requisites"
-                @click="mapGlobalLegal(edrpou)"
+                @click="submit()"
                 color="grey darken-3"
                 class="white--text sbmt-btn"
                 small
@@ -250,6 +244,20 @@
         </v-col>
       </v-card>
     </v-col>
+    <PersonInfo 
+      v-if="choosedPerson"
+      :edrListPerson="edrListPerson"
+      :yourControlSanctionList="yourControlSanctionList"
+      :eDeclarationList="eDeclarationList"
+      :rnboList="rnboList"
+      :unSanctionList="unSanctionList"
+      :unTerrorList="unTerrorList"
+      :esSanctionList="esSanctionList"
+      :usSanctionList="usSanctionList"
+      :yourControlRnboList="yourControlRnboList"
+      :yourControlDsfmuList="yourControlDsfmuList"
+      :dialog.sync="personDialog">
+    </PersonInfo>
   </v-row>
 </template>
 <script>
@@ -476,7 +484,7 @@ tr.v-data-table__expanded.v-data-table__expanded__content {
 }
 
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
   height: 8px;
   background-color: #F5F5F5;
 }
@@ -493,4 +501,42 @@ tr.v-data-table__expanded.v-data-table__expanded__content {
   padding-left: 0.5rem;
   color: floralwhite;
 }
+  .v-card__text > .node-tree {
+    max-height: 80vh;
+    overflow: hidden;
+    overflow-y: auto;
+  }
+  .list-item {
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .node-tree {
+    font-family: Menlo, Consolas, monospace;
+  }
+  .node-tree p {
+    margin-bottom: 8px!important;
+  }
+  .verification-text span {
+    display: none;
+  }
+  .verification-text span:first-child {
+    display: inline;
+  }
+  .verification-text.active :not(span:first-child) {
+    display: block;
+  }
+  .verification-text.active {
+    white-space: normal;
+    width: 100%;
+    text-decoration: none;
+  }
+  .verification-text.active span {
+    display: inline;
+  }
+  .info-text {
+    font-weight: 500;
+  }
+  .person-info .info-label {
+    font-weight: bold;
+  }
 </style>

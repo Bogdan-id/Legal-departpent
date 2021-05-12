@@ -1,3 +1,4 @@
+// @ts-check
 import axios from 'axios'
 /* eslint-disable no-unused-vars */
 import {Store} from 'vuex'
@@ -15,7 +16,9 @@ function setClientDate (res) {
 }
 /** @param {AxiosResponse} res @param {Store} store */
 function cacheResponse (res, store) {
-  if (res.data.code === "InvalidParameters") return Promise.resolve(res)
+  let code = res?.data?.code
+  if (code === "InvalidParameters" || code === "ForbiddenDueToRequestsLimit") return Promise.resolve(res)
+
   const key = getRequestKey(res.config)
   store.commit('assignObject', {key: key, data: res})
   return Promise.resolve(res)
@@ -74,7 +77,7 @@ function setInterceptor (store) {
     req => handleRequest(req, store),
     // request err 
     err => Promise.reject(err)
-  );
+  )
 
   axios.interceptors.response.use(
     // any status in range 200 trigger res
@@ -83,8 +86,8 @@ function setInterceptor (store) {
     // any status outside range 200 trigger res error
     /** @param {AxiosError} err */
     err => Promise.reject(err)
-  );
-  return axios;
+  )
+  return axios
 }
 
 export default setInterceptor

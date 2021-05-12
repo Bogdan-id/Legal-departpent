@@ -7,13 +7,13 @@ export default {
   state: {},
   mutations: {
     /** 
-     * @param {{}} state 
+     * @param {object} state 
      * @param {string} key */
     createKey(state, key) {
       Vue.set(state, key, {})
     },
     /** 
-     * @param {{}} state 
+     * @param {object} state 
      * @param {{key: "string", data: AxiosResponse}} object */
     assignObject(state, object) {
       state[object.key] = object.data

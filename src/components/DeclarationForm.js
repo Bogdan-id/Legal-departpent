@@ -13,6 +13,7 @@ import {
 
 import { 
   mdiClose, 
+  mdiCog,
   mdiAccountSearch,
   mdiMenuDown,
   mdiInformation,
@@ -101,6 +102,7 @@ const legal =  {
     personDialog: false,
     /* Icons */
     mdiClose,
+    mdiCog,
     mdiAccountSearch,
     mdiMenuDown,
     mdiInformation,
@@ -129,6 +131,11 @@ const legal =  {
       {text: "Приклад UK", value: "exampleUK", sortable: false, align: "center"},
       {text: "Приклад EN", value: "exampleEN", sortable: false, align: "center"},
     ],
+    searchConfigDialog: false,
+    /* Search config */
+    yourScoreDSFMU: false, 
+    yourScoreRNBO: false,
+    yourScoreForeignLegalSanctions: false,
   }),
   methods: {
     isPep,
@@ -143,6 +150,17 @@ const legal =  {
       this.yourControlRnboList.splice(0)
       this.yourControlDsfmuList.splice(0)
       this.yourControlSanctionList.splice(0)
+    },
+    clearPersonFields() {
+      this.firstName = null
+      this.lastName = null 
+      this.patronymic = null
+      this.inn = null
+      this.$v.$reset()
+    },  
+    clearLegalFields() {
+      this.edrpou = null
+      this.$v.$reset()
     },
     trimExceededLength,
     /** @param {{companyName: string}} object */
@@ -182,7 +200,7 @@ const legal =  {
       /** @param {AxiosResponse} res */
       const checkPublicity = async (res) => {
         const list = res.data?.results?.object_list
-        if (! list?.length) return
+        if (! list?.length) return res
 
         const requests = list.map(async object => {
           const isPep = this.isPep(object.infocard.position) ? 'Так' : 'Нi'
@@ -217,7 +235,7 @@ const legal =  {
       const getDeclarations = (object) => {
         const url = this.baseUrl + '/get-declarations'
         return this.$axios
-          .post(url, object).then(res => res)
+          .post(url, object).then(res => {console.log('DECLARATIONS RES: ', res); return res})
       }
       return getDeclarations(object).then(res => checkPublicity(res)).catch(err => this.getRejectedKey(err))
     },
@@ -275,13 +293,7 @@ const legal =  {
       const url = this.baseUrl + `/your-control/get-edr`
       return this.$axios
         .post(url, object)
-        .then(res => {
-          if (res?.data?.code === "InvalidParameters") {
-            this.$snotify.simple(res.data.message)
-            throw new Error(res.data.message)
-          }
-          return res
-        })
+        .then(res => this.checkStatus(res))
         .catch(err => this.getRejectedKey(err))
     },
     /**
@@ -292,16 +304,9 @@ const legal =  {
      * @return {Promise<AxiosResponse<YourControlRNBOUrl>>} */
     // eslint-disable-next-line
     getRnboResultUrl(object) {
-      // const url = this.baseUrl + '/your-control/rnbo/get-person-url'
-      // return this.$axios
-      //   .post(url, object).then(res => res).catch(err => this.getRejectedKey(err))
-
-      /* below temporary for debug purposes */
-      // @ts-ignore
-      return Promise.resolve({data: {
-          status: 'string',
-          resultUrl: 'string',
-      }})
+      const url = this.baseUrl + '/your-control/rnbo/get-person-url'
+      return this.$axios
+        .post(url, object).then(res => this.checkStatus(res)).catch(err => this.getRejectedKey(err))
     },
     /** 
      * @function getDsfmuResultUrl - return link with resultId (DSMFU - terros)
@@ -309,32 +314,27 @@ const legal =  {
      * @return {Promise<AxiosResponse<YourControlRNBOUrl>>} */
     // eslint-disable-next-line
     getDsfmuResultUrl(object) {
-      // const url = this.baseUrl + '/your-control/dsfmu/get-person-url'
-      // return this.$axios
-      //   .post(url, object).then(res => res).catch(err => this.getRejectedKey(err))
-      
-      /* below temporary for debug purposes */
-      // @ts-ignore
-      return Promise.resolve({data: {
-        status: 'string',
-        resultUrl: 'string',
-      }})
+      const url = this.baseUrl + '/your-control/dsfmu/get-person-url'
+      return this.$axios
+        .post(url, object).then(res => this.checkStatus(res)).catch(err => this.getRejectedKey(err))
+    },
+    checkStatus(res) {
+      const code = res?.data?.code
+      if (code === "ForbiddenDueToRequestsLimit" || code === "InvalidParameters") {
+        this.$snotify.simple(res.data.code + " " + res.data.message)
+        throw new Error(res)
+      }
+      return res
     },
     /** 
      * @param {{resultUrl: string, apiKey: string}} object
      * @return {Promise<AxiosResponse<YourControlRNBOResult>>} */ // AxiosResponse["data"]
     // eslint-disable-next-line
     getResult(object) {
-      // const url = this.baseUrl + '/your-control/get-person-result'
-      // return this.$axios
-      //   .post(url, object).then(res => res).catch(err => this.getRejectedKey(err))
-
-      /* below for debug purposes */
-      return Promise.resolve({data: {
-        data: [],
-        result: [],
-        registryUpdateTime: 'string',
-      }})
+      console.log(object)
+      const url = this.baseUrl + '/your-control/get-person-result'
+      return this.$axios
+        .post(url, object).then(res => this.checkStatus(res)).catch(err => this.getRejectedKey(err))
     },
     
     /** 
@@ -344,7 +344,7 @@ const legal =  {
     checkYourControlSanctions(object) {
       const url = this.baseUrl + '/your-control/sanctions'
       return this.$axios
-        .post(url, object).then(res => res).catch(err => this.getRejectedKey(err))
+        .post(url, object).then(res => this.checkStatus(res)).catch(err => this.getRejectedKey(err))
     },
     /** @param {string} str */
     getLegalName(str) {
@@ -374,7 +374,6 @@ const legal =  {
       const yourControlEdrLegal = {edrpou: code, apiKey: this.apiKey, inn: null}  
       return this.getEdr(yourControlEdrLegal)
         .then(res => {
-          console.log('getEdr RES', res)
           if (res?.data?.status === "Update in progress") {
             this.attemptsToGetNewEdr ++
             return new Promise(resolve => {
@@ -519,23 +518,28 @@ const legal =  {
           .then(res => this.rnboList.push(...res.data)),
         this.checkUnTerrors(transliteratedPerson)
           .then(res => this.unTerrorList.push(...res.data)),
-        this.getRnboResultUrl(yourControlPerson)
-          .then(res => this.getResult({resultUrl: res.data.resultUrl, apiKey: this.apiKey})
-          .then(rnboRes => {
-            rnboRes?.data?.data && this.yourControlRnboList.push(...rnboRes.data.data)
-          })),
-        this.getDsfmuResultUrl(yourControlPerson)
-          .then(res => this.getResult({resultUrl: res.data.resultUrl, apiKey: this.apiKey})
-          .then(rnboRes => {
-            rnboRes?.data?.data && this.yourControlDsfmuList.push(...rnboRes.data.data)
-          })),
         this.checkUsPersonSunctions(transliteratedPerson)
           .then(res => this.usSanctionList.push(...res.data)),
-        this.checkEsPersonSunctions(transliteratedPerson)
+        this.checkEsPersonSunctions(person)
           .then(res => this.esSanctionList.push(...res.data)),
         this.checkUnPersSanctions(transliteratedPerson)
           .then(res => this.unSanctionList.push(...res.data)),
       ]
+
+      this.yourScoreDSFMU && requests.push(
+        this.getDsfmuResultUrl(yourControlPerson)
+          .then(res => this.getResult({resultUrl: res.data.resultUrl, apiKey: this.apiKey})
+          .then(rnboRes => {
+            rnboRes?.data?.data && this.yourControlDsfmuList.push(...rnboRes.data.data)
+          }))
+      )
+
+      this.yourScoreRNBO && requests.push(this.getRnboResultUrl(yourControlPerson)
+        .then(res => this.getResult({resultUrl: res.data.resultUrl, apiKey: this.apiKey})
+        .then(rnboRes => {
+          rnboRes?.data?.data && this.yourControlRnboList.push(...rnboRes.data.data)
+        }))
+      )
 
       return await Promise.all(requests)
         .then(() => {
@@ -563,28 +567,34 @@ const legal =  {
 
       const requests = [
         this.checkEDeclarations(person)
-          .then(res => this.eDeclarationList.push(...res.data.results.object_list)),
+          .then(res => {console.log('E-DECLARATION-RES', res); return this.eDeclarationList.push(...res.data.results.object_list)}),
         this.checkRnboPersons(person)
           .then(res => this.rnboList.push(...res.data)),
         this.checkUnTerrors(transliteratedPerson)
           .then(res => this.unTerrorList.push(...res.data)),
-        this.getRnboResultUrl(yourControlPerson)
-          .then(res => this.getResult({resultUrl: res.data.resultUrl, apiKey: this.apiKey})
-          .then(rnboRes => {
-            this.yourControlRnboList.push(...rnboRes.data.data)
-          })),
-        this.getDsfmuResultUrl(yourControlPerson)
-          .then(res => this.getResult({resultUrl: res.data.resultUrl, apiKey: this.apiKey})
-          .then(rnboRes => {
-            this.yourControlDsfmuList.push(...rnboRes.data.data)
-          })),
         this.checkUsPersonSunctions(transliteratedPerson)
           .then(res => this.usSanctionList.push(...res.data)),
-        this.checkEsPersonSunctions(transliteratedPerson)
+        this.checkEsPersonSunctions(person)
           .then(res => this.esSanctionList.push(...res.data)),
         this.checkUnPersSanctions(transliteratedPerson)
           .then(res => this.unSanctionList.push(...res.data)),
       ]
+
+      this.yourScoreDSFMU && requests.push(
+        this.getDsfmuResultUrl(yourControlPerson)
+          .then(res => this.getResult({resultUrl: res.data.resultUrl, apiKey: this.apiKey})
+          .then(rnboRes => {
+            this.yourControlDsfmuList.push(...rnboRes.data.data)
+          }))
+      )
+
+      this.yourScoreRNBO && requests.push(
+        this.getRnboResultUrl(yourControlPerson)
+          .then(res => this.getResult({resultUrl: res.data.resultUrl, apiKey: this.apiKey})
+          .then(rnboRes => {
+            this.yourControlRnboList.push(...rnboRes.data.data)
+          }))
+      )
 
       return await Promise.all(requests)
         .then(() => {
@@ -645,7 +655,7 @@ const legal =  {
       const transliteratedPersonObj = this.getPersonInitials(name, {transliterate: true})
       // const personObj = this.getPersonInitials(name)
 
-      this.getRnboResultUrl({
+      this.yourScoreRNBO && this.getRnboResultUrl({
           lastName: capitalizedPersonObj.lastName, 
           firstName: capitalizedPersonObj.firstName, 
           middleName: capitalizedPersonObj.patronymic, 
@@ -653,6 +663,15 @@ const legal =  {
         })
         .then(res => this.getResult({resultUrl: res.data.resultUrl, apiKey: this.apiKey}))
         .then(res => this.assignObject(mapedObject, {YourControlRNBO: res}))
+      
+      this.yourScoreDSFMU && this.getDsfmuResultUrl({
+        lastName: capitalizedPersonObj.lastName, 
+        firstName: capitalizedPersonObj.firstName, 
+        middleName: capitalizedPersonObj.patronymic, 
+        apiKey: this.apiKey
+      })
+        .then(res => this.getResult({resultUrl: res.data.resultUrl, apiKey: this.apiKey})
+        .then(res => this.assignObject(mapedObject, {YourControlDSFMU: res})))
 
       this.checkEDeclarations(capitalizedPersonObj)
         .then(res => this.assignObject(mapedObject, {EDeclarations: res}))
@@ -662,7 +681,7 @@ const legal =  {
         .then(res => this.assignObject(mapedObject, {UNPersonSanctions: res}))
       this.checkUsPersonSunctions(transliteratedPersonObj) 
         .then(res => this.assignObject(mapedObject, {USPersonSanctions: res}))
-      this.checkEsPersonSunctions(transliteratedPersonObj)
+      this.checkEsPersonSunctions(capitalizedPersonObj)
         .then(res => this.assignObject(mapedObject, {ESPersonSanctions: res}))
       this.checkUnTerrors(transliteratedPersonObj)
         .then(res => this.assignObject(mapedObject, {UNTerrorPersonSanctions: res}))
@@ -682,7 +701,7 @@ const legal =  {
         .then(res => this.assignObject(founder, {UNLegalSanctions: res}))
       this.checkRnboLegals({edrpou: founder.code, companyName: founderName})
         .then(res => this.assignObject(founder, {RNBOLegals: res}))
-      this.checkYourControlSanctions({edrpou: founder.code, apiKey: this.apiKey})
+      this.yourScoreForeignLegalSanctions && this.checkYourControlSanctions({edrpou: founder.code, apiKey: this.apiKey})
         .then(res => this.assignObject(founder, {YourControlSanctions: res}))
     },
     /**
@@ -701,7 +720,7 @@ const legal =  {
         .then(res => this.assignObject(legal, {UNLegalSanctions: res}))
       this.checkRnboLegals({edrpou: legal.code, companyName: requisites.nameUa})
         .then(res => this.assignObject(legal, {RNBOLegals: res}))
-      this.checkYourControlSanctions({edrpou: legal.code, apiKey: this.apiKey})
+      this.yourScoreForeignLegalSanctions && this.checkYourControlSanctions({edrpou: legal.code, apiKey: this.apiKey})
         .then(res => this.assignObject(legal, {YourControlSanctions: res}))
     },
     assignObject (source, asignObject) {
@@ -718,6 +737,7 @@ const legal =  {
 
     /** @return {string} */
     transliterate(str) {
+      if (str.match(/[a-z]/i)) return str.toUpperCase()
       if(!str) return
       let fI = {"Є": "IE", "Ї": "I", "Й": "I", "Ю": "IU", "Я": "IA"}
       str = str.toUpperCase().split("")
@@ -776,19 +796,19 @@ const legal =  {
   computed: {
     transliteRule() { return transliteRule },
     requisites() {
-      return !this.$v.$invalid
+      return !this.$v.$invalid && (this.choosedLegal || this.choosedPerson && (this.personInitials || this.personInn))
     },
     choosedPerson() {
       return this.searchVariant === 1
     },
+    choosedLegal() {
+      return this.searchVariant === 2
+    }, 
     personInitials() {
       return this.searchType === "searchByInitials"
     },
     personInn() {
       return this.searchType === "searchByInn"
-    },
-    choosedLegal() {
-      return this.searchVariant === 2
     },
     legalEdrpou() {
       return this.searchType === "searchByEdrpou"
@@ -796,7 +816,7 @@ const legal =  {
     // validations
     edrpouErr() { 
       const errors = []
-      if (!this.$v.$invalid) return errors
+      if (!this.$v.edrpou.$error) return errors
       !this.$v.edrpou.required && errors.push('Невiрний код ЄДРПОУ')
       !this.$v.edrpou.minLength && errors.push('Не вiрна кiлькiсть знакiв')
       return errors
@@ -815,7 +835,7 @@ const legal =  {
     },
     innErr() {
       const errors = []
-      if (! this.$v.$invalid) return
+      if (! this.$v.inn.$error) return errors
       !this.$v.inn.required && errors.push('Невiрний код IНН')
       !this.$v.inn.minLength && errors.push('Не вiрна кiлькiсть знакiв')
       return errors
@@ -830,7 +850,12 @@ const legal =  {
     },
     searchVariant() {
       this.searchType = null
+      this.clearLegalFields()
+      this.clearPersonFields()
     },
+    searchType() {
+      this.clearPersonFields()
+    }
   },
   mounted() {
     window.addEventListener('keydown', this.listenPressKey)

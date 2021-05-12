@@ -137,6 +137,55 @@
       </ul>
     </li>
     <li 
+      v-if="person.YourControlDSFMU"
+      @click.stop="toggleYourControlDSFMU" 
+      class="list-item">
+      <ListSigns 
+        title="РНБО санкції (Your-control)"
+        :data="person.YourControlDSFMU.data.data"
+        :state="showYourControlDSFMU"
+        :config="person.YourControlDSFMU.config"
+      />
+      <ul 
+        v-if="showYourControlDSFMU && person.YourControlDSFMU.data.data"
+        @click.prevent="toggleYourControlDSFMU">
+        <li
+          @click="toggleDescription(YourControlShowedList, key)"
+          :class="{active: YourControlShowedList.includes(key)}"
+          class="verification-text"
+          v-for="(item, key) in person.YourControlDSFMU.data.data"
+          :key="key">
+          <span>
+            {{ item.fullName }}&nbsp;
+            [{{ YourControlShowedList.includes(key) ? "-" : "+" }}]
+          </span>
+          <div v-show="YourControlShowedList.includes(key)">
+            <span v-show="item.sanctionsBasis">
+              Характеристика: <span class="info-text">{{ item.sanctionsBasis }}</span>
+            </span>
+            <span v-show="item.restrictiveMeasure">
+              Обмеження: <span class="info-text">{{ item.restrictiveMeasure }}</span>
+            </span>
+            <span v-show="item.periodOfApplication">
+              Термiн дії: <span class="info-text">{{ item.periodOfApplication }}</span>
+            </span>
+            <span v-show="item.note">
+              Замiтка: <span class="info-text">{{ item.note }}</span>
+            </span>
+            <span v-show="item.personCategory">
+              Категорiя: <span class="info-text">{{ item.personCategory }}</span>
+            </span>
+            <span v-show="item.source">
+              Джерело Iнформацiї: <span class="info-text">{{ item.source }}</span>
+            </span>
+            <span v-show="item.documentBasis">
+              Юридична постанова: <span class="info-text">{{ item.documentBasis }}</span>
+            </span>
+          </div>
+        </li>
+      </ul>
+    </li>
+    <li 
       v-if="person.ESPersonSanctions"
       @click.stop="toggleEsSanctions" 
       class="list-item">
@@ -156,14 +205,22 @@
           v-for="(item, key) in person.ESPersonSanctions.data.filter(item => !textExceptions.includes(item))"
           :key="key">
           <span>
-            {{ getInitials(item.text) }}&nbsp;
+            {{ item.fullName }}&nbsp;
             [{{ ESPersonSanctionsShowedList.includes(key) ? "-" : "+" }}]
           </span>
-          <div 
-            v-show="ESPersonSanctionsShowedList.includes(key)"
-            class="info-text">
-            {{ getText(item.text, getInitials(item.text)) }}
-          </div>
+          <v-card-text 
+            class="person-info" 
+            v-show="ESPersonSanctionsShowedList.includes(key)">
+            <p>
+              <span class="info-label">Iнформацiя: </span> <span class="info-text">{{ item.information }}</span>
+            </p>
+            <p>
+              <span class="info-label">Пiдстави: </span> <span class="info-text">{{ item.reasons }}</span>
+            </p>
+            <p>
+              <span class="info-label">Дата внесення: </span> <span class="info-text">{{ item.dateListing }}</span>
+            </p>
+          </v-card-text>
         </li>
       </ul>
     </li>
@@ -187,12 +244,31 @@
           v-for="(item, key) in person.RNBOSanctions.data.filter(item => !textExceptions.includes(item))"
           :key="key">
           <span>
-            {{ getInitials(item.text) }}&nbsp;
+            {{ item.fullName }}&nbsp;
             [{{ RNBOSanctionsShowedList.includes(key) ? "-" : "+" }}]
           </span>
-          <div class="info-text" v-show="RNBOSanctionsShowedList.includes(key)">
-            {{ getText(item.text, getInitials(item.text)) }}
-          </div>
+          <v-card-text 
+            class="person-info" 
+            v-show="RNBOSanctionsShowedList.includes(key)">
+            <p>
+              <span class="info-label">ПIБ: </span> <span class="info-text">{{ item.fullName }}</span>
+            </p>
+            <p>
+              <span class="info-label">Характеристика: </span> <span class="info-text">{{ item.description }}</span>
+            </p>
+            <p>
+              <span class="info-label">Обмеження: </span> <span class="info-text">{{ item.restrictiveMeasures }}</span>
+            </p>
+            <p>
+              <span class="info-label">Термiн дiї: </span> <span class="info-text">{{ item.periodOfApplication }}</span>
+            </p>
+            <p>
+              <span class="info-label">Документ: </span> <span class="info-text">{{ item.documentBasis }}</span>
+            </p>
+            <p>
+              <span class="info-label">Дата внесення: </span> <span class="info-text">{{ item.dateApproval }}</span>
+            </p>
+          </v-card-text>
         </li>
       </ul>
     </li>
@@ -369,6 +445,7 @@ export default {
     ],
   }),
   methods: {
+    toggleYourControlDSFMU() {this.showYourControlDSFMU = !this.showYourControlDSFMU},
     toggleYourControlRNBO() {this.showYourControl = !this.showYourControl},
     toggleSignerInfo() {this.showSignerInfo = !this.showSignerInfo},
     toggleFounderInfo() {this.showFounderInfo = !this.showFounderInfo},

@@ -20,3 +20,8 @@ vm.$axios = axios(store)
 vm.$store = store
 
 new Vue({vuetify, render: h => h(App)}).$mount('#app')
+
+Vue.config.errorHandler = function (err, vm, info) {
+  Vue.prototype.$snotify.simple(err)
+  throw {err, vm, info}
+}

@@ -6,6 +6,61 @@
         :legalDialog.sync="legalDialog">
       </LegalTree>
     </v-dialog>
+    <v-dialog 
+      v-model="searchConfigDialog"
+      :max-width="540">
+      <v-card style="position: relative" class="pb-4">
+        <v-tooltip 
+          bottom
+          color="grey darken-3">
+          <template #activator="{ on }">
+            <v-btn 
+              v-on="on"
+              @click="searchConfigDialog = !searchConfigDialog"
+              style="position: absolute; top: 5px; right: 5px;"
+              small
+              icon>
+              <v-icon :size="21">
+                {{ mdiClose }}
+              </v-icon>
+            </v-btn>
+          </template>
+          <span>Закрити</span>
+        </v-tooltip>
+        <v-card-title 
+          class="pb-0"
+          style="color: #4682b4">
+          Налаштування пошуку
+        </v-card-title>
+        <v-card-title 
+          class="body-1 pt-3 pb-0">
+          YourScore:
+        </v-card-title>
+        <v-card-text class="pt-0 pl-7">
+          <v-checkbox 
+            v-model="yourScoreRNBO"
+            label="Пошук фiз. осiб - РНБО"
+            color="red lighten-2"
+            hide-details
+            dense>
+          </v-checkbox>
+          <v-checkbox 
+            v-model="yourScoreDSFMU"
+            label="Пошук фiз. осiб - ДСФМУ (терористи)"
+            color="red lighten-2"
+            hide-details
+            dense>
+          </v-checkbox>
+          <v-checkbox 
+            v-model="yourScoreForeignLegalSanctions"
+            label="Пошук закордонних санкцiй до юр. особи"
+            color="red lighten-2"
+            hide-details
+            dense>
+          </v-checkbox>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
     <v-tooltip bottom>
       <template v-slot:activator="{ on }">
         <v-fade-transition hide-on-leave>
@@ -144,7 +199,26 @@
     <v-col cols="12" xl="3" lg="4" md="4"  sm="6" xs="10">
       <v-card class="mt-8 ml-5 mr-5 mb-8">
         <v-col>
-          <v-card-text class="pb-0">
+          <v-card-text class="pb-0" style="position: relative;">
+            <v-fade-transition hide-on-leave>
+              <v-tooltip
+                color="grey darken-3" 
+                bottom>
+                <template #activator="{ on }">
+                  <v-btn 
+                    v-on="on"
+                    v-show="choosedLegal || choosedPerson"
+                    @click="searchConfigDialog = !searchConfigDialog"
+                    style="position: absolute; top: 0; right: 0;"
+                    icon>
+                    <v-icon>
+                      {{ mdiCog }}
+                    </v-icon>
+                  </v-btn>
+                </template>
+                <span>Налаштування пошуку</span>
+              </v-tooltip>
+            </v-fade-transition>
             <div style="font-size: 1.05rem; text-align: left;">Оберiть критерiй пошуку</div>
             <v-radio-group dense single-line
               v-model="searchVariant">

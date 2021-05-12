@@ -441,6 +441,10 @@ const legal =  {
             })
           }
         })
+        .catch(err => {
+          this.$snotify.simple(err)
+          throw err
+        })
     },
     /**
      * @template T

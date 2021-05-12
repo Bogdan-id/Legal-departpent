@@ -19,14 +19,22 @@
           v-for="(item, key) in legal.ESLegalSanctions.data"
           :key="key">
           <span>
-            {{ getInitials(item.text) }}&nbsp;
+            {{ item.fullName }}&nbsp;
             [{{ ESLegalSanctionsShowedList.includes(key) ? "-" : "+" }}]
           </span>
-          <div 
-            v-show="ESLegalSanctionsShowedList.includes(key)"
-            class="info-text">
-            {{ getText(item.text, getInitials(item.text)) }}
-          </div>
+          <v-card-text 
+            class="person-info" 
+            v-show="ESLegalSanctionsShowedList.includes(key)">
+            <p>
+              <span class="info-label">Iнформацiя: </span> <span class="info-text">{{ item.information }}</span>
+            </p>
+            <p>
+              <span class="info-label">Пiдстави: </span> <span class="info-text">{{ item.reasons }}</span>
+            </p>
+            <p>
+              <span class="info-label">Дата внесення: </span> <span class="info-text">{{ item.dateListing }}</span>
+            </p>
+          </v-card-text>
         </li>
       </ul>
     </li>
@@ -79,14 +87,28 @@
           v-for="(item, key) in legal.RNBOLegals.data"
           :key="key">
           <span>
-            {{ getInitials(item.text) }}&nbsp;
+            {{ item.fullName }}&nbsp;
             [{{ RNBOLegalsShowedList.includes(key) ? "-" : "+" }}]
           </span>
-          <div 
-            v-show="RNBOLegalsShowedList.includes(key)"
-            class="info-text">
-            {{ getText(item.text, getInitials(item.text)) }}
-          </div>
+          <v-card-text 
+            class="person-info" 
+            v-show="RNBOLegalsShowedList.includes(key)">
+            <p>
+              <span class="info-label">Характеристика: </span> <span class="info-text">{{ item.description }}</span>
+            </p>
+            <p>
+              <span class="info-label">Обмеження: </span> <span class="info-text">{{ item.restrictiveMeasures }}</span>
+            </p>
+            <p>
+              <span class="info-label">Термiн дiї: </span> <span class="info-text">{{ item.periodOfApplication }}</span>
+            </p>
+            <p>
+              <span class="info-label">Документ: </span> <span class="info-text">{{ item.documentBasis }}</span>
+            </p>
+            <p>
+              <span class="info-label">Дата внесення: </span> <span class="info-text">{{ item.dateApproval }}</span>
+            </p>
+          </v-card-text>
         </li>
       </ul>
     </li>

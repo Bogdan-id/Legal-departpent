@@ -1,7 +1,7 @@
 <template>
   <v-dialog
     ref="dialog"
-    v-model="dialog"
+    v-model="innerState"
     :max-width="800"
     :max-height="600">
     <a  
@@ -11,19 +11,21 @@
       target="_blank">
     </a>
     <div class="check-wrapper">
-      <!-- <v-hover #default="{ hover }" >
-        <v-btn 
-          :style="closeAbsBtn"
-          @click="$emit('update:dialog', !dialog)" 
-          :color="hover 
-            ? 'rgba(255, 255, 255, 0.801)' 
-            : 'rgba(255, 255, 255, 0.562)'"
-          
-          icon>
-          <v-icon>{{ mdiClose }}</v-icon>
-        </v-btn>
-      </v-hover> -->
-      <v-card-text class="pl-1 pr-1 pt-3 custom-bg modal-card" elevation="0">
+      <v-tooltip
+        color="grey darken-4"
+        bottom>
+        <template #activator="{ on }">
+          <v-icon 
+            @click="innerState = !innerState"
+            style="position: absolute; top: 0; right: 2px; cursor: pointer;"
+            v-on="on"
+            size="22">
+            {{ mdiCloseBox }}
+          </v-icon>
+        </template>
+        <span>Закрити</span>
+      </v-tooltip>
+      <v-card-text class="pl-1 pr-1 pt-5 custom-bg modal-card" elevation="0">
         <!-- EDR -->
         <v-btn @click="makeActive('EDR')" 
           class="d-block white--text section-btn"
@@ -84,9 +86,10 @@
         </v-btn>
         <v-scroll-x-transition hide-on-leave>
           <v-card v-show="btnActv('yourControlDsfmuList')" class="mb-2 item-card">
-            <v-card-text class="person-info">
+            <v-card-text 
+              v-show="yourControlDsfmuList.length"
+              class="person-info pt-0">
               <ul 
-                v-show="yourControlDsfmuList.length"
                 class="mb-3">
                 <li
                   class="mb-5"
@@ -172,10 +175,10 @@
         </v-btn>
         <v-scroll-x-transition hide-on-leave>
           <v-card v-show="btnActv('yourControlRnboList')" class="mb-2 item-card">
-            <v-card-text class="person-info">
-              <ul 
-                v-show="yourControlRnboList.length"
-                class="mb-3">
+            <v-card-text 
+              v-show="yourControlRnboList.length"
+              class="person-info">
+              <ul class="mb-3">
                 <li
                   class="mb-5"
                   v-for="(item, key) in yourControlRnboList"
@@ -309,10 +312,30 @@
         </v-btn>
         <v-scroll-x-transition hide-on-leave>
           <v-card v-show="btnActv('RNBO')" class="mb-2 item-card">
-            <v-card-text v-show="rnboVariant.length">
-              <p v-for="(item, key) in rnboVariant.filter(filterCustomMark)"
-                :key="key"
-                v-html="item.text"></p>
+            <v-card-text class="person-info" v-show="rnboVariant.length">
+              <div 
+                class="pb-4"
+                v-for="(item, key) in rnboVariant.filter(filterCustomMark)"
+                :key="key">
+                <p>
+                  <span class="info-label">ПIБ: </span> <span class="info-text">{{ item.fullName }}</span>
+                </p>
+                <p>
+                  <span class="info-label">Характеристика: </span> <span class="info-text">{{ item.description }}</span>
+                </p>
+                <p>
+                  <span class="info-label">Обмеження: </span> <span class="info-text">{{ item.restrictiveMeasures }}</span>
+                </p>
+                <p>
+                  <span class="info-label">Термiн дiї: </span> <span class="info-text">{{ item.periodOfApplication }}</span>
+                </p>
+                <p>
+                  <span class="info-label">Документ: </span> <span class="info-text">{{ item.documentBasis }}</span>
+                </p>
+                <p>
+                  <span class="info-label">Дата внесення: </span> <span class="info-text">{{ item.dateApproval }}</span>
+                </p>
+              </div>
             </v-card-text>
             <v-card-text v-show="!rnboVariant.length">
               Данi для вiдображення вiдсутнi
@@ -509,9 +532,25 @@
         <v-scroll-x-transition hide-on-leave>
           <v-card v-show="btnActv('EUSanc')" class="mb-2 item-card">
             <v-card-text v-show="esVariant.length > 0">
-              <p v-for="(item, key) in esVariant.filter(filterCustomMark)"
-                :key="key"
-                v-html="key + 1 + '. ' + item.text"></p>
+              <v-card-text 
+                class="person-info" 
+                v-show="esVariant.length > 0">
+                <div v-for="(item, key) in esVariant.filter(filterCustomMark)"
+                  :key="key">
+                  <p>
+                    <span class="info-label">ПIБ: </span> <span class="info-text">{{ item.fullName }}</span>
+                  </p>
+                  <p>
+                    <span class="info-label">Iнформацiя: </span> <span class="info-text">{{ item.information }}</span>
+                  </p>
+                  <p>
+                    <span class="info-label">Пiдстави: </span> <span class="info-text">{{ item.reasons }}</span>
+                  </p>
+                  <p>
+                    <span class="info-label">Дата внесення: </span> <span class="info-text">{{ item.dateListing }}</span>
+                  </p>
+                </div>
+              </v-card-text>
             </v-card-text>
             <v-card-text v-show="!esVariant.length">
               Данi для вiдображення вiдсутнi
@@ -660,6 +699,7 @@ import {
   mdiMenuDown, 
   mdiTextBoxSearchOutline,
   mdiClose,
+  mdiCloseBox,
 } from '@mdi/js' 
 
 /* Components */
@@ -707,6 +747,9 @@ export default {
     mdiMenuDown,
     mdiTextBoxSearchOutline,
     mdiClose,
+    mdiCloseBox,
+    /* Dialog */
+    innerState: false,
   }),
   methods: {
     makeActive(section) {
@@ -727,7 +770,7 @@ export default {
     },
     switchHeader (list, index) {
       switch(list[index]) {
-        case 'initials': return 'спiвпадiння за ПIП';
+        case 'initials': return 'спiвпадiння за ПIБ';
         case 'lastFirstName': return 'спiвпадiння за Прiзвищем та Iм`ям';
         case 'lastName' : return 'спiвпадiння за Прiзвищем'; 
         case 'firstName': return 'спiвпадiння за Iм`ям'; 
@@ -814,7 +857,11 @@ export default {
       }, 0)
     },
     dialog(val) {
+      this.innerState = val
       !val && (this.currSection = null)
+    },
+    innerState(val) {
+      this.$emit('update:dialog', val)
     }
   },
 }
@@ -825,5 +872,6 @@ export default {
   position: relative; 
   max-height: 600px;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 </style>

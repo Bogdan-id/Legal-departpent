@@ -70,6 +70,122 @@
             </v-card-text>
           </v-card>
         </v-scroll-x-transition>
+        <!-- Australian person sanctions [australiaSanctionList] -->
+        <v-btn @click="makeActive('australiaSanctionList')" 
+          class="d-block white--text section-btn"
+          :color="btnActv('australiaSanctionList') ? 'grey darken-1' : 'grey darken-3'">
+          Санкцiї Австралiї (терористи)&nbsp;-&nbsp;[
+          <span :class="{'btn-count': validLength(australiaSanctionList).length}">
+            {{ validLength(australiaSanctionList).length }}
+          </span>]
+          <v-icon 
+            :class="btnActv('australiaSanctionList') ? 'active' : ''" 
+            color="white">
+            {{ mdiMenuDown }}
+          </v-icon>
+          <span v-show="australiaSanctionList.length" 
+            class="result-header">
+            {{switchHeader(australiaSanctionList, australiaSanctionList.length - 1)}}
+          </span>
+        </v-btn>
+        <v-scroll-x-transition hide-on-leave>
+          <v-card v-show="btnActv('australiaSanctionList')" class="mb-2 item-card">
+            <v-card-text 
+              v-show="australiaSanctionList.length"
+              class="person-info pt-4">
+              <ul 
+                class="mb-3">
+                <li
+                  class="entity-list"
+                  style="padding-bottom: 15px;"
+                  v-for="(item, key) in australiaSanctionList.filter(filterCustomMark)"
+                  :key="key">
+                  <span class="info-label">{{ item.fullName }}&nbsp;</span>
+                  <div>
+                    <div v-show="item.birthDate">
+                      <span class="info-label">Дата народження:</span> 
+                      &nbsp;
+                      <span>
+                        {{ item.birthDate }}
+                      </span>
+                    </div>
+                    <div v-show="item.placeBirth">
+                      <span class="info-label">Мicце народження:</span> 
+                      &nbsp;
+                      <span>{{ item.placeBirth }}</span>
+                    </div>
+                    <div v-show="item.citizenship">
+                      <span class="info-label">Громадянство: </span> <span class="info-text">{{ item.citizenship }}</span>
+                    </div>
+                    <div v-show="item.additionalInfo">
+                      <span class="info-label">Iнфо:</span> <span class="info-text">{{ item.additionalInfo }}</span>
+                    </div>
+                    <div v-show="item.address">
+                      <span class="info-label">Адреса:</span> <span class="info-text">{{ item.address }}</span>
+                    </div>
+                    <div v-show="item.commitee">
+                      <span class="info-label">Органiзацiя:</span> <span class="info-text">{{ item.commitee }}</span>
+                    </div>
+                    <div v-show="item.listingInfo">
+                      <span class="info-label">Дата:</span> <span class="info-text">{{ item.listingInfo }}</span>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </v-card-text>
+            <v-card-text v-show="!australiaSanctionList.length">
+              Данi для вiдображення вiдсутнi
+            </v-card-text>
+          </v-card>
+        </v-scroll-x-transition>
+        <!-- Canadian person sanctions [canadaSanctionList] -->
+        <v-btn @click="makeActive('canadaSanctionList')" 
+          class="d-block white--text section-btn"
+          :color="btnActv('canadaSanctionList') ? 'grey darken-1' : 'grey darken-3'">
+          Санкцiї Канади &nbsp;-&nbsp;[
+          <span :class="{'btn-count': validLength(canadaSanctionList).length}">
+            {{ validLength(canadaSanctionList).length }}
+          </span>]
+          <v-icon 
+            :class="btnActv('canadaSanctionList') ? 'active' : ''" 
+            color="white">
+            {{ mdiMenuDown }}
+          </v-icon>
+          <span v-show="canadaSanctionList.length" 
+            class="result-header">
+            {{switchHeader(canadaSanctionList, canadaSanctionList.length - 1)}}
+          </span>
+        </v-btn>
+        <v-scroll-x-transition hide-on-leave>
+          <v-card v-show="btnActv('canadaSanctionList')" class="mb-2 item-card">
+            <v-card-text 
+              v-show="canadaSanctionList.length"
+              class="person-info pt-4">
+              <ul 
+                class="mb-3">
+                <li
+                  class="entity-list"
+                  style="padding-bottom: 15px;"
+                  v-for="(item, key) in canadaSanctionList.filter(filterCustomMark)"
+                  :key="key">
+                  <span class="info-label">{{ item.fullName }}&nbsp;</span>
+                  <div>
+                    <div v-show="item.Country">
+                      <span class="info-label">Країна:</span> 
+                      &nbsp;
+                      <span>
+                        {{ item.Country }}
+                      </span>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </v-card-text>
+            <v-card-text v-show="!canadaSanctionList.length">
+              Данi для вiдображення вiдсутнi
+            </v-card-text>
+          </v-card>
+        </v-scroll-x-transition>
         <!-- Yourscore DSMFU  -->
         <v-btn @click="makeActive('yourControlDsfmuList')" 
           class="d-block white--text section-btn"
@@ -92,7 +208,8 @@
               <ul 
                 class="mb-3">
                 <li
-                  class="mb-5"
+                  class="entity-list"
+                  style="padding-bottom: 15px;"
                   v-for="(item, key) in yourControlDsfmuList"
                   :key="key">
                   <span class="info-label">{{ item.name }}&nbsp;</span>
@@ -180,7 +297,8 @@
               class="person-info">
               <ul class="mb-3">
                 <li
-                  class="mb-5"
+                  class="entity-list"
+                  style="padding-bottom: 15px;"
                   v-for="(item, key) in yourControlRnboList"
                   :key="key">
                   <span class="info-label">{{ item.fullName }}&nbsp;</span>
@@ -313,29 +431,32 @@
         <v-scroll-x-transition hide-on-leave>
           <v-card v-show="btnActv('RNBO')" class="mb-2 item-card">
             <v-card-text class="person-info" v-show="rnboVariant.length">
-              <div 
-                class="pb-4"
-                v-for="(item, key) in rnboVariant.filter(filterCustomMark)"
-                :key="key">
-                <p>
-                  <span class="info-label">ПIБ: </span> <span class="info-text">{{ item.fullName }}</span>
-                </p>
-                <p>
-                  <span class="info-label">Характеристика: </span> <span class="info-text">{{ item.description }}</span>
-                </p>
-                <p>
-                  <span class="info-label">Обмеження: </span> <span class="info-text">{{ item.restrictiveMeasures }}</span>
-                </p>
-                <p>
-                  <span class="info-label">Термiн дiї: </span> <span class="info-text">{{ item.periodOfApplication }}</span>
-                </p>
-                <p>
-                  <span class="info-label">Документ: </span> <span class="info-text">{{ item.documentBasis }}</span>
-                </p>
-                <p>
-                  <span class="info-label">Дата внесення: </span> <span class="info-text">{{ item.dateApproval }}</span>
-                </p>
-              </div>
+              <ul>
+                <li 
+                  class="entity-list"
+                  style="padding-bottom: 15px;"
+                  v-for="(item, key) in rnboVariant.filter(filterCustomMark)"
+                  :key="key">
+                  <p>
+                    <span class="info-label">ПIБ: </span> <span class="info-text">{{ item.fullName }}</span>
+                  </p>
+                  <p>
+                    <span class="info-label">Характеристика: </span> <span class="info-text">{{ item.description }}</span>
+                  </p>
+                  <p>
+                    <span class="info-label">Обмеження: </span> <span class="info-text">{{ item.restrictiveMeasures }}</span>
+                  </p>
+                  <p>
+                    <span class="info-label">Термiн дiї: </span> <span class="info-text">{{ item.periodOfApplication }}</span>
+                  </p>
+                  <p>
+                    <span class="info-label">Документ: </span> <span class="info-text">{{ item.documentBasis }}</span>
+                  </p>
+                  <p>
+                    <span class="info-label">Дата внесення: </span> <span class="info-text">{{ item.dateApproval }}</span>
+                  </p>
+                </li>
+              </ul>
             </v-card-text>
             <v-card-text v-show="!rnboVariant.length">
               Данi для вiдображення вiдсутнi
@@ -535,21 +656,26 @@
               <v-card-text 
                 class="person-info" 
                 v-show="esVariant.length > 0">
-                <div v-for="(item, key) in esVariant.filter(filterCustomMark)"
-                  :key="key">
-                  <p>
-                    <span class="info-label">ПIБ: </span> <span class="info-text">{{ item.fullName }}</span>
-                  </p>
-                  <p>
-                    <span class="info-label">Iнформацiя: </span> <span class="info-text">{{ item.information }}</span>
-                  </p>
-                  <p>
-                    <span class="info-label">Пiдстави: </span> <span class="info-text">{{ item.reasons }}</span>
-                  </p>
-                  <p>
-                    <span class="info-label">Дата внесення: </span> <span class="info-text">{{ item.dateListing }}</span>
-                  </p>
-                </div>
+                <ul>
+                  <li 
+                    class="entity-list"
+                    style="padding-bottom: 15px;"
+                    v-for="(item, key) in esVariant.filter(filterCustomMark)"
+                    :key="key">
+                    <p>
+                      <span class="info-label">ПIБ: </span> <span class="info-text">{{ item.fullName }}</span>
+                    </p>
+                    <p>
+                      <span class="info-label">Iнформацiя: </span> <span class="info-text">{{ item.information }}</span>
+                    </p>
+                    <p>
+                      <span class="info-label">Пiдстави: </span> <span class="info-text">{{ item.reasons }}</span>
+                    </p>
+                    <p>
+                      <span class="info-label">Дата внесення: </span> <span class="info-text">{{ item.dateListing }}</span>
+                    </p>
+                  </li>
+                </ul>
               </v-card-text>
             </v-card-text>
             <v-card-text v-show="!esVariant.length">
@@ -721,6 +847,9 @@ export default {
     yourControlRnboList: {type: Array},
     yourControlDsfmuList: {type: Array},
     yourControlSanctionList: {type: Array},
+
+    australiaSanctionList: {type: Array},
+    canadaSanctionList: {type: Array},
     /* Dialog */
     dialog: {type: Boolean},
   },
@@ -873,5 +1002,12 @@ export default {
   max-height: 600px;
   overflow-y: auto;
   overflow-x: hidden;
+}
+.entity-list:first-child {
+  padding-top: 0;
+}
+.entity-list {
+  border-bottom: 1px solid gainsboro;
+  padding-top: 29px;
 }
 </style>

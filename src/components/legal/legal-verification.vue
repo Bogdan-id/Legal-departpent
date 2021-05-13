@@ -112,6 +112,93 @@
         </li>
       </ul>
     </li>
+    <!-- Canada sanctions -->
+    <li 
+      @click.stop="toggleCanadaSanctions"  
+      class="list-item">
+      <ListSigns 
+        title="Канада санкцiї"
+        :data="legal.CanadaLegalSanctions.data"
+        :state="showCanadaSanctions"
+        :config="legal.CanadaLegalSanctions.config"
+      />
+      <ul 
+        v-show="showCanadaSanctions"
+        @click.prevent="toggleCanadaSanctions">
+        <li
+          @click="toggleDescription(CanadaLegalsShowedList, key)"
+          class="verification-text"
+          :class="{active: CanadaLegalsShowedList.includes(key)}"
+          v-for="(item, key) in legal.CanadaLegalSanctions.data"
+          :key="key">
+          <span>
+            {{ item.Entity }}&nbsp;
+            [{{ CanadaLegalsShowedList.includes(key) ? "-" : "+" }}]
+          </span>
+          <v-card-text 
+            class="person-info" 
+            v-show="CanadaLegalsShowedList.includes(key)">
+            <span v-show="item.Country">
+              Країна: <span class="info-text">{{ item.Country }}</span>
+            </span>
+            <span v-show="item.Aliases">
+              Також вiдомий як: <span class="info-text">{{ item.Aliases }}</span>
+            </span>
+          </v-card-text>
+        </li>
+      </ul>
+    </li>
+    <!-- Australia sanctions -->
+    <li 
+      @click.stop="toggleAustraliaSanctions"
+      class="list-item">
+      <ListSigns 
+        title="Австралiя санкцiї"
+        :data="legal.AustraliaLegalSanctions.data"
+        :state="showAustraliaSanctions"
+        :config="legal.AustraliaLegalSanctions.config"
+      />
+      <ul 
+        v-show="showAustraliaSanctions"
+        @click.prevent="toggleAustraliaSanctions">
+        <li
+          @click="toggleDescription(AustraliaLegalShowedList, key)" 
+          class="verification-text"
+          :class="{active: AustraliaLegalShowedList.includes(key)}"
+          v-for="(item, key) in legal.AustraliaLegalSanctions.data"
+          :key="key">
+          <span>
+            {{ item.fullName }}&nbsp;
+            [{{ AustraliaLegalShowedList.includes(key) ? "-" : "+" }}]
+          </span>
+          <v-card-text 
+            class="person-info" 
+            v-show="AustraliaLegalShowedList.includes(key)">
+            <span v-show="item.birthDate">
+              Дата народження: <span class="info-text">{{ item.birthDate }}</span>
+            </span>
+            <span v-show="item.placeBirth">
+              Мicце народження: <span class="info-text">{{ item.placeBirth }}</span>
+            </span>
+            <span v-show="item.citizenship">
+              Громадянство: <span class="info-text">{{ item.citizenship }}</span>
+            </span>
+            <span v-show="item.additionalInfo">
+              Iнфо: <span class="info-text">{{ item.additionalInfo }}</span>
+            </span>
+            <span v-show="item.address">
+              Адреса: <span class="info-text">{{ item.address }}</span>
+            </span>
+            <span v-show="item.commitee">
+              Органiзацiя: <span class="info-text">{{ item.commitee }}</span>
+            </span>
+            <span v-show="item.listingInfo">
+              Дата: <span class="info-text">{{ item.listingInfo }}</span>
+            </span>
+          </v-card-text>
+        </li>
+      </ul>
+    </li>
     <li 
       @click.stop="toggleUNLegalSanctions"
       class="list-item">
@@ -256,7 +343,7 @@ import {
   getText, 
   getCategoryName} from './helper'
 
-import ListSigns from "./list-sign"
+import ListSigns from "./list-sign.vue"
 
 export default {
   components: {ListSigns},
@@ -269,9 +356,13 @@ export default {
     showUNTerrorLegalSanctions: false,
     showUSLegalSanctions: false,
     showYourControlSanctions: false,
+    showCanadaSanctions: false,
+    showAustraliaSanctions: false,
 
     ESLegalSanctionsShowedList: [],
     RNBOLegalsShowedList: [],
+    CanadaLegalsShowedList: [],
+    AustraliaLegalShowedList: [],
     UNLegalSanctionsShowedList: [],
     UNLegalTerrorsShowedList: [],
     USLegalSanctionsShowedList: [],
@@ -292,6 +383,8 @@ export default {
     toggleUNTerrorLegalSanctions() {this.showUNTerrorLegalSanctions = !this.showUNTerrorLegalSanctions},
     toggleUSLegalSanctions() {this.showUSLegalSanctions = !this.showUSLegalSanctions},
     toggleYourControlSanctions() {this.showYourControlSanctions = !this.showYourControlSanctions},
+    toggleCanadaSanctions() {this.showCanadaSanctions = !this.showCanadaSanctions},
+    toggleAustraliaSanctions() {this.showAustraliaSanctions = !this.showAustraliaSanctions},
     toggleDescription, 
     getCategoryName,
     getInitials,

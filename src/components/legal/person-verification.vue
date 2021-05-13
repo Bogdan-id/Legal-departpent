@@ -313,6 +313,94 @@
         </li>
       </ul>
     </li>
+    <!-- Australia sanctions -->
+    <li 
+      v-if="person.AustraliaPersonSanctions"
+      @click.stop="toggleAustraliaPersonSanctions"
+      class="list-item">
+      <ListSigns 
+        title="Австралiя санкцii"
+        :data="person.AustraliaPersonSanctions.data"
+        :state="showAustraliaSanctions"
+        :config="person.AustraliaPersonSanctions.config"
+      />
+      <ul 
+        v-show="showAustraliaSanctions"
+        @click.prevent="toggleAustraliaPersonSanctions">
+        <li
+          @click="toggleDescription(AustraliaPersonSanctionsShowedList, key)"
+          :class="{active: AustraliaPersonSanctionsShowedList.includes(key)}"
+          class="verification-text"
+          v-for="(item, key) in person.AustraliaPersonSanctions.data.filter(item => !textExceptions.includes(item))"
+          :key="key">
+          <span>
+            {{ item.fullName }}&nbsp;
+            [{{ AustraliaPersonSanctionsShowedList.includes(key) ? "-" : "+" }}]
+          </span>
+          <span v-show="item.birthDate">
+            Дата народження: <span class="info-text">{{ item.birthDate }}</span>
+          </span>
+          <span v-show="item.placeBirth">
+            Мicце народження: <span class="info-text">{{ item.placeBirth }}</span>
+          </span>
+          <span v-show="item.citizenship">
+            Громадянство: <span class="info-text">{{ item.citizenship }}</span>
+          </span>
+          <span v-show="item.additionalInfo">
+            Iнфо: <span class="info-text">{{ item.additionalInfo }}</span>
+          </span>
+          <span v-show="item.address">
+            Адреса: <span class="info-text">{{ item.address }}</span>
+          </span>
+          <span v-show="item.commitee">
+            Органiзацiя: <span class="info-text">{{ item.commitee }}</span>
+          </span>
+          <span v-show="item.listingInfo">
+            Дата: <span class="info-text">{{ item.listingInfo }}</span>
+          </span>
+        </li>
+      </ul>
+    </li>
+    <!-- Canada sanctions [CanadaPersonSanctions]-->
+    <li 
+      v-if="person.CanadaPersonSanctions"
+      @click.stop="toggleCanadaSanctions"
+      class="list-item">
+      <ListSigns 
+        title="Канада санкцiї"
+        :data="person.CanadaPersonSanctions.data"
+        :state="showCanadaSanctions"
+        :config="person.CanadaPersonSanctions.config"
+      />
+      <ul 
+        v-show="showCanadaSanctions"
+        @click.prevent="toggleCanadaSanctions">
+        <li
+          @click="toggleDescription(CanadaPersonSanctionsSshowedList, key)"
+          :class="{active: CanadaPersonSanctionsSshowedList.includes(key)}"
+          class="verification-text"
+          v-for="(item, key) in person.CanadaPersonSanctions.data.filter(item => !textExceptions.includes(item))"
+          :key="key">
+          <span>
+            {{ item.fullName }}&nbsp;
+            [{{ CanadaPersonSanctionsSshowedList.includes(key) ? "-" : "+" }}]
+          </span>
+          <span>Резолюцiя: <span class="info-text">{{ item['program-entry'] }}</span></span>
+          <span v-show="item['date-of-birth-list']">
+            Дата народження: <span class="info-text">{{ item['date-of-birth-list'] }}</span>
+          </span>
+          <span v-show="item['place-of-birth-list']">
+            Мiсце народження: <span class="info-text">{{ item['place-of-birth-list'] }}</span>
+          </span>
+          <span v-show="item['nationality-list']">
+            Нацiональнiсть: <span class="info-text">{{ item['nationality-list'] }}</span>
+          </span>
+          <span v-show="item['comments']">
+            Додатково: <span class="info-text">{{ item['comments'] }}</span>
+          </span>
+        </li>
+      </ul>
+    </li>
     <li 
       v-if="person.UNTerrorPersonSanctions"
       @click.stop="toggleUNTerrorPersonSanctions"
@@ -412,7 +500,7 @@ import {
   getText, 
   getCategoryName } from "./helper"
 
-import ListSigns from "./list-sign"
+import ListSigns from "./list-sign.vue"
 
 export default {
   components: {ListSigns},
@@ -427,9 +515,13 @@ export default {
     showFounderInfo: false,
     showSignerInfo: false,
     showYourControl: false,
+    showAustraliaSanctions: false,
+    showCanadaSanctions: false,
 
     USPersonSanctionShowedList: [],
     UNTerrorPersonSanctionsShowedList: [],
+    CanadaPersonSanctionsSshowedList: [],
+    AustraliaPersonSanctionsShowedList: [],
     UNPersonSanctionsShowedList: [],
     RNBOSanctionsShowedList: [],
     ESPersonSanctionsShowedList: [],
@@ -455,6 +547,8 @@ export default {
     toggleUNPersonSanctions() {this.showUNPersonSanctions = !this.showUNPersonSanctions},
     toggleUNTerrorPersonSanctions() {this.showUNTerrorPersonSanctions = !this.showUNTerrorPersonSanctions},
     toggleUSPersonSanctions() {this.showUSPersonSanctions = !this.showUSPersonSanctions},
+    toggleAustraliaPersonSanctions() {this.showAustraliaSanctions = !this.showAustraliaSanctions},
+    toggleCanadaSanctions() {this.showCanadaSanctions = !this.showCanadaSanctions},
     getCategoryName,
     toggleDescription, 
     getInitials,

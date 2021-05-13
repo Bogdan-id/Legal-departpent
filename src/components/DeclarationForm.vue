@@ -325,6 +325,8 @@
       :eDeclarationList="eDeclarationList"
       :rnboList="rnboList"
       :unSanctionList="unSanctionList"
+      :canadaSanctionList="canadaSanctionList"
+      :australiaSanctionList="australiaSanctionList"
       :unTerrorList="unTerrorList"
       :esSanctionList="esSanctionList"
       :usSanctionList="usSanctionList"

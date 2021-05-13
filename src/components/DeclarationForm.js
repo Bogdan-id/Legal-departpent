@@ -94,6 +94,8 @@ const legal =  {
     yourControlRnboList: [],
     yourControlDsfmuList: [],
     yourControlSanctionList: [],
+    australiaSanctionList: [],
+    canadaSanctionList: [],
     /* Data */
     searchVariant: null,
     searchType: null,
@@ -150,6 +152,8 @@ const legal =  {
       this.yourControlRnboList.splice(0)
       this.yourControlDsfmuList.splice(0)
       this.yourControlSanctionList.splice(0)
+      this.canadaSanctionList.splice(0) 
+      this.australiaSanctionList.splice(0)
     },
     clearPersonFields() {
       this.firstName = null
@@ -318,6 +322,36 @@ const legal =  {
       return this.$axios
         .post(url, object).then(res => this.checkStatus(res)).catch(err => this.getRejectedKey(err))
     },
+
+
+    /** @param {{edrpou: string | number, companyName: string}} object */
+    checkCanadaLegalSanctions (object) {
+      const url = this.baseUrl + '/canada-legal-sanctions'
+      return this.$axios
+        .post(url, object).then(res => res).catch(err => this.getRejectedKey(err))
+    },
+    /** 
+     * @param {{lastName: string, firstName: string, patronymic: string}} object */
+    checkCanadaPersonSanctions (object) {
+      const url = this.baseUrl + '/canada-person-sanctions'
+      return this.$axios
+        .post(url, object).then(res => res).catch(err => this.getRejectedKey(err))
+    },
+    /** 
+     * @param {{lastName: string, firstName: string, patronymic: string}} object */
+    checkAustraliaPersonSanctions (object) {
+      const url = this.baseUrl + '/australia-person-sanctions'
+      return this.$axios
+        .post(url, object).then(res => res).catch(err => this.getRejectedKey(err))
+    },
+    /** @param {{edrpou: string | number, companyName: string}} object */
+    checkAustraliaLegalSanctions (object) {
+      const url = this.baseUrl + '/australia-legal-sanctions'
+      return this.$axios
+        .post(url, object).then(res => res).catch(err => this.getRejectedKey(err))
+    },
+
+
     checkStatus(res) {
       const code = res?.data?.code
       if (code === "ForbiddenDueToRequestsLimit" || code === "InvalidParameters") {
@@ -528,6 +562,10 @@ const legal =  {
           .then(res => this.esSanctionList.push(...res.data)),
         this.checkUnPersSanctions(transliteratedPerson)
           .then(res => this.unSanctionList.push(...res.data)),
+        this.checkAustraliaPersonSanctions(transliteratedPerson) 
+          .then(res => this.australiaSanctionList.push(...res.data)),
+        this.checkCanadaPersonSanctions(transliteratedPerson)
+          .then(res => this.canadaSanctionList.push(...res.data)),
       ]
 
       this.yourScoreDSFMU && requests.push(
@@ -582,6 +620,10 @@ const legal =  {
           .then(res => this.esSanctionList.push(...res.data)),
         this.checkUnPersSanctions(transliteratedPerson)
           .then(res => this.unSanctionList.push(...res.data)),
+          this.checkAustraliaPersonSanctions(transliteratedPerson) 
+          .then(res => this.australiaSanctionList.push(...res.data)),
+        this.checkCanadaPersonSanctions(transliteratedPerson)
+          .then(res => this.canadaSanctionList.push(...res.data)),
       ]
 
       this.yourScoreDSFMU && requests.push(
@@ -654,7 +696,6 @@ const legal =  {
      * @param {string} name
      */
     checkLegalPerson(mapedObject, name) {
-      console.log('checkLegalPerson', name)
       const capitalizedPersonObj = this.getPersonInitials(name, {capitalize: true})
       const transliteratedPersonObj = this.getPersonInitials(name, {transliterate: true})
       // const personObj = this.getPersonInitials(name)
@@ -689,6 +730,10 @@ const legal =  {
         .then(res => this.assignObject(mapedObject, {ESPersonSanctions: res}))
       this.checkUnTerrors(transliteratedPersonObj)
         .then(res => this.assignObject(mapedObject, {UNTerrorPersonSanctions: res}))
+      this.checkAustraliaPersonSanctions(transliteratedPersonObj) 
+        .then(res => this.assignObject(mapedObject, {AustraliaPersonSanctions: res}))
+      this.checkCanadaPersonSanctions(transliteratedPersonObj)
+        .then(res => this.assignObject(mapedObject, {CanadaPersonSanctions: res}))
     },
     /**
      * @param {Founder} founder
@@ -707,6 +752,10 @@ const legal =  {
         .then(res => this.assignObject(founder, {RNBOLegals: res}))
       this.yourScoreForeignLegalSanctions && this.checkYourControlSanctions({edrpou: founder.code, apiKey: this.apiKey})
         .then(res => this.assignObject(founder, {YourControlSanctions: res}))
+      this.checkCanadaLegalSanctions({edrpou: founder.code, companyName: this.transliterate(founderName)}) 
+        .then(res => this.assignObject(founder, {CanadaLegalSanctions: res}))
+      this.checkAustraliaLegalSanctions({edrpou: founder.code, companyName: this.transliterate(founderName)})
+        .then(res => this.assignObject(founder, {AustraliaLegalSanctions: res}))
     },
     /**
      * @param {EdrLegal} legal
@@ -726,6 +775,10 @@ const legal =  {
         .then(res => this.assignObject(legal, {RNBOLegals: res}))
       this.yourScoreForeignLegalSanctions && this.checkYourControlSanctions({edrpou: legal.code, apiKey: this.apiKey})
         .then(res => this.assignObject(legal, {YourControlSanctions: res}))
+      this.checkCanadaLegalSanctions({edrpou: legal.code, companyName: requisites.nameEn}) 
+        .then(res => this.assignObject(legal, {CanadaLegalSanctions: res}))
+      this.checkAustraliaLegalSanctions({edrpou: legal.code, companyName: requisites.nameEn})
+        .then(res => this.assignObject(legal, {AustraliaLegalSanctions: res}))
     },
     assignObject (source, asignObject) {
       Object.entries(asignObject).forEach(entry => this.$set(source, entry[0], entry[1]))

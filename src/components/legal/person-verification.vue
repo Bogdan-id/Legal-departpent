@@ -27,7 +27,17 @@
       class="list-item">
       <div>
         <span>Iнформацiя про засновника</span>
-        <span>&nbsp;[{{ showFounderInfo ? "-" : "+" }}]</span>
+        <span 
+          v-show="
+            person.role
+            || person.country
+            || person.address
+            || person.type
+            || person.type && person.code
+            || person.capital
+            || person.ownershipPercent">
+          &nbsp;[{{ showFounderInfo ? "-" : "+" }}]
+        </span>
       </div>
       <div 
         v-show="showFounderInfo"
@@ -79,52 +89,56 @@
             {{ item.infocard.last_name + " " + item.infocard.first_name + " " + item.infocard.patronymic }}
             &nbsp;[{{ EDeclarationsShowedList.includes(key) ? "-" : "+" }}]
           </span>
-          <span>Мiсце роботи: <span class="info-text">{{ item.infocard.office }}</span></span>
-          <span>Посада: <span class="info-text">{{ item.infocard.position }}</span></span>
-          <span>Дата декларації: <span class="info-text">{{ item.infocard.created_date }}</span></span>
-          <span>Тип декларації: <span class="info-text">{{ item.infocard.document_type }}</span></span>
-          <span>Публiчна особа: <span class="info-text">{{ item.infocard.isPep }}</span></span>
-          <span>Зв`язки з ПЭП: 
-            <span v-if="item.infocard.family && !item.infocard.family.length" class="info-text">Нi</span>
-            <span v-if="item.infocard.family && item.infocard.family.length" class="info-text">
-              <v-menu
-                :close-on-content-click="false"
-                top
-                offset-y>
-                <template v-slot:activator="{ on }">
-                  <v-btn 
-                    v-on="on"
-                    color="grey darken-3" 
-                    class="white--text"
-                    style="text-transform: none"
-                    small>
-                    Так
-                  </v-btn>
-                </template>
-                <v-card 
-                  min-width="120" 
-                  max-height="400"
-                  style="overflow: scroll">
-                  <v-card-text style="position: relative" class="pt-6">
-                    <div class="text-right">
-                      <v-btn 
-                        @click="$refs.edthTable.$el.click()"
-                        style="position: fixed; right: 10px; top: 5px;"
-                        icon 
-                        small>
-                        <v-icon size="19">
-                          {{ mdiClose }}
-                        </v-icon>
-                      </v-btn>
-                    </div>
-                    Сiм`я:
-                    <pre>{{ JSON.stringify(item.infocard.family, null, 2) }}</pre>
-                  </v-card-text>
-                </v-card>
-              </v-menu>
+          <div 
+            v-if="EDeclarationsShowedList.includes(key)" 
+            @click.prevent="toggleDescription(EDeclarationsShowedList, key)">
+            <span>Мiсце роботи: <span class="info-text">{{ item.infocard.office }}</span></span>
+            <span>Посада: <span class="info-text">{{ item.infocard.position }}</span></span>
+            <span>Дата декларації: <span class="info-text">{{ item.infocard.created_date }}</span></span>
+            <span>Тип декларації: <span class="info-text">{{ item.infocard.document_type }}</span></span>
+            <span>Публiчна особа: <span class="info-text">{{ item.infocard.isPep }}</span></span>
+            <span>Зв`язки з ПЭП: 
+              <span v-if="item.infocard.family && !item.infocard.family.length" class="info-text">Нi</span>
+              <span v-if="item.infocard.family && item.infocard.family.length" class="info-text">
+                <v-menu
+                  :close-on-content-click="false"
+                  top
+                  offset-y>
+                  <template v-slot:activator="{ on }">
+                    <v-btn 
+                      v-on="on"
+                      color="grey darken-3" 
+                      class="white--text"
+                      style="text-transform: none"
+                      small>
+                      Так
+                    </v-btn>
+                  </template>
+                  <v-card 
+                    min-width="120" 
+                    max-height="400"
+                    style="overflow: scroll">
+                    <v-card-text style="position: relative" class="pt-6">
+                      <div class="text-right">
+                        <v-btn 
+                          @click="$refs.edthTable.$el.click()"
+                          style="position: fixed; right: 10px; top: 5px;"
+                          icon 
+                          small>
+                          <v-icon size="19">
+                            {{ mdiClose }}
+                          </v-icon>
+                        </v-btn>
+                      </div>
+                      Сiм`я:
+                      <pre>{{ JSON.stringify(item.infocard.family, null, 2) }}</pre>
+                    </v-card-text>
+                  </v-card>
+                </v-menu>
+              </span>
             </span>
-          </span>
-          <span>Посилання: <a class="info-text">{{ item.infocard.url }}</a></span>
+            <span>Посилання: <a @click="openLink(item.infocard.url)" class="info-text">{{ item.infocard.url }}</a></span>
+          </div>
         </li>
       </ul>
     </li>
@@ -558,6 +572,7 @@ export default {
     showYourControl: false,
     showAustraliaSanctions: false,
     showCanadaSanctions: false,
+    showYourControlDSFMU: false,
 
     USPersonSanctionShowedList: [],
     UNTerrorPersonSanctionsShowedList: [],
@@ -590,6 +605,9 @@ export default {
     toggleUSPersonSanctions() {this.showUSPersonSanctions = !this.showUSPersonSanctions},
     toggleAustraliaPersonSanctions() {this.showAustraliaSanctions = !this.showAustraliaSanctions},
     toggleCanadaSanctions() {this.showCanadaSanctions = !this.showCanadaSanctions},
+    openLink(url) {
+      window.open(url, '_blank')
+    },
     getCategoryName,
     toggleDescription, 
     getInitials,

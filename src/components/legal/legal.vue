@@ -64,7 +64,7 @@
       <li
         @click.stop="toggleFounders"
         class="list-item">
-        <div>Засновники&nbsp;[{{showFounders ? '-' : '+'}}]</div>
+        <div>Засновники &nbsp;[{{showFounders ? '-' : '+'}}]</div>
         <ul 
           @click.prevent="toggleFounders" 
           v-if="showFounders">

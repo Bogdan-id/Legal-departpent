@@ -239,7 +239,7 @@ const legal =  {
       const getDeclarations = (object) => {
         const url = this.baseUrl + '/get-declarations'
         return this.$axios
-          .post(url, object).then(res => {console.log('DECLARATIONS RES: ', res); return res})
+          .post(url, object).then(res => res)
       }
       return getDeclarations(object).then(res => checkPublicity(res)).catch(err => this.getRejectedKey(err))
     },
@@ -366,7 +366,6 @@ const legal =  {
      * @return {Promise<AxiosResponse<YourControlRNBOResult>>} */ // AxiosResponse["data"]
     // eslint-disable-next-line
     getResult(object) {
-      console.log(object)
       const url = this.baseUrl + '/your-control/get-person-result'
       return this.$axios
         .post(url, object).then(res => this.checkStatus(res)).catch(err => this.getRejectedKey(err))
@@ -612,7 +611,7 @@ const legal =  {
 
       const requests = [
         this.checkEDeclarations(person)
-          .then(res => {console.log('E-DECLARATION-RES', res); return this.eDeclarationList.push(...res.data.results.object_list)}),
+          .then(res => this.eDeclarationList.push(...res.data.results.object_list)),
         this.checkRnboPersons(person)
           .then(res => this.rnboList.push(...res.data)),
         this.checkUnTerrors(transliteratedPerson)
@@ -662,7 +661,6 @@ const legal =  {
      * @param {boolean} [config.capitalize]
      * @param {boolean} [config.transliterate]  */
     getPersonInitials(person, config) {
-      console.log('PERSON', person)
       let capitalize, transliterate 
 
       if (config) {

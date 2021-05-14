@@ -4,6 +4,7 @@ import axios from 'axios'
 import {Store} from 'vuex'
 import {AxiosResponse, AxiosError, AxiosRequestConfig} from 'axios'
 /* eslint-enable no-unused-vars */
+import {YourControlErrCodes} from '../utils/utils'
 
 /** 
  * Helper Functions */
@@ -17,7 +18,7 @@ function setClientDate (res) {
 /** @param {AxiosResponse} res @param {Store} store */
 function cacheResponse (res, store) {
   let code = res?.data?.code
-  if (code) return Promise.resolve(res)
+  if (YourControlErrCodes.includes(code)) return Promise.resolve(res)
 
   const key = getRequestKey(res.config)
   store.commit('assignObject', {key: key, data: res})

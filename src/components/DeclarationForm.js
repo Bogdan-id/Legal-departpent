@@ -36,6 +36,7 @@ import LegalTree from './legal/tree.vue'
 import PersonInfo from './person/person.vue'
 import { validationMixin } from 'vuelidate'
 import { minLength, required } from 'vuelidate/lib/validators'
+import { YourControlErrCodes } from '../utils/utils'
 
 const legal =  {
   mixins: [validationMixin],
@@ -353,7 +354,8 @@ const legal =  {
 
     checkStatus(res) {
       const code = res?.data?.code
-      if (code) {
+
+      if (YourControlErrCodes.includes(code)) {
         this.$snotify.simple(res.data.code + " " + res.data.message)
         throw res
       }
@@ -848,7 +850,7 @@ const legal =  {
     },
     setBaseUrl() {
       this.baseUrl = process.env.NODE_ENV === "development" 
-        ? 'http://127.0.0.1:4000' 
+        ? 'http://94.131.243.7:4000' // http://127.0.0.1:4000
         : 'http://94.131.243.7:4000'
     }
   },

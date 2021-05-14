@@ -17,7 +17,7 @@ function setClientDate (res) {
 /** @param {AxiosResponse} res @param {Store} store */
 function cacheResponse (res, store) {
   let code = res?.data?.code
-  if (code === "InvalidParameters" || code === "ForbiddenDueToRequestsLimit") return Promise.resolve(res)
+  if (code) return Promise.resolve(res)
 
   const key = getRequestKey(res.config)
   store.commit('assignObject', {key: key, data: res})

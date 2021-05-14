@@ -219,12 +219,12 @@ const legal =  {
               return getDeclarations(initials).then(res => {
                 let nestedDeclar = res.data.results.object_list
                 if (nestedDeclar.length) {
-                  nestedDeclar.forEach(obj => {
-                    const nestedPep = this.isPep(obj.infocard.position)
-                    obj.infocard.isPep = nestedPep
-                  })
+                  nestedDeclar.forEach(obj => obj.infocard.isPep = this.isPep(obj.infocard.position))
                   nestedDeclar = nestedDeclar.filter(o => o.infocard.isPep)
-                  object.infocard.family.push(...nestedDeclar)
+                  object.infocard.family.push(...nestedDeclar.map(o => {
+                    delete o.unified_source
+                    return o
+                  }))
                 }
               })
             })
@@ -353,9 +353,9 @@ const legal =  {
 
     checkStatus(res) {
       const code = res?.data?.code
-      if (code === "ForbiddenDueToRequestsLimit" || code === "InvalidParameters") {
+      if (code) {
         this.$snotify.simple(res.data.code + " " + res.data.message)
-        throw new Error(res)
+        throw res
       }
       return res
     },

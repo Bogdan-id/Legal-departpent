@@ -177,19 +177,15 @@ const yourControlEdrByEdrpouRes = {
   "contractorType": "Юридична особа (ЮО)"
 }
 
-const yourControlEdrByInitialsRes = {
-  data: 'empty'
-}
-
 const YourControlErrCodes = [
     'InvalidParameters',
     'ForbiddenDueToRequestsLimit',
     'ForbiddenDueToIP',
+    'ForbiddenDueToEndpoint',
 ]
 
 export {
   letters,
   yourControlEdrByEdrpouRes,
-  yourControlEdrByInitialsRes,
   YourControlErrCodes,
 }

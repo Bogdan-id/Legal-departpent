@@ -916,7 +916,7 @@ export default {
       ]
       return arr
         .filter(
-          v => items.includes(v)
+          v => !items.includes(v)
         )
     },
     // eslint-disable-next-line

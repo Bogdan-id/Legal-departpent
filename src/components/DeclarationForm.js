@@ -213,7 +213,7 @@ const legal =  {
 
           if (family.length) {
             const nested = family.map(async p => {
-              object.infocard.family = []
+              this.$set(object.infocard, 'family', [])
               if (p.trim() === "") return
               const initials = this.getPersonInitials(p)
 

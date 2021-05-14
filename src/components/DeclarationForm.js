@@ -559,7 +559,7 @@ const legal =  {
           .then(res => this.unTerrorList.push(...res.data)),
         this.checkUsPersonSunctions(transliteratedPerson)
           .then(res => this.usSanctionList.push(...res.data)),
-        this.checkEsPersonSunctions(person)
+        this.checkEsPersonSunctions(transliteratedPerson)
           .then(res => this.esSanctionList.push(...res.data)),
         this.checkUnPersSanctions(transliteratedPerson)
           .then(res => this.unSanctionList.push(...res.data)),
@@ -618,7 +618,7 @@ const legal =  {
           .then(res => this.unTerrorList.push(...res.data)),
         this.checkUsPersonSunctions(transliteratedPerson)
           .then(res => this.usSanctionList.push(...res.data)),
-        this.checkEsPersonSunctions(person)
+        this.checkEsPersonSunctions(transliteratedPerson)
           .then(res => this.esSanctionList.push(...res.data)),
         this.checkUnPersSanctions(transliteratedPerson)
           .then(res => this.unSanctionList.push(...res.data)),
@@ -728,7 +728,7 @@ const legal =  {
         .then(res => this.assignObject(mapedObject, {UNPersonSanctions: res}))
       this.checkUsPersonSunctions(transliteratedPersonObj) 
         .then(res => this.assignObject(mapedObject, {USPersonSanctions: res}))
-      this.checkEsPersonSunctions(capitalizedPersonObj)
+      this.checkEsPersonSunctions(transliteratedPersonObj)
         .then(res => this.assignObject(mapedObject, {ESPersonSanctions: res}))
       this.checkUnTerrors(transliteratedPersonObj)
         .then(res => this.assignObject(mapedObject, {UNTerrorPersonSanctions: res}))

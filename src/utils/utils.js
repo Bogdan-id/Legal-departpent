@@ -181,8 +181,15 @@ const yourControlEdrByInitialsRes = {
   data: 'empty'
 }
 
+const YourControlErrCodes = [
+    'InvalidParameters',
+    'ForbiddenDueToRequestsLimit',
+    'ForbiddenDueToIP',
+]
+
 export {
   letters,
   yourControlEdrByEdrpouRes,
   yourControlEdrByInitialsRes,
+  YourControlErrCodes,
 }

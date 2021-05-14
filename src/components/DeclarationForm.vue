@@ -36,7 +36,7 @@
           class="body-1 pt-3 pb-0">
           YourScore:
         </v-card-title>
-        <v-card-text class="pt-0 pl-7">
+        <v-card-text class="pt-0 pl-7 search-configuration">
           <v-checkbox 
             v-model="yourScoreRNBO"
             label="Пошук фiз. осiб - РНБО"
@@ -614,5 +614,9 @@ tr.v-data-table__expanded.v-data-table__expanded__content {
   }
   .person-info .info-label {
     font-weight: bold;
+  }
+  .search-configuration .v-icon__svg {
+    height: 21px;
+    width: 21px;
   }
 </style>

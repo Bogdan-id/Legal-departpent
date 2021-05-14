@@ -18,7 +18,9 @@
       </template>
       <v-card>
         <v-card-text class="config-info pt-6">
-          <v-card-title class="subtitle-1 pl-1 pt-0 pb-2">
+          <v-card-title 
+            class="subtitle-1 pl-1 pt-0 pb-2"
+            style="font-weight: bold">
             {{ title }}
           </v-card-title>
           <v-btn 
@@ -28,11 +30,11 @@
             <v-icon color="grey lighten-4" small>{{ mdiClose }}</v-icon>
           </v-btn>
           <div>
-            <span class="info-label">Дата запросу:&nbsp;&nbsp;</span> 
+            <span class="info-label">Дата запиту:&nbsp;&nbsp;</span> 
             <span class="info-data">{{ config.clientDate }}</span>
           </div> 
           <div>
-            <span class="info-label">Тiло запросу:&nbsp;&nbsp;</span> 
+            <span class="info-label">Тiло запиту:&nbsp;&nbsp;</span> 
             <span class="info-data">{{ JSON.parse(config.data) }}</span>
           </div> 
           <div>

@@ -39,6 +39,7 @@
       </ul>
     </li>
     <li 
+      v-if="legal.YourControlSanctions && legal.YourControlSanctions.data"
       @click.stop="toggleYourControlSanctions" 
       class="list-item">
       <ListSigns 

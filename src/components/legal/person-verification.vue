@@ -56,7 +56,7 @@
       </div>
     </li>
     <!-- Declarations -->
-    <li 
+    <li
       v-if="person.EDeclarations"
       @click.stop="toggleDeclarations" 
       class="list-item">
@@ -83,7 +83,48 @@
           <span>Посада: <span class="info-text">{{ item.infocard.position }}</span></span>
           <span>Дата декларації: <span class="info-text">{{ item.infocard.created_date }}</span></span>
           <span>Тип декларації: <span class="info-text">{{ item.infocard.document_type }}</span></span>
-          <span>Посилання: <span class="info-text">{{ item.infocard.url }}</span></span>
+          <span>Публiчна особа: <span class="info-text">{{ item.infocard.isPep }}</span></span>
+          <span>Зв`язки з ПЭП: 
+            <span v-if="item.infocard.family && !item.infocard.family.length" class="info-text">Нi</span>
+            <span v-if="item.infocard.family && item.infocard.family.length" class="info-text">
+              <v-menu
+                :close-on-content-click="false"
+                top
+                offset-y>
+                <template v-slot:activator="{ on }">
+                  <v-btn 
+                    v-on="on"
+                    color="grey darken-3" 
+                    class="white--text"
+                    style="text-transform: none"
+                    small>
+                    Так
+                  </v-btn>
+                </template>
+                <v-card 
+                  min-width="120" 
+                  max-height="400"
+                  style="overflow: scroll">
+                  <v-card-text style="position: relative" class="pt-6">
+                    <div class="text-right">
+                      <v-btn 
+                        @click="$refs.edthTable.$el.click()"
+                        style="position: fixed; right: 10px; top: 5px;"
+                        icon 
+                        small>
+                        <v-icon size="19">
+                          {{ mdiClose }}
+                        </v-icon>
+                      </v-btn>
+                    </div>
+                    Сiм`я:
+                    <pre>{{ JSON.stringify(item.infocard.family, null, 2) }}</pre>
+                  </v-card-text>
+                </v-card>
+              </v-menu>
+            </span>
+          </span>
+          <span>Посилання: <a class="info-text">{{ item.infocard.url }}</a></span>
         </li>
       </ul>
     </li>

@@ -118,7 +118,7 @@ const legal =  {
     yourControlTimeOut: 3000,
     legalDialog: false,
     commonErr: "Поле обов`язкове",
-    apiKey: 'b00b0000a013607c3bc0acb76917a9f022f2b908',
+    apiKey: '2b0f0000a7209808cb15807c8b74f36f4365e72a',
     baseUrl: null,
     letters: letters,
     /* Request hint */
@@ -405,7 +405,7 @@ const legal =  {
      * @param {EdrLegal | Founder | {}} mapedObject
      * @param {string | number } code - EDRPOU code */
     getEdrData(mapedObject, code) {
-      const yourControlEdrLegal = {edrpou: code, apiKey: this.apiKey, inn: null}  
+      const yourControlEdrLegal = {edrpou: code, apiKey: process.env.VUE_APP_YOUR_SCORE_API_KEY, inn: null}  
       return this.getEdr(yourControlEdrLegal)
         .then(res => {
           if (res?.data?.status === "Update in progress") {
@@ -530,7 +530,7 @@ const legal =  {
       this.loading = true
 
       const personData = await this.getEdr({
-        apiKey: this.apiKey,
+        apiKey: process.env.VUE_APP_YOUR_SCORE_API_KEY,
         inn: inn,
       })
 
@@ -546,7 +546,7 @@ const legal =  {
         lastName: lastName,
         firstName: firstName,
         middleName: patronymic,
-        apiKey: this.apiKey
+        apiKey: process.env.VUE_APP_YOUR_SCORE_API_KEY
       }
 
       const requests = [
@@ -570,14 +570,14 @@ const legal =  {
 
       this.yourScoreDSFMU && requests.push(
         this.getDsfmuResultUrl(yourControlPerson)
-          .then(res => this.getResult({resultUrl: res.data.resultUrl, apiKey: this.apiKey})
+          .then(res => this.getResult({resultUrl: res.data.resultUrl, apiKey: process.env.VUE_APP_YOUR_SCORE_API_KEY})
           .then(rnboRes => {
             rnboRes?.data?.data && this.yourControlDsfmuList.push(...rnboRes.data.data)
           }))
       )
 
       this.yourScoreRNBO && requests.push(this.getRnboResultUrl(yourControlPerson)
-        .then(res => this.getResult({resultUrl: res.data.resultUrl, apiKey: this.apiKey})
+        .then(res => this.getResult({resultUrl: res.data.resultUrl, apiKey: process.env.VUE_APP_YOUR_SCORE_API_KEY})
         .then(rnboRes => {
           rnboRes?.data?.data && this.yourControlRnboList.push(...rnboRes.data.data)
         }))
@@ -603,7 +603,7 @@ const legal =  {
         lastName: person.lastName,
         firstName: person.firstName,
         middleName: person.patronymic,
-        apiKey: this.apiKey,
+        apiKey: process.env.VUE_APP_YOUR_SCORE_API_KEY,
       }
       const transliteratedPerson = this.getPersonInitials(`${person.lastName} ${person.firstName} ${person.patronymic}`, {transliterate: true})
 
@@ -628,7 +628,7 @@ const legal =  {
 
       this.yourScoreDSFMU && requests.push(
         this.getDsfmuResultUrl(yourControlPerson)
-          .then(res => this.getResult({resultUrl: res.data.resultUrl, apiKey: this.apiKey})
+          .then(res => this.getResult({resultUrl: res.data.resultUrl, apiKey: process.env.VUE_APP_YOUR_SCORE_API_KEY})
           .then(rnboRes => {
             this.yourControlDsfmuList.push(...rnboRes.data.data)
           }))
@@ -636,7 +636,7 @@ const legal =  {
 
       this.yourScoreRNBO && requests.push(
         this.getRnboResultUrl(yourControlPerson)
-          .then(res => this.getResult({resultUrl: res.data.resultUrl, apiKey: this.apiKey})
+          .then(res => this.getResult({resultUrl: res.data.resultUrl, apiKey: process.env.VUE_APP_YOUR_SCORE_API_KEY})
           .then(rnboRes => {
             this.yourControlRnboList.push(...rnboRes.data.data)
           }))
@@ -704,18 +704,18 @@ const legal =  {
           lastName: capitalizedPersonObj.lastName, 
           firstName: capitalizedPersonObj.firstName, 
           middleName: capitalizedPersonObj.patronymic, 
-          apiKey: this.apiKey
+          apiKey: process.env.VUE_APP_YOUR_SCORE_API_KEY
         })
-        .then(res => this.getResult({resultUrl: res.data.resultUrl, apiKey: this.apiKey}))
+        .then(res => this.getResult({resultUrl: res.data.resultUrl, apiKey: process.env.VUE_APP_YOUR_SCORE_API_KEY}))
         .then(res => this.assignObject(mapedObject, {YourControlRNBO: res}))
       
       this.yourScoreDSFMU && this.getDsfmuResultUrl({
         lastName: capitalizedPersonObj.lastName, 
         firstName: capitalizedPersonObj.firstName, 
         middleName: capitalizedPersonObj.patronymic, 
-        apiKey: this.apiKey
+        apiKey: process.env.VUE_APP_YOUR_SCORE_API_KEY
       })
-        .then(res => this.getResult({resultUrl: res.data.resultUrl, apiKey: this.apiKey})
+        .then(res => this.getResult({resultUrl: res.data.resultUrl, apiKey: process.env.VUE_APP_YOUR_SCORE_API_KEY})
         .then(res => this.assignObject(mapedObject, {YourControlDSFMU: res})))
 
       this.checkEDeclarations(capitalizedPersonObj)
@@ -750,7 +750,7 @@ const legal =  {
         .then(res => this.assignObject(founder, {UNLegalSanctions: res}))
       this.checkRnboLegals({edrpou: founder.code, companyName: founderName})
         .then(res => this.assignObject(founder, {RNBOLegals: res}))
-      this.yourScoreForeignLegalSanctions && this.checkYourControlSanctions({edrpou: founder.code, apiKey: this.apiKey})
+      this.yourScoreForeignLegalSanctions && this.checkYourControlSanctions({edrpou: founder.code, apiKey: process.env.VUE_APP_YOUR_SCORE_API_KEY})
         .then(res => this.assignObject(founder, {YourControlSanctions: res}))
       this.checkCanadaLegalSanctions({edrpou: founder.code, companyName: this.transliterate(founderName)}) 
         .then(res => this.assignObject(founder, {CanadaLegalSanctions: res}))
@@ -773,7 +773,7 @@ const legal =  {
         .then(res => this.assignObject(legal, {UNLegalSanctions: res}))
       this.checkRnboLegals({edrpou: legal.code, companyName: requisites.nameUa})
         .then(res => this.assignObject(legal, {RNBOLegals: res}))
-      this.yourScoreForeignLegalSanctions && this.checkYourControlSanctions({edrpou: legal.code, apiKey: this.apiKey})
+      this.yourScoreForeignLegalSanctions && this.checkYourControlSanctions({edrpou: legal.code, apiKey: process.env.VUE_APP_YOUR_SCORE_API_KEY})
         .then(res => this.assignObject(legal, {YourControlSanctions: res}))
       this.checkCanadaLegalSanctions({edrpou: legal.code, companyName: requisites.nameEn}) 
         .then(res => this.assignObject(legal, {CanadaLegalSanctions: res}))

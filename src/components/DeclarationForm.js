@@ -118,7 +118,6 @@ const legal =  {
     yourControlTimeOut: 3000,
     legalDialog: false,
     commonErr: "Поле обов`язкове",
-    apiKey: '2b0f0000a7209808cb15807c8b74f36f4365e72a',
     baseUrl: null,
     letters: letters,
     /* Request hint */
@@ -393,7 +392,7 @@ const legal =  {
      * @param {Cancel} cancel - Axios cancel object */
     getRejectedKey (cancel) {
       // @ts-ignore
-      if (cancel instanceof Error) throw new Error(cancel)
+      if (cancel instanceof Error) throw cancel
       if (! cancel) Promise.reject(new Error ('"getRejectedKey": "cancel"/"object" parameter required '))
       if (! cancel?.message) Promise.reject(cancel)
       if (cancel?.message) {
@@ -476,7 +475,7 @@ const legal =  {
           }
         })
         .catch(err => {
-          this.$snotify.simple(err)
+          this.$snotify.simple(err.Error || err)
           throw err
         })
     },
@@ -490,7 +489,8 @@ const legal =  {
         await this.getEdrData(mapedObject, code)
       } catch(err) {
         this.loading = false
-        console.log(err)
+        this.$snotify.simple(err.Error || err)
+        throw err
       }
     },
     submit() {
@@ -520,7 +520,7 @@ const legal =  {
         console.log(this.globalObject)
       } catch (err) {
         this.loading = false
-        console.log(err)
+        this.$snotify.simple(err.Error || err)
       }
     },
     /** @param {string | number} inn */
@@ -589,8 +589,9 @@ const legal =  {
           this.personDialog = true
         })
         .catch(err => {
-          console.log(err)
           this.loading = false
+          this.$snotify.simple(err.Error || err)
+          throw err
         })
     }, 
     /** @param {{lastName: string, firstName: string, patronymic: string}} person */
@@ -648,8 +649,9 @@ const legal =  {
           this.personDialog = true
         })
         .catch(err => {
-          console.log(err)
           this.loading = false
+          this.$snotify.simple(err.Error || err)
+          throw err
         })
     },
     /**

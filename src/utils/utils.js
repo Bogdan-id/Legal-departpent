@@ -182,6 +182,7 @@ const YourControlErrCodes = [
     'ForbiddenDueToRequestsLimit',
     'ForbiddenDueToIP',
     'ForbiddenDueToEndpoint',
+    'NotFound',
 ]
 
 export {

@@ -112,7 +112,7 @@ const legal =  {
     mdiAxisZRotateClockwise,
     mdiWindowMinimize,
     mdiSortAlphabeticalAscendingVariant,
-    attemptsToGetNewEdr: 0,
+    attemptsToGetNewEdr: 50,
     maxAttempts: 0,
     /** @param { array } handledEdrpous - List of "edrpou" codes that have already been checked */
     handledEdrpous: [],

@@ -534,6 +534,11 @@ const legal =  {
         inn: inn,
       })
 
+      if (personData.data.code === 'InvalidParameters') {
+        this.$snotify.simple('Недiйсний код IПН')
+        return
+      }
+
       this.edrListPerson.splice(0)
       this.edrListPerson.push(personData)
       // @ts-ignore

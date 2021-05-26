@@ -60,7 +60,7 @@
         <div v-show="person.ownershipPercent">
           Доля в статутному капiталi (%): <span class="info-text">{{ person.ownershipPercent }}</span>
         </div>
-        <div v-show="person.type">
+        <div v-show="person.type || person.type === 0">
           Тип володiння: <span class="info-text">{{ getOwnerType(person.type) }}</span>
         </div>
       </div>

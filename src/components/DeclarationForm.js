@@ -536,7 +536,7 @@ const legal =  {
       
       console.log('person data', personData)
       // @ts-ignore
-      if (personData.code === 'InvalidParameters') {
+      if (personData.data.code === 'InvalidParameters') {
         this.$snotify.simple('Недiйсний код IПН')
         return
       }

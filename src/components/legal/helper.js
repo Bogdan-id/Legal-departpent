@@ -29,10 +29,19 @@ function getCategoryName (data) {
     default: ""
   }
 }
+function getOwnerType (type) {
+  if (! type) return '---'
+  switch (type) {
+    case 0: return 'Засновник'
+    case 1: return 'Бенефіціар'
+    case 2: return 'Власник істотної участі'
+  }
+}
 
 export {
   toggleDescription,
   getCategoryName,
   getInitials,
   getText,
+  getOwnerType,
 }

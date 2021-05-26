@@ -59,6 +59,12 @@
             </span>
             <span class="info-text">{{ founder.capital }}</span>
           </div>
+          <div>
+            <span class="info-label">
+              Тип володiння: 
+            </span>
+            <span class="info-text">{{ getOwnerType(founder.type) }}</span>
+          </div>
         </li>
       </ul>
     </div>
@@ -91,7 +97,11 @@
 </template>
 
 <script>
+import { getOwnerType } from './helper'
 export default {
   props: {company: {type: Object}},
+  methods: {
+    getOwnerType,
+  }
 }
 </script>

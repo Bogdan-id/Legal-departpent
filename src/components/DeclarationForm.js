@@ -406,7 +406,7 @@ const legal =  {
      * @param {string | number } code - EDRPOU code */
     getEdrData(mapedObject, code) {
       const yourControlEdrLegal = {edrpou: code, apiKey: process.env.VUE_APP_YOUR_SCORE_API_KEY, inn: null}  
-      return this.getEdr(yourControlEdrLegal)
+      const data = this.getEdr(yourControlEdrLegal)
         .then(res => {
           if (res?.data?.status === "Update in progress") {
             this.attemptsToGetNewEdr ++
@@ -418,7 +418,7 @@ const legal =  {
           if (res?.data?.code === 'InvalidParameters') {
             this.$snotify.simple('Недiйсний код ЭДРПОУ')
             this.loading = false
-            return
+            return res
           }
           /** @type {EdrLegal} */
           let legal, legalEnName, legalUaName
@@ -485,6 +485,8 @@ const legal =  {
           this.$snotify.simple(err.Error || err)
           throw err
         })
+
+      return data
     },
     /**
      * @template T
@@ -520,7 +522,14 @@ const legal =  {
     async mapGlobalLegal(code) {
       try {
         this.loading = true
-        await this.getEdrData(this.globalObject, code)
+        const data = await this.getEdrData(this.globalObject, code)
+
+        if (data?.data?.code === 'InvalidParameters') {
+          this.$snotify.simple('Недiйсний код ЭДРПОУ')
+          this.loading = false
+          return
+        }
+        
         this.loading = false
         this.legalDialog = true
         console.log(this.globalObject)

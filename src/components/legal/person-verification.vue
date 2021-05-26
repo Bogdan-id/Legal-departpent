@@ -51,9 +51,6 @@
         <div v-show="person.address">
           Адреса: <span class="info-text">{{ person.address }}</span>
         </div>
-        <div v-show="person.type">
-          Власник: <span class="info-text">{{ person.type ? "Так" : "Нi" }}</span>
-        </div>
         <div v-show="person.type && person.code">
           Власник компанiї: <span class="info-text">{{ person.code }}</span>
         </div>
@@ -62,6 +59,9 @@
         </div>
         <div v-show="person.ownershipPercent">
           Доля в статутному капiталi (%): <span class="info-text">{{ person.ownershipPercent }}</span>
+        </div>
+        <div v-show="person.type">
+          Тип володiння: <span class="info-text">{{ getOwnerType(person.type) }}</span>
         </div>
       </div>
     </li>
@@ -553,6 +553,7 @@ import {
   toggleDescription, 
   getInitials,
   getText, 
+  getOwnerType,
   getCategoryName } from "./helper"
 
 import ListSigns from "./list-sign.vue"
@@ -612,6 +613,7 @@ export default {
     toggleDescription, 
     getInitials,
     getText,
+    getOwnerType,
   },
 }
 </script>

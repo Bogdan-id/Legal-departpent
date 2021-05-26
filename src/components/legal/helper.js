@@ -30,7 +30,7 @@ function getCategoryName (data) {
   }
 }
 function getOwnerType (type) {
-  if (! type) return '---'
+  if (! type && type !== 0) return '---'
   switch (type) {
     case 0: return 'Засновник'
     case 1: return 'Бенефіціар'

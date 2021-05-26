@@ -414,6 +414,12 @@ const legal =  {
               setTimeout(() => resolve(this.getEdrData(mapedObject, code)), this.yourControlTimeOut)
             })
           }
+          // @ts-ignore
+          if (res?.data?.code === 'InvalidParameters') {
+            this.$snotify.simple('Недiйсний код ЭДРПОУ')
+            this.loading = false
+            return
+          }
           /** @type {EdrLegal} */
           let legal, legalEnName, legalUaName
           if (res?.data) {
@@ -534,10 +540,10 @@ const legal =  {
         inn: inn,
       })
       
-      console.log('person data', personData)
       // @ts-ignore
       if (personData.data.code === 'InvalidParameters') {
         this.$snotify.simple('Недiйсний код IПН')
+        this.loading = false
         return
       }
 

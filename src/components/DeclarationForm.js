@@ -409,6 +409,7 @@ const legal =  {
       const data = this.getEdr(yourControlEdrLegal)
         .then(res => {
           if (res?.data?.status === "Update in progress") {
+            console.log('UPDATE IN PROGRESS')
             this.attemptsToGetNewEdr ++
             return new Promise(resolve => {
               setTimeout(() => resolve(this.getEdrData(mapedObject, code)), this.yourControlTimeOut)
@@ -835,6 +836,7 @@ const legal =  {
 
     /** @return {string} */
     transliterate(str) {
+      if (! str) return ''
       if (str.match(/[a-z]/i)) return str.toUpperCase()
       if(!str) return
       let fI = {"Є": "IE", "Ї": "I", "Й": "I", "Ю": "IU", "Я": "IA"}

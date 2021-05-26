@@ -112,8 +112,8 @@ const legal =  {
     mdiAxisZRotateClockwise,
     mdiWindowMinimize,
     mdiSortAlphabeticalAscendingVariant,
-    attemptsToGetNewEdr: 50,
-    maxAttempts: 0,
+    attemptsToGetNewEdr: 0,
+    maxAttempts: 50,
     /** @param { array } handledEdrpous - List of "edrpou" codes that have already been checked */
     handledEdrpous: [],
     yourControlTimeOut: 3000,
@@ -416,8 +416,6 @@ const legal =  {
           }
           // @ts-ignore
           if (res?.data?.code === 'InvalidParameters') {
-            this.$snotify.simple('Недiйсний код ЭДРПОУ')
-            this.loading = false
             return res
           }
           /** @type {EdrLegal} */
@@ -529,7 +527,7 @@ const legal =  {
           this.loading = false
           return
         }
-        
+
         this.loading = false
         this.legalDialog = true
         console.log(this.globalObject)

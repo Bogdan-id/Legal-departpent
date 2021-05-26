@@ -533,8 +533,10 @@ const legal =  {
         apiKey: process.env.VUE_APP_YOUR_SCORE_API_KEY,
         inn: inn,
       })
-
-      if (personData.data.code === 'InvalidParameters') {
+      
+      console.log('person data', personData)
+      // @ts-ignore
+      if (personData.code === 'InvalidParameters') {
         this.$snotify.simple('Недiйсний код IПН')
         return
       }

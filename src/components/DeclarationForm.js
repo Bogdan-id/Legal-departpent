@@ -516,7 +516,6 @@ const legal =  {
         this.loading = true
         await this.getEdrData(this.globalObject, code)
         this.loading = false
-        // this.personDialog = true
         this.legalDialog = true
         console.log(this.globalObject)
       } catch (err) {
@@ -587,7 +586,7 @@ const legal =  {
       return await Promise.all(requests)
         .then(() => {
           this.loading = false
-          this.personDialog = true
+          this.checkPersonResult()
         })
         .catch(err => {
           this.loading = false
@@ -595,6 +594,26 @@ const legal =  {
           throw err
         })
     }, 
+    checkPersonResult() {
+      const innData = [
+        this.eDeclarationList,
+        this.rnboList,
+        this.unTerrorList,
+        this.usSanctionList,
+        this.esSanctionList,
+        this.unSanctionList,
+        this.australiaSanctionList,
+        this.canadaSanctionList,
+        this.yourControlDsfmuList,
+        this.yourControlRnboList,
+      ].filter(d => d.length > 0)
+      
+      if (!innData.length) {
+        return this.$snotify.simple('За вашим запитом нічого не знайдено')
+      } else {
+        this.personDialog = true
+      }
+    },
     /** @param {{lastName: string, firstName: string, patronymic: string}} person */
     // eslint-disable-next-line
     async mapGlobalPersonInitials(person) {
@@ -647,7 +666,7 @@ const legal =  {
       return await Promise.all(requests)
         .then(() => {
           this.loading = false
-          this.personDialog = true
+          this.checkPersonResult()
         })
         .catch(err => {
           this.loading = false

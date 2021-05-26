@@ -178,7 +178,7 @@ const yourControlEdrByEdrpouRes = {
 }
 
 const YourControlErrCodes = [
-    'InvalidParameters',
+    // 'InvalidParameters',
     'ForbiddenDueToRequestsLimit',
     'ForbiddenDueToIP',
     'ForbiddenDueToEndpoint',

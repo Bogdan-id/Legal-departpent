@@ -409,7 +409,6 @@ const legal =  {
       const data = this.getEdr(yourControlEdrLegal)
         .then(res => {
           if (res?.data?.status === "Update in progress") {
-            console.log('UPDATE IN PROGRESS')
             this.attemptsToGetNewEdr ++
             return new Promise(resolve => {
               setTimeout(() => resolve(this.getEdrData(mapedObject, code)), this.yourControlTimeOut)
@@ -548,8 +547,10 @@ const legal =  {
         inn: inn,
       })
 
-      console.log('person data', personData)
-      
+      if (! personData) {
+        this.$snotify.simple('за вашим запитом нічого не знайдено')
+        return 
+      }
       // @ts-ignore
       if (personData.data.code === 'InvalidParameters') {
         this.$snotify.simple('Недiйсний код IПН')

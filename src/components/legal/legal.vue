@@ -3,7 +3,7 @@
     <!-- Legal info -->
     <ul>
       <li 
-        v-if="legal.code"
+        v-if="legal.code && legal.hasOwnProperty('RNBOLegals')"
         @click.stop="toggleLegalInfo"
         class="list-item">
         <div>Iнформацiя про компанiю&nbsp;[{{showCompanyInfo ? '-' : '+'}}]</div>
@@ -132,8 +132,6 @@ export default {
   computed: {
     legalFounders () {
       return this.legal.founders
-        // eslint-disable-next-line
-        .filter(v => v.hasOwnProperty('RNBOLegals'))
         .filter((_, key) => this.showFounderKey.includes(key))
     },
   },

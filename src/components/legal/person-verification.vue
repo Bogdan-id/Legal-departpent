@@ -508,6 +508,7 @@
 </template>
 
 <script lang="ts">
+import FounderInfo from './FounderInfo.vue'
 import { 
   toggleDescription, 
   getInitials,
@@ -518,7 +519,7 @@ import {
 import ListSigns from "./list-sign.vue"
 
 export default {
-  components: { ListSigns },
+  components: { ListSigns, FounderInfo },
   props: {person: Object},
   data: () => ({
     showDeclarations: false,

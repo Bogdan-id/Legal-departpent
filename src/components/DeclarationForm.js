@@ -548,7 +548,8 @@ const legal =  {
       })
 
       if (! personData) {
-        this.$snotify.simple('за вашим запитом нічого не знайдено')
+        this.$snotify.simple('За вашим запитом нічого не знайдено')
+        this.loading = false
         return 
       }
       // @ts-ignore

@@ -38,7 +38,7 @@
       <div v-if="company.ownershipPercent">
         Доля в статутному капiталi (%): <span class="info-text">{{ company.ownershipPercent }}</span>
       </div>
-      <div v-if="!company.founders && !company.founders.length">
+      <div>
         Тип володiння: <span class="info-text">{{ getOwnerType(company.type) }}</span>
       </div>
     </div>

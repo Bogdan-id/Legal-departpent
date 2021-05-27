@@ -82,8 +82,12 @@
             <div 
               v-if="founderVerificationKeys.includes(key)"
               @click.prevent="toggleDescription">
-              <PersonVerification v-if="founder.hasOwnProperty('RNBOSanctions')" :person="founder" />
-              <LegalVerification v-if="founder.hasOwnProperty('RNBOLegals')" :legal="founder" />
+              <PersonVerification 
+                v-if="founder.hasOwnProperty('RNBOSanctions')" :person="founder"
+                @click.prevent="toggleDescription" />
+              <LegalVerification 
+                v-if="founder.hasOwnProperty('RNBOLegals')" :legal="founder"
+                @click.prevent="toggleDescription" />
             </div>
           </li>
           <legal 
@@ -119,7 +123,7 @@ export default {
     showLegalVerification: false,
     showCompanyInfo: false,
 
-    showFounderKey: null,
+    showFounderKey: [],
     signerVerificationKeys: [],
     founderVerificationKeys: [],
 
@@ -127,9 +131,9 @@ export default {
   }),
   computed: {
     legalFounders () {
-      if (this.showFounderKey) return this.legal.founders
-        .filter((_, key) => key === this.showFounderKey)
-      return []
+      return this.legal.founders
+        .filter((_, key) => this.showFounderKey.includes(key))
+      else return []
     },
   },
   methods: {
@@ -137,8 +141,10 @@ export default {
       this.showFounders = !this.showFounders
     },
     toggleFounderKey (key) {
-      if (this.showFounderKey === key) this.showFounderKey = null
-      else this.showFounderKey = key
+      if (this.showFounderKey.includes(key)) {
+        let index = this.showFounderKey.indexOf(key)
+        this.showFounderKey.splice(index, 1)
+      } else this.showFounderKey.push(key)
     },
     toggleSigners () {
       this.showSigners = !this.showSigners

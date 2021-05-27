@@ -39,7 +39,7 @@
           &nbsp;[{{ showFounderInfo ? "-" : "+" }}]
         </span>
       </div>
-      <div v-if="hasOwnerShip">
+      <div>
         <div v-if="legal.role">
           Роль: <span class="info-text">{{ legal.role }}</span>
         </div>

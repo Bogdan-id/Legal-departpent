@@ -549,18 +549,17 @@ const legal =  {
         this.$snotify.simple(err)
         throw err
       })
+      if (! personData) {
+        this.$snotify.simple('За вашим запитом нічого не знайдено')
+        this.loading = false
+        return 
+      }
 
       if (personData?.data?.status === 'Update in progress') {
         this.attemptsToGetNewEdr ++
         return new Promise(resolve => {
           setTimeout(() => resolve(this.mapGlobalPersonInn(inn)), this.yourControlTimeOut)
         })
-      }
-
-      if (! personData) {
-        this.$snotify.simple('За вашим запитом нічого не знайдено')
-        this.loading = false
-        return 
       }
       // @ts-ignore
       if (personData.data.code === 'InvalidParameters') {

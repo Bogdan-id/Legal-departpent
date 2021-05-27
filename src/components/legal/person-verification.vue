@@ -40,26 +40,26 @@
         </span>
       </div>
       <div v-if="showFounderInfo">
-        <div v-if="legal.role">
-          Роль: <span class="info-text">{{ legal.role }}</span>
+        <div v-if="person.role">
+          Роль: <span class="info-text">{{ person.role }}</span>
         </div>
-        <div v-if="legal.country">
-          Країна: <span class="info-text">{{ legal.country }}</span>
+        <div v-if="person.country">
+          Країна: <span class="info-text">{{ person.country }}</span>
         </div>
-        <div v-if="legal.address">
-          Адреса: <span class="info-text">{{ legal.address }}</span>
+        <div v-if="person.address">
+          Адреса: <span class="info-text">{{ person.address }}</span>
         </div>
-        <div v-if="legal.type && legal.code">
-          Власник компанiї: <span class="info-text">{{ legal.code }}</span>
+        <div v-if="person.type && person.code">
+          Власник компанiї: <span class="info-text">{{ person.code }}</span>
         </div>
-        <div v-if="legal.capital">
-          Доля в статутному капiталi (грн): <span class="info-text">{{ legal.capital }}</span>
+        <div v-if="person.capital">
+          Доля в статутному капiталi (грн): <span class="info-text">{{ person.capital }}</span>
         </div>
-        <div v-if="legal.ownershipPercent">
-          Доля в статутному капiталi (%): <span class="info-text">{{ legal.ownershipPercent }}</span>
+        <div v-if="person.ownershipPercent">
+          Доля в статутному капiталi (%): <span class="info-text">{{ person.ownershipPercent }}</span>
         </div>
         <div>
-          Тип володiння: <span class="info-text">{{ getOwnerType(legal.type) }}</span>
+          Тип володiння: <span class="info-text">{{ getOwnerType(person.type) }}</span>
         </div>
       </div>
     </li>

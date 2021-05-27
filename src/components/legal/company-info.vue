@@ -18,6 +18,30 @@
         <div><span class="info-label">Факс:</span> <span class="info-text">{{ item.fax || "---" }}</span></div>
       </div>
     </div>
+    <div v-if="hasOwnerShip" class="pl-3">
+      <h4>Iнформацiя про засновника</h4>
+      <div v-if="company.role">
+        Роль: <span class="info-text">{{ person.role }}</span>
+      </div>
+      <div v-if="company.country">
+        Країна: <span class="info-text">{{ person.country }}</span>
+      </div>
+      <div v-if="company.address">
+        Адреса: <span class="info-text">{{ person.address }}</span>
+      </div>
+      <div v-if="company.type && person.code">
+        Власник компанiї: <span class="info-text">{{ person.code }}</span>
+      </div>
+      <div v-if="company.capital">
+        Доля в статутному капiталi (грн): <span class="info-text">{{ person.capital }}</span>
+      </div>
+      <div v-if="company.ownershipPercent">
+        Доля в статутному капiталi (%): <span class="info-text">{{ person.ownershipPercent }}</span>
+      </div>
+      <div v-if="!company.founders && !company.founders.length">
+        Тип володiння: <span class="info-text">{{ getOwnerType(person.type) }}</span>
+      </div>
+    </div>
     <div v-if="company.contractorType"><span class="info-label">Тип контрагента:</span> <span class="info-text">{{ company.contractorType }}</span></div>
     <div 
       v-if="company.mainEconomicActivity">
@@ -110,6 +134,12 @@ export default {
   props: { company: { type: Object } },
   methods: {
     getOwnerType,
-  }
+  },
+  computed: {
+    hasOwnerShip() {
+      // eslint-disable-next-line
+      return this.company.hasOwnProperty('ownershipType')
+    },
+  },
 }
 </script>

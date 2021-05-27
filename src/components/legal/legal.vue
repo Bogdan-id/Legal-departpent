@@ -16,6 +16,10 @@
         </v-fade-transition>
       </li>
     </ul>
+    <!-- Founder -->
+    <ul v-if="legal.hasOwnProperty('ownershipType') || legal.hasOwnProperty('ownershipPercent')">
+      <FounderInfo :founder="legal" />
+    </ul>
     <!-- Legal verification -->
     <ul>
       <li 
@@ -29,9 +33,6 @@
           <LegalVerification :legal="legal" />
         </div>
       </li>
-    </ul>
-    <ul v-if="legal.hasOwnProperty('ownershipType') || legal.hasOwnProperty('ownershipPercent')">
-      <FounderInfo :founder="legal" />
     </ul>
     <!-- Signers -->
     <ul v-if="legal.signers && legal.signers.length">

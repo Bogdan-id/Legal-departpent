@@ -133,7 +133,6 @@ export default {
     legalFounders () {
       return this.legal.founders
         .filter((_, key) => this.showFounderKey.includes(key))
-      else return []
     },
   },
   methods: {

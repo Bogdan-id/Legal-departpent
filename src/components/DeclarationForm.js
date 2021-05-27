@@ -547,6 +547,8 @@ const legal =  {
         apiKey: process.env.VUE_APP_YOUR_SCORE_API_KEY,
         inn: inn,
       })
+
+      console.log('person data', personData)
       
       // @ts-ignore
       if (personData.data.code === 'InvalidParameters') {

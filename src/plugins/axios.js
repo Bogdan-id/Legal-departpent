@@ -18,7 +18,7 @@ function setClientDate (res) {
 /** @param {AxiosResponse} res @param {Store} store */
 function cacheResponse (res, store) {
   let code = res?.data?.code
-  let status = res?.data?.state
+  let status = res?.data?.status
   if (YourControlErrCodes.includes(code) || YourControlErrCodes.includes(status)) return Promise.resolve(res)
 
   const key = getRequestKey(res.config)

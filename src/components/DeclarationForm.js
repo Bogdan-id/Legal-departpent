@@ -386,7 +386,7 @@ const legal =  {
       if (! str.includes('"')) return str
 
       return str.split('"')
-        .filter(v => v.toUpperCase() !== 'ТОВ' && v.toUpperCase() !== 'LLC' && v.toUpperCase() !== 'TOV')
+        .filter(v => !v.toUpperCase().includes('ТОВ') && !v.toUpperCase().includes('LLC') && !v.toUpperCase().includes('TOV'))
         .reduce(
           (a, b) => a.length > b.length ? a : b
         )
@@ -434,25 +434,25 @@ const legal =  {
             name = this.getLegalName(legal.name)
             /** @type {Founder} */
             // @ts-ignore
-            founderEnName = this.transliterate(this.getLegalName(name))
+            founderEnName = this.transliterate(name)
             // @ts-ignore
-            founderUaName = this.getLegalName(name)
+            founderUaName = name
             // @ts-ignore
           } else if (typeof mapedObject.name === "string") {
             // @ts-ignore
             name = this.getLegalName(mapedObject.name)
             // @ts-ignore
-            founderEnName = this.transliterate(this.getLegalName(name))
+            founderEnName = this.transliterate(name)
             // @ts-ignore
-            founderUaName = this.getLegalName(name)
+            founderUaName = name
             // @ts-ignore
           } else if (typeof mapedObject.name === "object") {
             // @ts-ignore
             name = this.getLegalName(mapedObject.name.shortName)
             // @ts-ignore
-            founderEnName = this.transliterate(this.getLegalName(name))
+            founderEnName = this.transliterate(name)
             // @ts-ignore
-            founderUaName = this.getLegalName(name)
+            founderUaName = name
           }
 
           const requisites = {

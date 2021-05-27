@@ -82,16 +82,16 @@
             <div 
               v-if="founderVerificationKeys.includes(key)"
               @click.prevent="toggleDescription">
+              <legal 
+                v-for="(founder, key) in legalFounders" 
+                :legal="founder"
+                :key="'legal-signer' + componentId + key">
+              </legal>
               <PersonVerification 
                 v-if="founder.hasOwnProperty('RNBOSanctions')" :person="founder"
                 @click.prevent="toggleDescription" />
             </div>
           </li>
-          <legal 
-            v-for="(founder, key) in legalFounders" 
-            :legal="founder"
-            :key="'legal-signer' + componentId + key">
-          </legal>
         </ul>
       </li>
     </ul>

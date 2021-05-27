@@ -18,7 +18,8 @@ function setClientDate (res) {
 /** @param {AxiosResponse} res @param {Store} store */
 function cacheResponse (res, store) {
   let code = res?.data?.code
-  if (YourControlErrCodes.includes(code)) return Promise.resolve(res)
+  let status = res?.data?.state
+  if (YourControlErrCodes.includes(code) || YourControlErrCodes.includes(status)) return Promise.resolve(res)
 
   const key = getRequestKey(res.config)
   store.commit('assignObject', {key: key, data: res})

@@ -385,9 +385,11 @@ const legal =  {
       if (! str || typeof str !== "string") return
       if (! str.includes('"')) return str
 
-      return str.split('"').reduce(
-        (a, b) => a.length > b.length ? a : b
-      )
+      return str.split('"')
+        .filter(v => v.toUpperCase() !== 'ТОВ' && v.toUpperCase() !== 'LLC' && v.toUpperCase() !== 'TOV')
+        .reduce(
+          (a, b) => a.length > b.length ? a : b
+        )
     },
     /** 
      * @param {Cancel} cancel - Axios cancel object */
@@ -432,28 +434,31 @@ const legal =  {
             name = this.getLegalName(legal.name)
             /** @type {Founder} */
             // @ts-ignore
-            founderEnName = this.transliterate(name)
+            founderEnName = this.transliterate(this.getLegalName(name))
             // @ts-ignore
-            founderUaName = name
+            founderUaName = this.getLegalName(name)
             // @ts-ignore
           } else if (typeof mapedObject.name === "string") {
             // @ts-ignore
             name = this.getLegalName(mapedObject.name)
             // @ts-ignore
-            founderEnName = this.transliterate(name)
+            founderEnName = this.transliterate(this.getLegalName(name))
             // @ts-ignore
-            founderUaName = name
+            founderUaName = this.getLegalName(name)
             // @ts-ignore
           } else if (typeof mapedObject.name === "object") {
             // @ts-ignore
             name = this.getLegalName(mapedObject.name.shortName)
             // @ts-ignore
-            founderEnName = this.transliterate(name)
+            founderEnName = this.transliterate(this.getLegalName(name))
             // @ts-ignore
-            founderUaName = name
+            founderUaName = this.getLegalName(name)
           }
 
-          const requisites = {nameEn: legalEnName || founderEnName, nameUa: legalUaName || founderUaName}
+          const requisites = {
+            nameEn: legalEnName || founderEnName, 
+            nameUa: legalUaName || founderUaName
+          }
           const object = legal || mapedObject
           // @ts-ignore
           this.checkLegal(object, requisites)
@@ -464,7 +469,7 @@ const legal =  {
 
           if (legalFounders?.length) {
             legalFounders.map(founder => {
-              const founderName = founder?.name?.split('"')[1]
+              const founderName = this.getLegalName(founder.name)
               this.checkLegalFounder(founder, founderName)
             })
           }

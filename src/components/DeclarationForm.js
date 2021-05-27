@@ -617,6 +617,7 @@ const legal =  {
     }, 
     checkPersonResult() {
       const innData = [
+        this.edrListPerson,
         this.eDeclarationList,
         this.rnboList,
         this.unTerrorList,
@@ -635,7 +636,7 @@ const legal =  {
         this.personDialog = true
       }
     },
-    /** @param {{lastName: string, firstName: string, patronymic: string}} person */
+    /** @param {{ lastName: string, firstName: string, patronymic: string }} person */
     // eslint-disable-next-line
     async mapGlobalPersonInitials(person) {
       this.clearPersonData()

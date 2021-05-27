@@ -1,68 +1,5 @@
 <template>
   <ul>
-    <!-- Signer -->
-    <li 
-      v-if="legal.hasOwnProperty('appointDate') && showAdditional"
-      @click.stop="toggleSignerInfo" 
-      class="list-item">
-      <div>
-        <span>Iнформацiя про пiдписанта</span>
-        <span>&nbsp;[{{ showSignerInfo ? "-" : "+" }}]</span>
-      </div>
-      <div 
-        v-show="showSignerInfo"
-        @click.prevent="toggleSignerInfo">
-        <div v-show="legal.appointDate">
-          Дата пiдписання: <span class="info-text">{{ legal.appointDate }}</span>
-        </div>
-        <div>
-          Роль: <span class="info-text">{{ legal.role }}</span>
-        </div>
-      </div>
-    </li>
-    <!-- Founder -->
-    <li 
-      v-if="legal.hasOwnProperty('ownershipType') && showAdditional"
-      @click.stop="toggleFounderInfo" 
-      class="list-item">
-      <div>
-        <span>Iнформацiя про засновника</span>
-        <span 
-          v-show="
-            legal.role
-            || legal.country
-            || legal.address
-            || legal.type
-            || legal.type && legal.code
-            || legal.capital
-            || legal.ownershipPercent">
-          &nbsp;[{{ showFounderInfo ? "-" : "+" }}]
-        </span>
-      </div>
-      <div v-if="showFounderInfo">
-        <div v-if="legal.role">
-          Роль: <span class="info-text">{{ legal.role }}</span>
-        </div>
-        <div v-if="legal.country">
-          Країна: <span class="info-text">{{ legal.country }}</span>
-        </div>
-        <div v-if="legal.address">
-          Адреса: <span class="info-text">{{ legal.address }}</span>
-        </div>
-        <div v-if="legal.type && legal.code">
-          Власник компанiї: <span class="info-text">{{ legal.code }}</span>
-        </div>
-        <div v-if="legal.capital">
-          Доля в статутному капiталi (грн): <span class="info-text">{{ legal.capital }}</span>
-        </div>
-        <div v-if="legal.ownershipPercent">
-          Доля в статутному капiталi (%): <span class="info-text">{{ legal.ownershipPercent }}</span>
-        </div>
-        <div>
-          Тип володiння: <span class="info-text">{{ getOwnerType(legal.type) }}</span>
-        </div>
-      </div>
-    </li>
     <li 
       @click.stop="toggleEsSanctions" 
       class="list-item">
@@ -413,11 +350,7 @@ import ListSigns from "./list-sign.vue"
 export default {
   components: { ListSigns },
   props: {
-    legal: {type: Object},
-    showAdditional: {
-      type: Boolean,
-      default: true,
-    }
+    legal: { type: Object },
   },
   data: () => ({
     showDeclarations: false,
@@ -430,7 +363,6 @@ export default {
     showCanadaSanctions: false,
     showAustraliaSanctions: false,
     showSignerInfo: false,
-    showFounderInfo: false,
 
     ESLegalSanctionsShowedList: [],
     RNBOLegalsShowedList: [],
@@ -452,7 +384,6 @@ export default {
   methods: {
     toggleEsSanctions() {this.showESLegalSanctions = !this.showESLegalSanctions},
     toggleSignerInfo() {this.showSignerInfo = !this.showSignerInfo},
-    toggleFounderInfo() {this.showFounderInfo = !this.showFounderInfo},
     toggleRNBOLegalSanctions() {this.showRNBOLegalSanctions = !this.showRNBOLegalSanctions},
     toggleUNLegalSanctions() {this.showUNLegalSanctions = !this.showUNLegalSanctions},
     toggleUNTerrorLegalSanctions() {this.showUNTerrorLegalSanctions = !this.showUNTerrorLegalSanctions},

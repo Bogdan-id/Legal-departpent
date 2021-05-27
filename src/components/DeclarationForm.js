@@ -390,6 +390,9 @@ const legal =  {
         .reduce(
           (a, b) => a.length > b.length ? a : b
         )
+        .replace('TOV', '')
+        .replace('LLC', '')
+        .replace('TOV', '')
     },
     /** 
      * @param {Cancel} cancel - Axios cancel object */

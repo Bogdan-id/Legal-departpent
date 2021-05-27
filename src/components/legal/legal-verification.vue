@@ -39,7 +39,29 @@
           &nbsp;[{{ showFounderInfo ? "-" : "+" }}]
         </span>
       </div>
-      <CompanyInfo v-if="showFounderInfo" :company="legal"/>
+      <div v-if="hasOwnerShip">
+        <div v-if="legal.role">
+          Роль: <span class="info-text">{{ legal.role }}</span>
+        </div>
+        <div v-if="legal.country">
+          Країна: <span class="info-text">{{ legal.country }}</span>
+        </div>
+        <div v-if="legal.address">
+          Адреса: <span class="info-text">{{ legal.address }}</span>
+        </div>
+        <div v-if="legal.type && legal.code">
+          Власник компанiї: <span class="info-text">{{ legal.code }}</span>
+        </div>
+        <div v-if="legal.capital">
+          Доля в статутному капiталi (грн): <span class="info-text">{{ legal.capital }}</span>
+        </div>
+        <div v-if="legal.ownershipPercent">
+          Доля в статутному капiталi (%): <span class="info-text">{{ legal.ownershipPercent }}</span>
+        </div>
+        <div>
+          Тип володiння: <span class="info-text">{{ getOwnerType(legal.type) }}</span>
+        </div>
+      </div>
     </li>
     <li 
       @click.stop="toggleEsSanctions" 
@@ -386,10 +408,9 @@ import {
   getCategoryName} from './helper'
 
 import ListSigns from "./list-sign.vue"
-import CompanyInfo from './company-info.vue'
 
 export default {
-  components: { ListSigns, CompanyInfo },
+  components: { ListSigns },
   props: {
     legal: {type: Object},
     showAdditional: {

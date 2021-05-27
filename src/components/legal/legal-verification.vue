@@ -386,9 +386,10 @@ import {
   getCategoryName} from './helper'
 
 import ListSigns from "./list-sign.vue"
+import CompanyInfo from './company-info.vue'
 
 export default {
-  components: {ListSigns},
+  components: { ListSigns, CompanyInfo },
   props: {legal: Object},
   data: () => ({
     showDeclarations: false,

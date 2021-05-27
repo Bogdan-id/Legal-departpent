@@ -2,7 +2,7 @@
   <div>
     <div v-if="company.name && company.shortName"><span class="info-label">Компанiя:</span> <span class="info-text">{{ company.name.shortName }}</span></div>
     <div v-if="company.code"><span class="info-label">ЄДРПОУ:</span> <span class="info-text">{{ company.code }}</span></div>
-    <div v-if="company.address"><span class="info-label">Адреса:</span> <span class="info-text">{{ company.address }}</span></div>
+    <div v-if="company.address && !hasOwnerShip"><span class="info-label">Адреса:</span> <span class="info-text">{{ company.address }}</span></div>
     <div v-if="company.superiorManagement"><span class="info-label">Форма правлiння:</span> <span class="info-text">{{ company.superiorManagement }}</span></div>
     <div v-if="company.contacts && company.contacts.length">
       <div><span class="info-label">Контакти</span></div>
@@ -18,7 +18,7 @@
         <div><span class="info-label">Факс:</span> <span class="info-text">{{ item.fax || "---" }}</span></div>
       </div>
     </div>
-    <div v-if="hasOwnerShip" class="pl-3">
+    <div v-if="hasOwnerShip">
       <h4>Iнформацiя про засновника</h4>
       <div v-if="company.role">
         Роль: <span class="info-text">{{ company.role }}</span>

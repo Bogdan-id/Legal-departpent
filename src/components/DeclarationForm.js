@@ -512,7 +512,7 @@ const legal =  {
         case this.choosedPerson && this.personInitials: return this.mapGlobalPersonInitials({
           lastName: this.lastName,
           firstName: this.firstName,
-          patronymic: this.patronymic, 
+          patronymic: this.patronymic ? this.patronymic : '', 
         })
       }
     },
@@ -721,7 +721,7 @@ const legal =  {
       let personObject = {
         firstName: firstName,
         lastName: lastName,
-        patronymic: patronymic,
+        patronymic: patronymic ? patronymic : '',
       }
 
       /** @param {function} handler */

@@ -20,8 +20,6 @@
         </div>
       </div>
     </li>
-
-    <!-- Put here company info -->
     <!-- Founder -->
     <li 
       v-if="person.hasOwnProperty('ownershipType')"

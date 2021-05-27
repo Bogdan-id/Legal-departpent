@@ -1,5 +1,46 @@
 <template>
   <ul>
+    <!-- Signer -->
+    <li 
+      v-if="legal.hasOwnProperty('appointDate')"
+      @click.stop="toggleSignerInfo" 
+      class="list-item">
+      <div>
+        <span>Iнформацiя про пiдписанта</span>
+        <span>&nbsp;[{{ showSignerInfo ? "-" : "+" }}]</span>
+      </div>
+      <div 
+        v-show="showSignerInfo"
+        @click.prevent="toggleSignerInfo">
+        <div v-show="legal.appointDate">
+          Дата пiдписання: <span class="info-text">{{ legal.appointDate }}</span>
+        </div>
+        <div>
+          Роль: <span class="info-text">{{ legal.role }}</span>
+        </div>
+      </div>
+    </li>
+    <!-- Founder -->
+    <li 
+      v-if="legal.hasOwnProperty('ownershipType')"
+      @click.stop="toggleFounderInfo" 
+      class="list-item">
+      <div>
+        <span>Iнформацiя про засновника</span>
+        <span 
+          v-show="
+            legal.role
+            || legal.country
+            || legal.address
+            || legal.type
+            || legal.type && legal.code
+            || legal.capital
+            || legal.ownershipPercent">
+          &nbsp;[{{ showFounderInfo ? "-" : "+" }}]
+        </span>
+      </div>
+      <CompanyInfo v-if="showFounderInfo" :company="legal"/>
+    </li>
     <li 
       @click.stop="toggleEsSanctions" 
       class="list-item">

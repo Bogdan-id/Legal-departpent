@@ -83,7 +83,7 @@
               v-if="founderVerificationKeys.includes(key)"
               @click.prevent="toggleDescription">
               <legal 
-                v-for="(founder, key) in legalFounders" 
+                v-if="founder.hasOwnProperty('RNBOLegals')"
                 :legal="founder"
                 :key="'legal-signer' + componentId + key">
               </legal>
@@ -130,7 +130,6 @@ export default {
     legalFounders () {
       /* eslint-disable */
       return this.legal.founders
-        .filter(founder => founder.hasOwnProperty('RNBOLegals'))
         .filter((_, key) => this.showFounderKey.includes(key))
       /* eslint-enable */
     },

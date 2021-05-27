@@ -400,6 +400,8 @@ export default {
     showYourControlSanctions: false,
     showCanadaSanctions: false,
     showAustraliaSanctions: false,
+    showSignerInfo: false,
+    showFounderInfo: false,
 
     ESLegalSanctionsShowedList: [],
     RNBOLegalsShowedList: [],
@@ -420,6 +422,8 @@ export default {
   }),
   methods: {
     toggleEsSanctions() {this.showESLegalSanctions = !this.showESLegalSanctions},
+    toggleSignerInfo() {this.showSignerInfo = !this.showSignerInfo},
+    toggleFounderInfo() {this.showFounderInfo = !this.showFounderInfo},
     toggleRNBOLegalSanctions() {this.showRNBOLegalSanctions = !this.showRNBOLegalSanctions},
     toggleUNLegalSanctions() {this.showUNLegalSanctions = !this.showUNLegalSanctions},
     toggleUNTerrorLegalSanctions() {this.showUNTerrorLegalSanctions = !this.showUNTerrorLegalSanctions},

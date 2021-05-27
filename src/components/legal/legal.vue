@@ -85,9 +85,6 @@
               <PersonVerification 
                 v-if="founder.hasOwnProperty('RNBOSanctions')" :person="founder"
                 @click.prevent="toggleDescription" />
-              <LegalVerification 
-                v-if="founder.hasOwnProperty('RNBOLegals')" :legal="founder"
-                @click.prevent="toggleDescription" />
             </div>
           </li>
           <legal 

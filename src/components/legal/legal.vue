@@ -80,7 +80,8 @@
             <div 
               v-if="founderVerificationKeys.includes(key)"
               @click.prevent="toggleDescription">
-              <PersonVerification :person="founder" />
+              <PersonVerification v-if="!founder.code" :person="founder" />
+              <LegalVerification v-if="founder.code" :legal="founder" />
             </div>
           </li>
           <legal 

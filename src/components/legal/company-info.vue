@@ -19,7 +19,6 @@
       </div>
     </div>
     <div v-if="hasOwnerShip">
-      <h4>Iнформацiя про засновника</h4>
       <div v-if="company.role">
         Роль: <span class="info-text">{{ company.role }}</span>
       </div>

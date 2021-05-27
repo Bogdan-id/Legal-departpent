@@ -2,7 +2,7 @@
   <ul>
     <!-- Signer -->
     <li 
-      v-if="legal.hasOwnProperty('appointDate')"
+      v-if="legal.hasOwnProperty('appointDate') && showAdditional"
       @click.stop="toggleSignerInfo" 
       class="list-item">
       <div>
@@ -22,7 +22,7 @@
     </li>
     <!-- Founder -->
     <li 
-      v-if="legal.hasOwnProperty('ownershipType')"
+      v-if="legal.hasOwnProperty('ownershipType') && showAdditional"
       @click.stop="toggleFounderInfo" 
       class="list-item">
       <div>
@@ -390,7 +390,13 @@ import CompanyInfo from './company-info.vue'
 
 export default {
   components: { ListSigns, CompanyInfo },
-  props: {legal: Object},
+  props: {
+    legal: {type: Object},
+    showAdditional: {
+      type: Boolean,
+      default: true,
+    }
+  },
   data: () => ({
     showDeclarations: false,
     showESLegalSanctions: false,

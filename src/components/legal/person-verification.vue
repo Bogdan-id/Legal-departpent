@@ -20,8 +20,29 @@
         </div>
       </div>
     </li>
+
+    <!-- Put here company info -->
     <!-- Founder -->
-    <CompanyInfo :company="person"/>
+    <li 
+      v-if="person.hasOwnProperty('ownershipType')"
+      @click.stop="toggleFounderInfo" 
+      class="list-item">
+      <div>
+        <span>Iнформацiя про засновника</span>
+        <span 
+          v-show="
+            person.role
+            || person.country
+            || person.address
+            || person.type
+            || person.type && person.code
+            || person.capital
+            || person.ownershipPercent">
+          &nbsp;[{{ showFounderInfo ? "-" : "+" }}]
+        </span>
+      </div>
+      <CompanyInfo :company="person"/>
+    </li>
     <!-- Declarations -->
     <li
       v-if="person.EDeclarations"

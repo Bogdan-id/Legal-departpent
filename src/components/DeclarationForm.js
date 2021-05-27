@@ -66,7 +66,7 @@ const legal =  {
       ? {
           lastName: {required},
           firstName: {required},
-          patronymic: {required},
+          // patronymic: {required},
       } : {} 
 
     return {
@@ -932,10 +932,10 @@ const legal =  {
       if (! this.$v.firstName.$error) return
       else return this.commonErr
     }, 
-    patronymicErr() {
-      if (! this.$v.patronymic.$error) return
-      else return this.commonErr
-    },
+    // patronymicErr() {
+    //   if (! this.$v.patronymic.$error) return
+    //   else return this.commonErr
+    // },
     innErr() {
       const errors = []
       if (! this.$v.inn.$error) return errors

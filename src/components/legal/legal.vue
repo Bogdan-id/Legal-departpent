@@ -19,7 +19,7 @@
     <!-- Legal verification -->
     <ul>
       <li 
-        v-if="legal.code"
+        v-if="legal.hasOwnProperty('RNBOLegals')"
         @click.stop="toggleLegalVerification"
         class="list-item">
         <div>Перевiрка&nbsp;[{{showLegalVerification ? '-' : '+'}}]</div>
@@ -80,8 +80,8 @@
             <div 
               v-if="founderVerificationKeys.includes(key)"
               @click.prevent="toggleDescription">
-              <PersonVerification v-if="!founder.code" :person="founder" />
-              <LegalVerification v-if="founder.code" :legal="founder" />
+              <PersonVerification v-if="founder.hasOwnProperty('RNBOSanctions')" :person="founder" />
+              <LegalVerification v-if="founder.hasOwnProperty('RNBOLegals')" :legal="founder" />
             </div>
           </li>
           <legal 

@@ -20,6 +20,10 @@
         </div>
       </div>
     </li>
+    <FounderInfo 
+      v-if="person.hasOwnProperty('ownershipType') || person.hasOwnProperty('ownershipPercent')"
+      :founder="person">
+    </FounderInfo>
     <!-- Declarations -->
     <li
       v-if="person.EDeclarations"

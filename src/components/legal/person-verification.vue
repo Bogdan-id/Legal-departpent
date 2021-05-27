@@ -20,49 +20,6 @@
         </div>
       </div>
     </li>
-    <!-- Founder -->
-    <li 
-      v-if="person.hasOwnProperty('ownershipType')"
-      @click.stop="toggleFounderInfo" 
-      class="list-item">
-      <div>
-        <span>Iнформацiя про засновника</span>
-        <span 
-          v-show="
-            person.role
-            || person.country
-            || person.address
-            || person.type
-            || person.type && person.code
-            || person.capital
-            || person.ownershipPercent">
-          &nbsp;[{{ showFounderInfo ? "-" : "+" }}]
-        </span>
-      </div>
-      <div v-if="showFounderInfo">
-        <div v-if="person.role">
-          Роль: <span class="info-text">{{ person.role }}</span>
-        </div>
-        <div v-if="person.country">
-          Країна: <span class="info-text">{{ person.country }}</span>
-        </div>
-        <div v-if="person.address">
-          Адреса: <span class="info-text">{{ person.address }}</span>
-        </div>
-        <div v-if="person.type && person.code">
-          Власник компанiї: <span class="info-text">{{ person.code }}</span>
-        </div>
-        <div v-if="person.capital">
-          Доля в статутному капiталi (грн): <span class="info-text">{{ person.capital }}</span>
-        </div>
-        <div v-if="person.ownershipPercent">
-          Доля в статутному капiталi (%): <span class="info-text">{{ person.ownershipPercent }}</span>
-        </div>
-        <div>
-          Тип володiння: <span class="info-text">{{ getOwnerType(person.type) }}</span>
-        </div>
-      </div>
-    </li>
     <!-- Declarations -->
     <li
       v-if="person.EDeclarations"
@@ -566,7 +523,6 @@ export default {
     showUNPersonSanctions: false,
     showUNTerrorPersonSanctions: false,
     showUSPersonSanctions: false,
-    showFounderInfo: false,
     showSignerInfo: false,
     showYourControl: false,
     showAustraliaSanctions: false,
@@ -595,7 +551,6 @@ export default {
     toggleYourControlDSFMU() {this.showYourControlDSFMU = !this.showYourControlDSFMU},
     toggleYourControlRNBO() {this.showYourControl = !this.showYourControl},
     toggleSignerInfo() {this.showSignerInfo = !this.showSignerInfo},
-    toggleFounderInfo() {this.showFounderInfo = !this.showFounderInfo},
     toggleDeclarations() {this.showDeclarations = !this.showDeclarations},
     toggleEsSanctions() {this.showEsSanctions = !this.showEsSanctions},
     toggleRNBOSanctions() {this.showRnboSunctions = !this.showRnboSunctions},

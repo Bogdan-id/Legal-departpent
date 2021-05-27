@@ -26,9 +26,7 @@
         <div 
           v-if="showLegalVerification"
           @click.prevent="toggleLegalVerification">
-          <LegalVerification 
-            :legal="legal" 
-            :showAdditional="false" />
+          <LegalVerification :legal="legal" />
         </div>
       </li>
     </ul>
@@ -82,6 +80,7 @@
             <div 
               v-if="founderVerificationKeys.includes(key)"
               @click.prevent="toggleDescription">
+              <FounderInfo :founder="founder" />
               <legal 
                 v-if="founder.hasOwnProperty('RNBOLegals')"
                 :legal="founder"
@@ -102,6 +101,7 @@
 import PersonVerification from './person-verification.vue'
 import LegalVerification from './legal-verification.vue'
 import CompanyInfo from './company-info.vue'
+import FounderInfo from './FounderInfo.vue'
 import { toggleDescription } from './helper.js'
 
 export default {
@@ -110,6 +110,7 @@ export default {
     PersonVerification,
     LegalVerification,
     CompanyInfo,
+    FounderInfo,
   },
   props: {
     legal: Object

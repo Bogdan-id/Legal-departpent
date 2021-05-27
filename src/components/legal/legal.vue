@@ -30,6 +30,9 @@
         </div>
       </li>
     </ul>
+    <ul v-if="legal.hasOwnProperty('ownershipType') || legal.hasOwnProperty('ownershipPercent')">
+      <FounderInfo :founder="legal" />
+    </ul>
     <!-- Signers -->
     <ul v-if="legal.signers && legal.signers.length">
       <li
@@ -80,7 +83,6 @@
             <div 
               v-if="founderVerificationKeys.includes(key)"
               @click.prevent="toggleDescription">
-              <FounderInfo :founder="founder" />
               <legal 
                 v-if="founder.hasOwnProperty('RNBOLegals')"
                 :legal="founder"

@@ -25,7 +25,7 @@
       v-if="person.hasOwnProperty('ownershipType')"
       @click.stop="toggleFounderInfo" 
       class="list-item">
-      <div @click="toggleFounderInfo()">
+      <div>
         <span>Iнформацiя про засновника</span>
         <span 
           v-show="

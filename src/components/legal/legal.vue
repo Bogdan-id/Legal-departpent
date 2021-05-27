@@ -26,7 +26,9 @@
         <div 
           v-if="showLegalVerification"
           @click.prevent="toggleLegalVerification">
-          <LegalVerification :legal="legal" />
+          <LegalVerification 
+            :legal="legal" 
+            :showAdditional="false" />
         </div>
       </li>
     </ul>

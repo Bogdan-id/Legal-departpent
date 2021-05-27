@@ -128,8 +128,11 @@ export default {
   }),
   computed: {
     legalFounders () {
+      /* eslint-disable */
       return this.legal.founders
+        .filter(founder => founder.hasOwnProperty('RNBOLegals'))
         .filter((_, key) => this.showFounderKey.includes(key))
+      /* eslint-enable */
     },
   },
   methods: {

@@ -405,7 +405,8 @@ import {
   toggleDescription, 
   getInitials,
   getText, 
-  getCategoryName} from './helper'
+  getCategoryName,
+  getOwnerType } from './helper'
 
 import ListSigns from "./list-sign.vue"
 
@@ -463,6 +464,7 @@ export default {
     getCategoryName,
     getInitials,
     getText,
+    getOwnerType,
   },
 }
 </script>

@@ -545,12 +545,21 @@ const legal =  {
       const personData = await this.getEdr({
         apiKey: process.env.VUE_APP_YOUR_SCORE_API_KEY,
         inn: inn,
+      }).catch(err => {
+        this.$snotify.simple(err)
+        throw err
       })
-
       if (! personData) {
         this.$snotify.simple('За вашим запитом нічого не знайдено')
         this.loading = false
         return 
+      }
+
+      if (personData?.data?.status === 'Update in progress') {
+        this.attemptsToGetNewEdr ++
+        return new Promise(resolve => {
+          setTimeout(() => resolve(this.mapGlobalPersonInn(inn)), this.yourControlTimeOut)
+        })
       }
       // @ts-ignore
       if (personData.data.code === 'InvalidParameters') {

@@ -132,6 +132,8 @@ export default {
   computed: {
     legalFounders () {
       return this.legal.founders
+        // eslint-disable-next-line
+        .filter(v => v.hasOwnProperty('RNBOLegals'))
         .filter((_, key) => this.showFounderKey.includes(key))
     },
   },

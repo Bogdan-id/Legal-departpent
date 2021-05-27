@@ -41,7 +41,7 @@
           &nbsp;[{{ showFounderInfo ? "-" : "+" }}]
         </span>
       </div>
-      <CompanyInfo :company="person"/>
+      <CompanyInfo v-if="showFounderInfo" :company="person"/>
     </li>
     <!-- Declarations -->
     <li

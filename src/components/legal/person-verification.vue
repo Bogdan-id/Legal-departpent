@@ -21,50 +21,7 @@
       </div>
     </li>
     <!-- Founder -->
-    <li 
-      v-if="person.hasOwnProperty('ownershipType')"
-      @click.stop="toggleFounderInfo" 
-      class="list-item">
-      <div>
-        <span>Iнформацiя про засновника</span>
-        <span 
-          v-show="
-            person.role
-            || person.country
-            || person.address
-            || person.type
-            || person.type && person.code
-            || person.capital
-            || person.ownershipPercent">
-          &nbsp;[{{ showFounderInfo ? "-" : "+" }}]
-        </span>
-      </div>
-      <div 
-        v-show="showFounderInfo"
-        @click.prevent="toggleFounderInfo">
-        <div v-show="person.role">
-          Роль: <span class="info-text">{{ person.role }}</span>
-        </div>
-        <div v-show="person.country">
-          Країна: <span class="info-text">{{ person.country }}</span>
-        </div>
-        <div v-show="person.address">
-          Адреса: <span class="info-text">{{ person.address }}</span>
-        </div>
-        <div v-show="person.type && person.code">
-          Власник компанiї: <span class="info-text">{{ person.code }}</span>
-        </div>
-        <div v-show="person.capital">
-          Доля в статутному капiталi (грн): <span class="info-text">{{ person.capital }}</span>
-        </div>
-        <div v-show="person.ownershipPercent">
-          Доля в статутному капiталi (%): <span class="info-text">{{ person.ownershipPercent }}</span>
-        </div>
-        <div>
-          Тип володiння: <span class="info-text">{{ getOwnerType(person.type) }}</span>
-        </div>
-      </div>
-    </li>
+    <CompanyInfo :company="person"/>
     <!-- Declarations -->
     <li
       v-if="person.EDeclarations"
@@ -557,9 +514,10 @@ import {
   getCategoryName } from "./helper"
 
 import ListSigns from "./list-sign.vue"
+import CompanyInfo from './company-info.vue'
 
 export default {
-  components: {ListSigns},
+  components: { ListSigns, CompanyInfo },
   props: {person: Object},
   data: () => ({
     showDeclarations: false,

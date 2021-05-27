@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div><span class="info-label">Компанiя:</span> <span class="info-text">{{ company.name.shortName }}</span></div>
-    <div><span class="info-label">ЄДРПОУ:</span> <span class="info-text">{{ company.code }}</span></div>
-    <div><span class="info-label">Адреса:</span> <span class="info-text">{{ company.address }}</span></div>
-    <div><span class="info-label">Форма правлiння:</span> <span class="info-text">{{ company.superiorManagement }}</span></div>
+    <div v-if="company.name && company.shortName"><span class="info-label">Компанiя:</span> <span class="info-text">{{ company.name.shortName }}</span></div>
+    <div v-if="company.code"><span class="info-label">ЄДРПОУ:</span> <span class="info-text">{{ company.code }}</span></div>
+    <div v-if="company.address"><span class="info-label">Адреса:</span> <span class="info-text">{{ company.address }}</span></div>
+    <div v-if="company.superiorManagement"><span class="info-label">Форма правлiння:</span> <span class="info-text">{{ company.superiorManagement }}</span></div>
     <div v-if="company.contacts && company.contacts.length">
       <div><span class="info-label">Контакти</span></div>
       <div 
@@ -18,7 +18,7 @@
         <div><span class="info-label">Факс:</span> <span class="info-text">{{ item.fax || "---" }}</span></div>
       </div>
     </div>
-    <div><span class="info-label">Тип контрагента:</span> <span class="info-text">{{ company.contractorType }}</span></div>
+    <div v-if="company.contractorType"><span class="info-label">Тип контрагента:</span> <span class="info-text">{{ company.contractorType }}</span></div>
     <div 
       v-if="company.mainEconomicActivity">
       <span class="info-label">
@@ -75,7 +75,9 @@
       </span>
       <span class="info-text">{{ company.foundingCapital.sum }}</span>
     </div>
-    <div><span class="info-label">Форма володiння:</span> <span class="info-text">{{ company.legalForm }}</span></div>
+    <div v-if="company.legalForm">
+      <span class="info-label">Форма володiння:</span> <span class="info-text">{{ company.legalForm }}</span>
+    </div>
     <div v-if="company.registrationAuthorities && company.registrationAuthorities.length">
       <div><span class="info-label">Реєстрації:</span></div>
       <ul>
@@ -92,14 +94,20 @@
         </li>
       </ul>
     </div>
-    <div><span class="info-label">Статус:</span> <span class="info-text">{{ company.status }}</span></div>
+    <div v-if="company.registrationAfterLaw">
+      <div><span class="info-label">Дата реєстрації:</span> <span class="info-text">{{ company.registrationAfterLaw.entryDate }}</span></div>
+      <div><span class="info-label">Номер реєстрації:</span> <span class="info-text">{{ company.registrationAfterLaw.entryNumber }}</span></div>
+    </div>
+    <div v-if="company.status">
+      <span class="info-label">Статус:</span> <span class="info-text">{{ company.status }}</span>
+    </div>
   </div>
 </template>
 
 <script>
 import { getOwnerType } from './helper'
 export default {
-  props: {company: {type: Object}},
+  props: { company: { type: Object } },
   methods: {
     getOwnerType,
   }

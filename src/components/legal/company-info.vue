@@ -2,7 +2,7 @@
   <div>
     <div v-if="company.name && company.shortName"><span class="info-label">Компанiя:</span> <span class="info-text">{{ company.name.shortName }}</span></div>
     <div v-if="company.code"><span class="info-label">ЄДРПОУ:</span> <span class="info-text">{{ company.code }}</span></div>
-    <div v-if="company.address && !hasOwnerShip"><span class="info-label">Адреса:</span> <span class="info-text">{{ company.address }}</span></div>
+    <div v-if="company.address"><span class="info-label">Адреса:</span> <span class="info-text">{{ company.address }}</span></div>
     <div v-if="company.superiorManagement"><span class="info-label">Форма правлiння:</span> <span class="info-text">{{ company.superiorManagement }}</span></div>
     <div v-if="company.contacts && company.contacts.length">
       <div><span class="info-label">Контакти</span></div>
@@ -16,29 +16,6 @@
         <div><span class="info-label">Email:</span> <span class="info-text">{{ item.email || "---"}}</span></div>
         <div><span class="info-label">Сайт:</span> <span class="info-text">{{ item.webSite || "---" }}</span></div>
         <div><span class="info-label">Факс:</span> <span class="info-text">{{ item.fax || "---" }}</span></div>
-      </div>
-    </div>
-    <div v-if="hasOwnerShip">
-      <div v-if="company.role">
-        Роль: <span class="info-text">{{ company.role }}</span>
-      </div>
-      <div v-if="company.country">
-        Країна: <span class="info-text">{{ company.country }}</span>
-      </div>
-      <div v-if="company.address">
-        Адреса: <span class="info-text">{{ company.address }}</span>
-      </div>
-      <div v-if="company.type && company.code">
-        Власник компанiї: <span class="info-text">{{ company.code }}</span>
-      </div>
-      <div v-if="company.capital">
-        Доля в статутному капiталi (грн): <span class="info-text">{{ company.capital }}</span>
-      </div>
-      <div v-if="company.ownershipPercent">
-        Доля в статутному капiталi (%): <span class="info-text">{{ company.ownershipPercent }}</span>
-      </div>
-      <div>
-        Тип володiння: <span class="info-text">{{ getOwnerType(company.type) }}</span>
       </div>
     </div>
     <div v-if="company.contractorType"><span class="info-label">Тип контрагента:</span> <span class="info-text">{{ company.contractorType }}</span></div>

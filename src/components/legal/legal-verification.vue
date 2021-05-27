@@ -25,7 +25,7 @@
       v-if="legal.hasOwnProperty('ownershipType') && showAdditional"
       @click.stop="toggleFounderInfo" 
       class="list-item">
-      <div>
+      <div @click="toggleFounderInfo()">
         <span>Iнформацiя про засновника</span>
         <span 
           v-show="
@@ -39,7 +39,7 @@
           &nbsp;[{{ showFounderInfo ? "-" : "+" }}]
         </span>
       </div>
-      <div>
+      <div v-if="showFounderInfo">
         <div v-if="legal.role">
           Роль: <span class="info-text">{{ legal.role }}</span>
         </div>

@@ -1,5 +1,6 @@
 <template>
   <ul>
+    <!-- ES sanctions -->
     <li 
       @click.stop="toggleEsSanctions" 
       class="list-item">
@@ -8,6 +9,7 @@
         :data="legal.ESLegalSanctions.data"
         :state="showESLegalSanctions"
         :config="legal.ESLegalSanctions.config"
+        :source="'https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A02014D0145-20201001'"
       />
       <ul 
         v-show="showESLegalSanctions"
@@ -38,6 +40,7 @@
         </li>
       </ul>
     </li>
+    <!-- Your-Score -->
     <li 
       v-if="legal.YourControlSanctions && legal.YourControlSanctions.data"
       @click.stop="toggleYourControlSanctions" 
@@ -69,6 +72,7 @@
         </li>
       </ul>
     </li>
+    <!-- RNBO -->
     <li 
       @click.stop="toggleRNBOLegalSanctions" 
       class="list-item">
@@ -77,6 +81,7 @@
         :data="legal.RNBOLegals.data"
         :state="showRNBOLegalSanctions"
         :config="legal.RNBOLegals.config"
+        :source="'https://www.president.gov.ua/documents/822019-26290'"
       />
       <ul 
         v-show="showRNBOLegalSanctions"
@@ -122,6 +127,7 @@
         :data="legal.CanadaLegalSanctions.data"
         :state="showCanadaSanctions"
         :config="legal.CanadaLegalSanctions.config"
+        :source="'https://www.international.gc.ca/world-monde/assets/office_docs/international_relations-relations_internationales/sanctions/sema-lmes.xml'"
       />
       <ul 
         v-show="showCanadaSanctions"
@@ -158,6 +164,7 @@
         :data="legal.AustraliaLegalSanctions.data"
         :state="showAustraliaSanctions"
         :config="legal.AustraliaLegalSanctions.config"
+        :source="'https://www.dfat.gov.au/international-relations/security/sanctions/consolidated-list'"
       />
       <ul 
         v-show="showAustraliaSanctions"
@@ -200,6 +207,7 @@
         </li>
       </ul>
     </li>
+    <!-- UNO -->
     <li 
       @click.stop="toggleUNLegalSanctions"
       class="list-item">
@@ -208,6 +216,7 @@
         :data="legal.UNLegalSanctions.data"
         :state="showUNLegalSanctions"
         :config="legal.UNLegalSanctions.config"
+        :source="'https://scsanctions.un.org/resources/xml/ru/consolidated.xml'"
       />
       <ul 
         v-show="showUNLegalSanctions"
@@ -249,14 +258,16 @@
         </li>
       </ul>
     </li>
+    <!-- DSFMU -->
     <li 
       @click.stop="toggleUNTerrorLegalSanctions"
       class="list-item">
       <ListSigns 
-        title="ООН терористи"
+        title="ДСФМУ терористи"
         :data="legal.UNLegalTerrors.data"
         :state="showUNTerrorLegalSanctions"
         :config="legal.UNLegalTerrors.config"
+        :source="'https://fiu.gov.ua/assets/userfiles/Terror/zBlackListFull.xml'"
       />
       <ul 
         v-show="showUNTerrorLegalSanctions"
@@ -288,6 +299,7 @@
         </li>
       </ul>
     </li>
+    <!-- USA -->
     <li
       @click.stop="toggleUSLegalSanctions" 
       class="list-item">
@@ -296,6 +308,7 @@
         :data="legal.USLegalSanctions.data"
         :state="showUSLegalSanctions"
         :config="legal.USLegalSanctions.config"
+        :source="'https://www.treasury.gov/ofac/downloads/sdn.xml'"
       />
       <ul 
         v-show="showUSLegalSanctions"

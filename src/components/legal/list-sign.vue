@@ -45,6 +45,10 @@
             <span class="info-label">URL:&nbsp;&nbsp;</span> 
             <span class="info-data">{{ config.url }}</span>
           </div> 
+          <div v-if="source">
+            <span class="info-label">Джерело:&nbsp;&nbsp;</span> 
+            <a class="list-sign-link" target="_blank" :href="source">{{ host }}</a>
+          </div> 
         </v-card-text>
       </v-card>
     </v-menu>
@@ -52,17 +56,24 @@
   </div>
 </template>
 <script>
-import {getCategoryName} from "./helper"
-import {mdiClose, mdiInformation} from '@mdi/js'
+import { getCategoryName } from "./helper"
+import { mdiClose, mdiInformation } from '@mdi/js'
 export default {
   name: "list-signs",
   props: {
-    data: {type: Array},
-    title: {type: String},
-    state: {type: Boolean},
-    config: {type: Object},
+    data: { type: Array },
+    title: { type: String },
+    state: { type: Boolean },
+    config: { type: Object },
+    source: { type: String },
   },
-  data: () => ({mdiClose, mdiInformation}),
+  data: () => ({ mdiClose, mdiInformation }),
+  computed: {
+    host() {
+      if (!this.source) return 
+      return new URL(this.source).host
+    }
+  },
   methods: {
     getCategoryName,
     clickOutside() {
@@ -84,5 +95,8 @@ export default {
 }
 .info-data {
   /*  */
+}
+.list-sign-link {
+  color: white!important;
 }
 </style>

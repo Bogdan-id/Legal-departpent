@@ -1,4 +1,13 @@
 <template>
+<!-- 
+  ES: https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A02014D0145-20201001
+  RNBO: https://www.president.gov.ua/documents/822019-26290
+  Australia: https://www.dfat.gov.au/international-relations/security/sanctions/consolidated-list
+  Canada: https://www.international.gc.ca/world-monde/assets/office_docs/international_relations-relations_internationales/sanctions/sema-lmes.xml
+  UNO: https://scsanctions.un.org/resources/xml/ru/consolidated.xml
+  DSFMU: https://fiu.gov.ua/assets/userfiles/Terror/zBlackListFull.xml (unTerrorList, UNTerrorPersonSanctions, UNLegalTerrors)
+  USA: https://www.treasury.gov/ofac/downloads/sdn.xml
+ -->
   <v-dialog
     ref="dialog"
     v-model="innerState"
@@ -36,7 +45,9 @@
           </span>]
           <v-icon 
             :class="btnActv('EDR') ? 'active' : ''" 
-            color="white">{{ mdiMenuDown }}</v-icon>
+            color="white">
+            {{ mdiMenuDown }}
+          </v-icon>
         </v-btn>
         <v-scroll-x-transition hide-on-leave>
           <v-card v-show="btnActv('EDR')" class="mb-2 item-card">
@@ -87,6 +98,17 @@
             class="result-header">
             {{switchHeader(australiaSanctionList, australiaSanctionList.length - 1)}}
           </span>
+          <v-btn @click="$refs.austLink.click()" icon>
+            <v-icon color="white" small>
+              {{ mdiLinkVariant }}
+            </v-icon>
+            <a 
+              ref="austLink" 
+              target="_blank" 
+              style="display: none" 
+              href="https://www.dfat.gov.au/international-relations/security/sanctions/consolidated-list">
+            </a>
+          </v-btn>
         </v-btn>
         <v-scroll-x-transition hide-on-leave>
           <v-card v-show="btnActv('australiaSanctionList')" class="mb-2 item-card">
@@ -155,6 +177,17 @@
             class="result-header">
             {{switchHeader(canadaSanctionList, canadaSanctionList.length - 1)}}
           </span>
+          <v-btn @click="$refs.canadaLink.click()" icon>
+            <v-icon color="white" small>
+              {{ mdiLinkVariant }}
+            </v-icon>
+            <a 
+              ref="canadaLink" 
+              target="_blank" 
+              style="display: none" 
+              href="https://www.international.gc.ca/world-monde/assets/office_docs/international_relations-relations_internationales/sanctions/sema-lmes.xml">
+            </a>
+          </v-btn>
         </v-btn>
         <v-scroll-x-transition hide-on-leave>
           <v-card v-show="btnActv('canadaSanctionList')" class="mb-2 item-card">
@@ -346,6 +379,17 @@
             color="white">
             {{ mdiMenuDown }}
           </v-icon>
+          <v-btn @click="$refs.declLink.click()" icon>
+            <v-icon color="white" small>
+              {{ mdiLinkVariant }}
+            </v-icon>
+            <a 
+              ref="declLink" 
+              target="_blank" 
+              style="display: none" 
+              href="https://declarations.com.ua/">
+            </a>
+          </v-btn>
         </v-btn>
         <v-scroll-x-transition hide-on-leave>
           <v-card v-show="btnActv('ED')" class="mb-2 item-card">
@@ -427,6 +471,17 @@
             class="result-header">
             {{switchHeader(rnboList, rnboList.length - 1)}}
           </span>
+          <v-btn @click="$refs.rnboLink.click()" icon>
+            <v-icon color="white" small>
+              {{ mdiLinkVariant }}
+            </v-icon>
+            <a 
+              ref="rnboLink" 
+              target="_blank" 
+              style="display: none" 
+              href="https://www.president.gov.ua/documents/822019-26290">
+            </a>
+          </v-btn>
         </v-btn>
         <v-scroll-x-transition hide-on-leave>
           <v-card v-show="btnActv('RNBO')" class="mb-2 item-card">
@@ -480,6 +535,17 @@
             class="result-header">
             {{switchHeader(unSanctionList, unSanctionList.length - 1)}}
           </span>
+          <v-btn @click="$refs.unoLink.click()" icon>
+            <v-icon color="white" small>
+              {{ mdiLinkVariant }}
+            </v-icon>
+            <a 
+              ref="unoLink" 
+              target="_blank" 
+              style="display: none" 
+              href="https://scsanctions.un.org/resources/xml/ru/consolidated.xml">
+            </a>
+          </v-btn>
         </v-btn>
         <v-scroll-x-transition hide-on-leave>
           <v-card v-show="btnActv('UNSanc')" class="mb-2 item-card">
@@ -554,7 +620,7 @@
         <v-btn @click="makeActive('UNTerror')" 
           class="d-block white--text section-btn"
           :color="btnActv('UNTerror') ? 'grey darken-1' : 'grey darken-3'">
-          ООН. Перелiк терористiв&nbsp;-&nbsp;[
+          ДСФМУ. Перелiк терористiв&nbsp;-&nbsp;[
           <span :class="{'btn-count': validLength(unTerrorList).length}">
             {{ validLength(unTerrorList).length }}
           </span>]
@@ -562,11 +628,22 @@
             :class="btnActv('UNTerror') ? 'active' : ''" 
             color="white">
             {{ mdiMenuDown }}
+          </v-icon>
+          <span v-show="unTerrorList.length" 
+            class="result-header">
+            {{switchHeader(unTerrorList, unTerrorList.length - 1)}}
+          </span>
+          <v-btn @click="$refs.dsfmuLink.click()" icon>
+            <v-icon color="white" small>
+              {{ mdiLinkVariant }}
             </v-icon>
-            <span v-show="unTerrorList.length" 
-              class="result-header">
-              {{switchHeader(unTerrorList, unTerrorList.length - 1)}}
-            </span>
+            <a 
+              ref="dsfmuLink" 
+              target="_blank" 
+              style="display: none" 
+              href="https://fiu.gov.ua/assets/userfiles/Terror/zBlackListFull.xml">
+            </a>
+          </v-btn>
         </v-btn>
         <v-scroll-x-transition hide-on-leave>
           <v-card v-show="btnActv('UNTerror')" class="mb-2 item-card">
@@ -649,6 +726,17 @@
             class="result-header">
             {{switchHeader(esSanctionList, esSanctionList.length - 1)}}
           </span>
+          <v-btn @click="$refs.esLink.click()" icon>
+            <v-icon color="white" small>
+              {{ mdiLinkVariant }}
+            </v-icon>
+            <a 
+              ref="esLink" 
+              target="_blank" 
+              style="display: none" 
+              href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A02014D0145-20201001">
+            </a>
+          </v-btn>
         </v-btn>
         <v-scroll-x-transition hide-on-leave>
           <v-card v-show="btnActv('EUSanc')" class="mb-2 item-card">
@@ -699,6 +787,17 @@
             class="result-header">
             {{switchHeader(usSanctionList, usSanctionList.length - 1)}}
           </span>
+          <v-btn @click="$refs.usaLink.click()" icon>
+            <v-icon color="white" small>
+              {{ mdiLinkVariant }}
+            </v-icon>
+            <a 
+              ref="usaLink" 
+              target="_blank" 
+              style="display: none" 
+              href="https://www.treasury.gov/ofac/downloads/sdn.xml">
+            </a>
+          </v-btn>
         </v-btn>
         <v-scroll-x-transition hide-on-leave>
           <v-card v-show="btnActv('USSanc')" class="mb-2 item-card">
@@ -823,6 +922,7 @@
 import tableHeaders from './table-headers'
 import { 
   mdiMenuDown, 
+  mdiLinkVariant,
   mdiTextBoxSearchOutline,
   mdiClose,
   mdiCloseBox,
@@ -837,21 +937,21 @@ export default {
   },
   props: {
     /* Data */
-    edrListPerson: {type: Array},
-    eDeclarationList: {type: Array},
-    rnboList: {type: Array},
-    unSanctionList: {type: Array},
-    unTerrorList: {type: Array},
-    esSanctionList: {type: Array},
-    usSanctionList: {type: Array},
-    yourControlRnboList: {type: Array},
-    yourControlDsfmuList: {type: Array},
-    yourControlSanctionList: {type: Array},
+    edrListPerson: { type: Array },
+    eDeclarationList: { type: Array },
+    rnboList: { type: Array },
+    unSanctionList: { type: Array },
+    unTerrorList: { type: Array },
+    esSanctionList: { type: Array },
+    usSanctionList: { type: Array },
+    yourControlRnboList: { type: Array },
+    yourControlDsfmuList: { type: Array },
+    yourControlSanctionList: { type: Array },
 
-    australiaSanctionList: {type: Array},
-    canadaSanctionList: {type: Array},
+    australiaSanctionList: { type: Array },
+    canadaSanctionList: { type: Array },
     /* Dialog */
-    dialog: {type: Boolean},
+    dialog: { type: Boolean },
   },
   data: () => ({
     /* Watcher */
@@ -874,6 +974,7 @@ export default {
     ...tableHeaders,
     /* Icons */
     mdiMenuDown,
+    mdiLinkVariant,
     mdiTextBoxSearchOutline,
     mdiClose,
     mdiCloseBox,

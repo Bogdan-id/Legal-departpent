@@ -34,6 +34,7 @@
         :data="person.EDeclarations.data.results.object_list"
         :state="showDeclarations"
         :config="person.EDeclarations.config"
+        :source="'https://declarations.com.ua/'"
       />
       <ul 
         v-show="showDeclarations"
@@ -101,6 +102,7 @@
         </li>
       </ul>
     </li>
+    <!-- RNBO (your-score) -->
     <li 
       v-if="person.YourControlRNBO"
       @click.stop="toggleYourControlRNBO" 
@@ -110,6 +112,7 @@
         :data="person.YourControlRNBO.data.data"
         :state="showYourControl"
         :config="person.YourControlRNBO.config"
+        :source="'https://www.president.gov.ua/documents/822019-26290'"
       />
       <ul 
         v-if="showYourControl && person.YourControlRNBO.data.data"
@@ -150,12 +153,13 @@
         </li>
       </ul>
     </li>
+    <!-- DSFMU (your-score) -->
     <li 
       v-if="person.YourControlDSFMU"
       @click.stop="toggleYourControlDSFMU" 
       class="list-item">
       <ListSigns 
-        title="РНБО санкції (Your-control)"
+        title="ДСФМУ санкції (Your-control)"
         :data="person.YourControlDSFMU.data.data"
         :state="showYourControlDSFMU"
         :config="person.YourControlDSFMU.config"
@@ -199,6 +203,7 @@
         </li>
       </ul>
     </li>
+    <!-- ES sanctions -->
     <li 
       v-if="person.ESPersonSanctions"
       @click.stop="toggleEsSanctions" 
@@ -208,6 +213,7 @@
         :data="person.ESPersonSanctions.data"
         :state="showEsSanctions"
         :config="person.ESPersonSanctions.config"
+        :source="'https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A02014D0145-20201001'"
       />
       <ul 
         v-show="showEsSanctions"
@@ -238,6 +244,7 @@
         </li>
       </ul>
     </li>
+    <!-- RNBO sanctions -->
     <li
       v-if="person.RNBOSanctions"
       @click.stop="toggleRNBOSanctions" 
@@ -247,6 +254,7 @@
         :data="person.RNBOSanctions.data"
         :state="showRnboSunctions"
         :config="person.RNBOSanctions.config"
+        :source="'https://www.president.gov.ua/documents/822019-26290'"
       />
       <ul 
         v-show="showRnboSunctions"
@@ -286,6 +294,7 @@
         </li>
       </ul>
     </li>
+    <!-- UNO sanctions -->
     <li 
       v-if="person.UNPersonSanctions"
       @click.stop="toggleUNPersonSanctions"
@@ -295,6 +304,7 @@
         :data="person.UNPersonSanctions.data"
         :state="showUNPersonSanctions"
         :config="person.UNPersonSanctions.config"
+        :source="'https://scsanctions.un.org/resources/xml/ru/consolidated.xml'"
       />
       <ul 
         v-show="showUNPersonSanctions"
@@ -337,6 +347,7 @@
         :data="person.AustraliaPersonSanctions.data"
         :state="showAustraliaSanctions"
         :config="person.AustraliaPersonSanctions.config"
+        :source="'https://www.dfat.gov.au/international-relations/security/sanctions/consolidated-list'"
       />
       <ul 
         v-show="showAustraliaSanctions"
@@ -385,6 +396,7 @@
         :data="person.CanadaPersonSanctions.data"
         :state="showCanadaSanctions"
         :config="person.CanadaPersonSanctions.config"
+        :source="'https://www.international.gc.ca/world-monde/assets/office_docs/international_relations-relations_internationales/sanctions/sema-lmes.xml'"
       />
       <ul 
         v-show="showCanadaSanctions"
@@ -415,15 +427,17 @@
         </li>
       </ul>
     </li>
+    <!-- DSFMU sanctions -->
     <li 
       v-if="person.UNTerrorPersonSanctions"
       @click.stop="toggleUNTerrorPersonSanctions"
       class="list-item">
       <ListSigns 
-        title="ООН терорист"
+        title="ДСФМУ терористи"
         :data="person.UNTerrorPersonSanctions.data"
         :state="showUNTerrorPersonSanctions"
         :config="person.UNTerrorPersonSanctions.config"
+        :source="'https://fiu.gov.ua/assets/userfiles/Terror/zBlackListFull.xml'"
       />
       <ul 
         v-show="showUNTerrorPersonSanctions"
@@ -454,6 +468,7 @@
         </li>
       </ul>
     </li>
+    <!-- USA sanctions -->
     <li
       v-if="person.USPersonSanctions"
       @click.stop="toggleUSPersonSanctions" 
@@ -463,6 +478,7 @@
         :data="person.USPersonSanctions.data"
         :state="showUSPersonSanctions"
         :config="person.USPersonSanctions.config"
+        :source="'https://www.treasury.gov/ofac/downloads/sdn.xml'"
       />
       <ul 
         v-show="showUSPersonSanctions"

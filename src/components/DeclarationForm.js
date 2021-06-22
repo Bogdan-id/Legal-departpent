@@ -421,7 +421,12 @@ const legal =  {
           /** @type {EdrLegal} */
           let legal, legalEnName, legalUaName
           if (res?.data) {
-            legal = this.assignObject(mapedObject, JSON.parse(JSON.stringify(res.data)))
+            if (Array.isArray(res?.data?.founders)) {
+              legal = this.assignObject(mapedObject, JSON.parse(JSON.stringify(res.data.founders.filter(f => !founderExceptions.includes(f.name)))))
+            } else {
+              legal = this.assignObject(mapedObject, JSON.parse(JSON.stringify(res.data)))
+            }
+            
             legalEnName = this.getLegalName(legal?.nameInEnglish?.shortName)
             legalUaName = this.getLegalName(legal?.name?.shortName)
           }
@@ -469,9 +474,9 @@ const legal =  {
             legalFounders
               .filter(founder => !founderExceptions.includes(founder.name))
               .map(founder => {
-              const founderName = this.getLegalName(founder.name)
-              this.checkLegalFounder(founder, founderName)
-            })
+                const founderName = this.getLegalName(founder.name)
+                this.checkLegalFounder(founder, founderName)
+              })
           }
           if (personFounders?.length) {
             personFounders.map(founder => {

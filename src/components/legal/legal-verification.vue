@@ -93,26 +93,26 @@
           v-for="(item, key) in legal.RNBOLegals.data"
           :key="key">
           <span>
-            {{ item.fullName }}&nbsp;
+            {{ item.name_ukr || item.name_original }}&nbsp;
             [{{ RNBOLegalsShowedList.includes(key) ? "-" : "+" }}]
           </span>
           <v-card-text 
             class="person-info" 
             v-show="RNBOLegalsShowedList.includes(key)">
             <p>
-              <span class="info-label">Характеристика: </span> <span class="info-text">{{ item.description }}</span>
+              <span class="info-label">Номер реєстрації: </span> <span class="info-text">{{ item.odrn_edrpou }}</span>
             </p>
             <p>
-              <span class="info-label">Обмеження: </span> <span class="info-text">{{ item.restrictiveMeasures }}</span>
+              <span class="info-label">Обмеження: </span> <span class="info-text">{{ item.restriction_type }}</span>
             </p>
             <p>
-              <span class="info-label">Термiн дiї: </span> <span class="info-text">{{ item.periodOfApplication }}</span>
+              <span class="info-label">Термiн дiї: </span> <span class="info-text">{{ item.restriction_period }}</span>
             </p>
             <p>
-              <span class="info-label">Документ: </span> <span class="info-text">{{ item.documentBasis }}</span>
+              <span class="info-label">№ указу: </span> <span class="info-text">{{ item.ukaz_id }}</span>
             </p>
             <p>
-              <span class="info-label">Дата внесення: </span> <span class="info-text">{{ item.dateApproval }}</span>
+              <span class="info-label">Дата внесення: </span> <span class="info-text">{{ item.ukaz_date }}</span>
             </p>
           </v-card-text>
         </li>

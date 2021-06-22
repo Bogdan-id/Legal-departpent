@@ -1,5 +1,6 @@
 'use-strict'
 // @ts-check
+/* eslint-disable no-unused-vars */
 import { 
   EdrLegal,
   Founder,
@@ -8,6 +9,7 @@ import {
   YourControlRNBOResult,
   YourControlSanctions,
 } from '../types'
+/* eslint-enable no-unused-vars */
 import { 
   mdiClose, 
   mdiCog,
@@ -21,7 +23,9 @@ import {
 import { trimExceededLength, isPep } from '../utils/helper'
 import { letters } from '../utils/utils'
 import { transliteRule } from './translite'
+/* eslint-disable no-unused-vars */
 import { AxiosResponse, AxiosError, Cancel } from 'axios'
+/* eslint-enable no-unused-vars */
 import { founderExceptions } from '../utils/utils.js'
 import LegalTree from './legal/tree.vue'
 import PersonInfo from './person/person.vue'

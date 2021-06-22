@@ -105,7 +105,7 @@
             <p>
               <span class="info-label">Термiн дiї: </span> <span class="info-text">{{ item.restriction_period }}</span>
             </p>
-            <p>
+            <p v-show="item.restriction_end_date">
               <span class="info-label">Дата завершення дії обмежень: </span> <span class="info-text">{{ item.restriction_end_date }}</span>
             </p>
             <p>

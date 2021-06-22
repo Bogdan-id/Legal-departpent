@@ -186,8 +186,13 @@ const YourControlErrCodes = [
     'NotFound',
 ]
 
+const founderExceptions = [
+    'КІНЦЕВИЙ БЕНЕФІЦІАРНИЙ ВЛАСНИК (КОНТРОЛЕР) - ВІДСУТНІЙ',
+]
+
 export {
   letters,
   yourControlEdrByEdrpouRes,
   YourControlErrCodes,
+  founderExceptions,
 }

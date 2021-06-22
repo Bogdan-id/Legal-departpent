@@ -1,6 +1,5 @@
 'use-strict'
 // @ts-check
-/* eslint-disable no-unused-vars */
 import { 
   EdrLegal,
   Founder,
@@ -9,8 +8,6 @@ import {
   YourControlRNBOResult,
   YourControlSanctions,
 } from '../types'
-/* eslint-enable no-unused-vars */
-
 import { 
   mdiClose, 
   mdiCog,
@@ -21,18 +18,12 @@ import {
   mdiWindowMinimize,
   mdiSortAlphabeticalAscendingVariant,
 } from '@mdi/js' 
-
 import { trimExceededLength, isPep } from '../utils/helper'
-
 import { letters } from '../utils/utils'
 import { transliteRule } from './translite'
-/* eslint-disable no-unused-vars */
 import { AxiosResponse, AxiosError, Cancel } from 'axios'
-/* eslint-enable no-unused-vars */
-
-// @ts-ignore
+import { founderExceptions } from '../utils/utils.js'
 import LegalTree from './legal/tree.vue'
-// @ts-ignore
 import PersonInfo from './person/person.vue'
 import { validationMixin } from 'vuelidate'
 import { minLength, required } from 'vuelidate/lib/validators'
@@ -471,7 +462,9 @@ const legal =  {
           const personFounders = legal?.founders?.filter(founder => !founder.name.includes('"'))
 
           if (legalFounders?.length) {
-            legalFounders.map(founder => {
+            legalFounders
+              .filter(founder => !founderExceptions.includes(founder.name))
+              .map(founder => {
               const founderName = this.getLegalName(founder.name)
               this.checkLegalFounder(founder, founderName)
             })

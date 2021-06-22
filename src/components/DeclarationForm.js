@@ -422,7 +422,8 @@ const legal =  {
           let legal, legalEnName, legalUaName
           if (res?.data) {
             if (Array.isArray(res?.data?.founders)) {
-              legal = this.assignObject(mapedObject, JSON.parse(JSON.stringify(res.data.founders.filter(f => !founderExceptions.includes(f.name)))))
+              res.data.founders = res.data.founders.filter(f => !founderExceptions.includes(f.name))
+              legal = this.assignObject(mapedObject, JSON.parse(JSON.stringify(res.data)))
             } else {
               legal = this.assignObject(mapedObject, JSON.parse(JSON.stringify(res.data)))
             }

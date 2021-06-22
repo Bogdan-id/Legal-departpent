@@ -493,22 +493,22 @@
                   v-for="(item, key) in rnboVariant.filter(filterCustomMark)"
                   :key="key">
                   <p>
-                    <span class="info-label">ПIБ: </span> <span class="info-text">{{ item.fullName }}</span>
+                    <span class="info-label">ПIБ: </span> <span class="info-text">{{ item.name_ukr || item.name_original }}</span>
                   </p>
                   <p>
-                    <span class="info-label">Характеристика: </span> <span class="info-text">{{ item.description }}</span>
+                    <span class="info-label">Обмеження: </span> <span class="info-text">{{ item.restriction_type }}</span>
                   </p>
                   <p>
-                    <span class="info-label">Обмеження: </span> <span class="info-text">{{ item.restrictiveMeasures }}</span>
+                    <span class="info-label">Термiн дiї: </span> <span class="info-text">{{ item.restriction_period }}</span>
                   </p>
                   <p>
-                    <span class="info-label">Термiн дiї: </span> <span class="info-text">{{ item.periodOfApplication }}</span>
+                    <span class="info-label">Дата завершення дії обмежень: </span> <span class="info-text">{{ item.restriction_end_date }}</span>
                   </p>
                   <p>
-                    <span class="info-label">Документ: </span> <span class="info-text">{{ item.documentBasis }}</span>
+                    <span class="info-label">Номер указу: </span> <span class="info-text">{{ item.ukaz_id }}</span>
                   </p>
                   <p>
-                    <span class="info-label">Дата внесення: </span> <span class="info-text">{{ item.dateApproval }}</span>
+                    <span class="info-label">Дата указу: </span> <span class="info-text">{{ item.ukaz_date }}</span>
                   </p>
                 </li>
               </ul>

@@ -10,6 +10,7 @@ import {
   YourControlSanctions,
 } from '../types'
 /* eslint-enable no-unused-vars */
+
 import { 
   mdiClose, 
   mdiCog,
@@ -20,14 +21,18 @@ import {
   mdiWindowMinimize,
   mdiSortAlphabeticalAscendingVariant,
 } from '@mdi/js' 
+
 import { trimExceededLength, isPep } from '../utils/helper'
+
 import { letters } from '../utils/utils'
 import { transliteRule } from './translite'
 /* eslint-disable no-unused-vars */
 import { AxiosResponse, AxiosError, Cancel } from 'axios'
 /* eslint-enable no-unused-vars */
-import { founderExceptions } from '../utils/utils.js'
+
+// @ts-ignore
 import LegalTree from './legal/tree.vue'
+// @ts-ignore
 import PersonInfo from './person/person.vue'
 import { validationMixin } from 'vuelidate'
 import { minLength, required } from 'vuelidate/lib/validators'
@@ -421,13 +426,7 @@ const legal =  {
           /** @type {EdrLegal} */
           let legal, legalEnName, legalUaName
           if (res?.data) {
-            if (Array.isArray(res?.data?.founders)) {
-              res.data.founders = res.data.founders.filter(f => !founderExceptions.includes(f.name))
-              legal = this.assignObject(mapedObject, JSON.parse(JSON.stringify(res.data)))
-            } else {
-              legal = this.assignObject(mapedObject, JSON.parse(JSON.stringify(res.data)))
-            }
-            
+            legal = this.assignObject(mapedObject, JSON.parse(JSON.stringify(res.data)))
             legalEnName = this.getLegalName(legal?.nameInEnglish?.shortName)
             legalUaName = this.getLegalName(legal?.name?.shortName)
           }
@@ -472,12 +471,10 @@ const legal =  {
           const personFounders = legal?.founders?.filter(founder => !founder.name.includes('"'))
 
           if (legalFounders?.length) {
-            legalFounders
-              .filter(founder => !founderExceptions.includes(founder.name))
-              .map(founder => {
-                const founderName = this.getLegalName(founder.name)
-                this.checkLegalFounder(founder, founderName)
-              })
+            legalFounders.map(founder => {
+              const founderName = this.getLegalName(founder.name)
+              this.checkLegalFounder(founder, founderName)
+            })
           }
           if (personFounders?.length) {
             personFounders.map(founder => {

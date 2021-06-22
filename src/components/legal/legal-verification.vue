@@ -81,7 +81,7 @@
         :data="legal.RNBOLegals.data"
         :state="showRNBOLegalSanctions"
         :config="legal.RNBOLegals.config"
-        :source="'https://www.president.gov.ua/documents/822019-26290'"
+        :source="'https://sanctions-t.rnbo.gov.ua/'"
       />
       <ul 
         v-show="showRNBOLegalSanctions"
@@ -100,19 +100,19 @@
             class="person-info" 
             v-show="RNBOLegalsShowedList.includes(key)">
             <p>
-              <span class="info-label">Номер реєстрації: </span> <span class="info-text">{{ item.odrn_edrpou }}</span>
-            </p>
-            <p>
               <span class="info-label">Обмеження: </span> <span class="info-text">{{ item.restriction_type }}</span>
             </p>
             <p>
               <span class="info-label">Термiн дiї: </span> <span class="info-text">{{ item.restriction_period }}</span>
             </p>
             <p>
-              <span class="info-label">№ указу: </span> <span class="info-text">{{ item.ukaz_id }}</span>
+              <span class="info-label">Дата завершення дії обмежень: </span> <span class="info-text">{{ item.restriction_end_date }}</span>
             </p>
             <p>
-              <span class="info-label">Дата внесення: </span> <span class="info-text">{{ item.ukaz_date }}</span>
+              <span class="info-label">Номер указу: </span> <span class="info-text">{{ item.ukaz_id }}</span>
+            </p>
+            <p>
+              <span class="info-label">Дата указу: </span> <span class="info-text">{{ item.ukaz_date }}</span>
             </p>
           </v-card-text>
         </li>

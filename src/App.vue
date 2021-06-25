@@ -1,24 +1,26 @@
 <template>
   <v-app>
     <vue-snotify></vue-snotify>
-    <declaration-form></declaration-form>
+    <router-view></router-view>
   </v-app>
 </template>
 
 <script>
-import DeclarationForm from './components/DeclarationForm.vue'
-
 export default {
   name: 'App',
-  components: {
-    DeclarationForm,
-  },
 };
 </script>
 
 <style>
 @import "~vue-snotify/styles/material.css";
 
+.navigation-link {
+  padding: 15px;
+  display: block;
+  text-align: right;
+  margin-right: 25px;
+  font-size: 0.8rem;
+}
 #app {
   background: #e85d56;
 }

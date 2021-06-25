@@ -391,6 +391,12 @@ export default {
         lastName && (obj.lastName = lastName)
         firstName && (obj.firstName = firstName)
         patronymic && (obj.patronymic = patronymic)
+        if (!obj.lastName || !obj.firstName) {
+          const error = new Error('Прiзвище та iм`я обов`язковi для фiзичноi особи: ' + obj?.lastName + ", " + obj?.firstName)
+          this.$snotify.simple(error)
+          this.loading = false
+          throw error
+        }
         if (inn && !isNaN(+inn) && inn.length === 10) {
           obj.inn = parseInt(inn)
         }

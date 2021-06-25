@@ -1,4 +1,5 @@
 <template>
+<v-container fluid>
   <v-row class="api-form text-center justify-center">
     <v-dialog v-model="legalDialog">
       <LegalTree 
@@ -194,130 +195,136 @@
         </v-card-text>
       </v-card>
     </v-scroll-y-transition>
-
     <!-- form -->
-    <v-col cols="12" xl="3" lg="4" md="4"  sm="6" xs="10">
-      <v-card class="mt-8 ml-5 mr-5 mb-8">
-        <v-col>
-          <v-card-text class="pb-0" style="position: relative;">
-            <v-fade-transition hide-on-leave>
-              <v-tooltip
-                color="grey darken-3" 
-                bottom>
-                <template #activator="{ on }">
-                  <v-btn 
-                    v-on="on"
-                    v-show="choosedLegal || choosedPerson"
-                    @click="searchConfigDialog = !searchConfigDialog"
-                    style="position: absolute; top: 0; right: 0;"
-                    icon>
-                    <v-icon>
-                      {{ mdiCog }}
-                    </v-icon>
-                  </v-btn>
-                </template>
-                <span>Налаштування пошуку</span>
-              </v-tooltip>
-            </v-fade-transition>
-            <div style="font-size: 1.05rem; text-align: left;">Оберiть критерiй пошуку</div>
-            <v-radio-group dense single-line
-              v-model="searchVariant">
-              <v-radio
-                :value="1"
-                color="grey darken-2"
-                label="Фiзична особа">
-              </v-radio>
-              <v-radio
-                :value="2"
-                color="grey darken-2"
-                label="Юридична особа">
-              </v-radio>
-            </v-radio-group>
-            <v-fade-transition hide-on-leave>
-              <div v-show="choosedPerson">
-                <v-radio-group 
-                  v-model="searchType"
-                  dense 
-                  single-line>
-                  <v-radio
-                    :value="'searchByInitials'"
-                    color="grey darken-2"
-                    label="Пошук за ПIБ">
-                  </v-radio>
-                  <v-radio
-                    :value="'searchByInn'"
-                    color="grey darken-2"
-                    label="Пошук за IНН">
-                  </v-radio>
-                </v-radio-group>
-                <div v-if="personInitials">
-                  <v-text-field
-                    @blur="$v.lastName.$touch()"
-                    :error-messages="lastNameErr"
-                    v-model="lastName"
-                    label="Прiзвище"
-                    color="black">
-                  </v-text-field>
-                  <v-text-field
-                    v-model="firstName"
-                    @blur="$v.firstName.$touch()"
-                    :error-messages="firstNameErr"
-                    label="Iм`я"
-                    color="black">
-                  </v-text-field>
-                  <!-- 
-                    @blur="$v.patronymic.$touch()"
-                    :error-messages="patronymicErr"
-                   -->
-                  <v-text-field
-                    v-model="patronymic"
-                    label="По батьковi"
-                    color="black">
-                  </v-text-field>
-                </div>
-                <div v-if="personInn">
-                  <v-text-field
-                    @input="trimExceededLength('inn', 10, (value) => value.replace(/[^\d.]/g, ''))"
-                    @blur="$v.inn.$touch()"
-                    :error-messages="innErr"
-                    v-model="inn"
-                    id="inn"
-                    label="IНН"
-                    color="black">
-                  </v-text-field>
-                </div>
-              </div>
-            </v-fade-transition>
-            <v-fade-transition hide-on-leave>
-              <div v-if="choosedLegal">
+    <v-col cols="12" xl="4" lg="5" md="6"  sm="8" xs="10">
+      <v-card class="mt-8 ml-5 mr-5 mb-8" style="position: relative;">
+        <v-fade-transition hide-on-leave>
+          <v-tooltip
+            color="grey darken-3" 
+            bottom>
+            <template #activator="{ on }">
+              <v-btn 
+                v-on="on"
+                v-show="choosedLegal || choosedPerson"
+                @click="searchConfigDialog = !searchConfigDialog"
+                style="position: absolute; top: 0; right: 0;"
+                icon>
+                <v-icon>
+                  {{ mdiCog }}
+                </v-icon>
+              </v-btn>
+            </template>
+            <span>Налаштування пошуку</span>
+          </v-tooltip>
+        </v-fade-transition>
+        <router-link 
+          class="navigation-link" 
+          :to="'batch-data-validation'">
+          {{ `перейти до пакетної перевірки` }}
+        </router-link>
+        <v-card-title class="pb-0 pt-0">
+          Оберiть критерiй пошуку
+        </v-card-title>
+        <v-card-text>
+          <v-radio-group 
+            dense 
+            single-line
+            v-model="searchVariant"
+            hide-details>
+            <v-radio
+              :value="1"
+              color="grey darken-2"
+              label="Фiзична особа">
+            </v-radio>
+            <v-radio
+              :value="2"
+              color="grey darken-2"
+              label="Юридична особа">
+            </v-radio>
+          </v-radio-group>
+          <v-fade-transition hide-on-leave>
+            <div v-show="choosedPerson">
+              <v-radio-group 
+                v-model="searchType"
+                dense 
+                single-line>
+                <v-radio
+                  :value="'searchByInitials'"
+                  color="grey darken-2"
+                  label="Пошук за ПIБ">
+                </v-radio>
+                <v-radio
+                  :value="'searchByInn'"
+                  color="grey darken-2"
+                  label="Пошук за IНН">
+                </v-radio>
+              </v-radio-group>
+              <div v-if="personInitials">
                 <v-text-field
-                  v-model="edrpou"
-                  :error-messages="edrpouErr"
-                  @blur="$v.edrpou.$touch()"
-                  @input="trimExceededLength('edrpou', 8, (value) => value.replace(/[^\d.]/g, ''))"
-                  :label="'ЄДРПОУ'"
-                  id="edrpou"
+                  @blur="$v.lastName.$touch()"
+                  :error-messages="lastNameErr"
+                  v-model="lastName"
+                  label="Прiзвище"
+                  color="black">
+                </v-text-field>
+                <v-text-field
+                  v-model="firstName"
+                  @blur="$v.firstName.$touch()"
+                  :error-messages="firstNameErr"
+                  label="Iм`я"
+                  color="black">
+                </v-text-field>
+                <!-- 
+                  @blur="$v.patronymic.$touch()"
+                  :error-messages="patronymicErr"
+                  -->
+                <v-text-field
+                  v-model="patronymic"
+                  label="По батьковi"
                   color="black">
                 </v-text-field>
               </div>
-            </v-fade-transition>
-          </v-card-text>
-          <v-card-actions 
-            class="justify-center">
-            <v-slide-x-transition hide-on-leave>
-              <v-btn 
-                v-show="requisites"
-                @click="submit()"
-                color="grey darken-3"
-                class="white--text sbmt-btn"
-                small
-                :disabled="searchVariant === null"
-                :loading="loading">
-                Отримати данi
-              </v-btn>
-            </v-slide-x-transition>
-          </v-card-actions>
-        </v-col>
+              <div v-if="personInn">
+                <v-text-field
+                  @input="trimExceededLength('inn', 10, (value) => value.replace(/[^\d.]/g, ''))"
+                  @blur="$v.inn.$touch()"
+                  :error-messages="innErr"
+                  v-model="inn"
+                  id="inn"
+                  label="IНН"
+                  color="black">
+                </v-text-field>
+              </div>
+            </div>
+          </v-fade-transition>
+          <v-fade-transition hide-on-leave>
+            <div v-if="choosedLegal">
+              <v-text-field
+                v-model="edrpou"
+                :error-messages="edrpouErr"
+                @blur="$v.edrpou.$touch()"
+                @input="trimExceededLength('edrpou', 8, (value) => value.replace(/[^\d.]/g, ''))"
+                :label="'ЄДРПОУ'"
+                id="edrpou"
+                color="black">
+              </v-text-field>
+            </div>
+          </v-fade-transition>
+        </v-card-text>
+        <v-card-actions class="justify-center pb-4">
+          <v-slide-x-transition hide-on-leave>
+            <v-btn 
+              v-show="requisites"
+              @click="submit()"
+              color="grey darken-3"
+              class="white--text sbmt-btn"
+              small
+              :disabled="searchVariant === null"
+              :loading="loading">
+              Отримати данi
+            </v-btn>
+          </v-slide-x-transition>
+        </v-card-actions>
       </v-card>
     </v-col>
     <PersonInfo 
@@ -337,6 +344,7 @@
       :dialog.sync="personDialog">
     </PersonInfo>
   </v-row>
+</v-container>
 </template>
 <script>
 import { legal } from "./DeclarationForm.js" 

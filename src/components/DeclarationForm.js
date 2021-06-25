@@ -24,7 +24,7 @@ import {
 
 import { trimExceededLength, isPep } from '../utils/helper'
 
-import { letters } from '../utils/utils'
+import { transliterate } from '../utils/utils'
 import { transliteRule } from './translite'
 /* eslint-disable no-unused-vars */
 import { AxiosResponse, AxiosError, Cancel } from 'axios'
@@ -120,7 +120,6 @@ const legal =  {
     legalDialog: false,
     commonErr: "Поле обов`язкове",
     baseUrl: null,
-    letters: letters,
     /* Request hint */
     ukVersion: true,
     showRequisite: false,
@@ -140,6 +139,7 @@ const legal =  {
     yourScoreForeignLegalSanctions: false,
   }),
   methods: {
+    transliterate,
     isPep,
     clearPersonData() {
       this.edrListPerson.splice(0)
@@ -854,27 +854,6 @@ const legal =  {
       return str.map(text => {
         return (text.charAt(0).toUpperCase() + text.slice(1).toLowerCase()).trim()
       }).join(' ')
-    },
-
-    /** @return {string} */
-    transliterate(str) {
-      if (! str) return ''
-      if (str.match(/[a-z]/i)) return str.toUpperCase()
-      if(!str) return
-      let fI = {"Є": "IE", "Ї": "I", "Й": "I", "Ю": "IU", "Я": "IA"}
-      str = str.toUpperCase().split("")
-      str.forEach((v, i) => {
-        if(Object.keys(fI).includes(v) && i !== 0) str.splice(i, 1, fI[v])
-      })
-
-      return str.join("")
-        .replace(/зг/g, 'ZGH')
-        .trim()
-        .replace(/\s+/g, ' ')
-        .split('')
-        .map(char => this.letters[char] || char)
-        .join("")
-        .replace(/[^a-zA-Z-`\s0-9().,]/gu, '')
     },
 
     // Need refactoring

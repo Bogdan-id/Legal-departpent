@@ -242,7 +242,7 @@ function tables(o, params) {
     { text: emptyMessage(), fontSize: 9 }
   ]
   const zeroResult = !personTerrorsTable()?.length && !personRnboTable()?.length && !legalTerrorsTable()?.length && !legalRnboTable()?.length ? emptyMsg : ''
-
+  
   return {
     personTerrorsTable: personTerrorsTable(),
     personRnboTable: personRnboTable(),

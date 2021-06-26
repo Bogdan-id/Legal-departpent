@@ -3,7 +3,7 @@ import pdfFonts from "pdfmake/build/vfs_fonts"
 import { layout } from './content'
 pdfMake.vfs = pdfFonts.pdfMake.vfs
 
-function download(obj, params, fileName = "КП.pdf") {
+function download(obj, params, fileName = "Результат перевiрки.pdf") {
   // @ts-ignore
   return pdfMake.createPdf(docDefinition(obj, params)).download(fileName)
 }

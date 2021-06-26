@@ -471,8 +471,8 @@ export default {
     },
     setBaseUrl() {
       this.baseURL = process.env.NODE_ENV === "development" 
-        ? 'http://127.0.0.1:4000'
-        : 'http://94.131.243.7:4000'
+        ? 'http://127.0.0.1:4000/'
+        : 'http://94.131.243.7:4000/'
     },
   },
   mounted() {

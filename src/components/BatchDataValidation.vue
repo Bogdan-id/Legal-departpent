@@ -192,7 +192,7 @@ import { mdiPrinter, mdiDownload } from '@mdi/js'
 import { download as dwn, print as prnt } from './Pdf-make'
 export default {
   data: () => ({
-    baseURL: 'http://127.0.0.1:4000/',
+    baseURL: null,
     searchVariant: null,
     personStr: null,
     legalStr: null,
@@ -469,7 +469,15 @@ export default {
     download() {
       this.dwn(this.global, { entity: this.entity })
     },
+    setBaseUrl() {
+      this.baseUrl = process.env.NODE_ENV === "development" 
+        ? 'http://127.0.0.1:4000'
+        : 'http://94.131.243.7:4000'
+    },
   },
+  mounted() {
+    this.setBaseUrl()
+  }
 }
 </script>
 <style>

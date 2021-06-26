@@ -62,6 +62,9 @@
                     <template #item.alsoKnown="{ item }">
                       {{ item.alsoKnown.length ? item.alsoKnown.join(', ') : '' }}
                     </template>
+                    <template #item.dateEntry="{ item }">
+                      {{ getDate(item['date-entry']) }}
+                    </template>
                   </v-data-table>
                 </div>
               </div>
@@ -100,6 +103,9 @@
                     :items-per-page="100"
                     :hide-default-footer="true"
                     :hide-default-header="!global[item].validations.terrors.length">
+                    <template #item.dateEntry="{ item }">
+                      {{ getDate(item['date-entry']) }}
+                    </template>
                   </v-data-table>
                 </div>
               </div>
@@ -187,7 +193,7 @@
 </v-container>
 </template>
 <script>
-import { transliterate, emptyMessage, setPersonViewName, setLegalViewName } from '../utils/utils'
+import { transliterate, emptyMessage, setPersonViewName, setLegalViewName, getDate } from '../utils/utils'
 import { mdiPrinter, mdiDownload } from '@mdi/js' 
 import { download as dwn, print as prnt } from './Pdf-make'
 export default {
@@ -205,7 +211,7 @@ export default {
       { text: 'Додаткова iнформацiя', value: 'comments', align: 'center', sortable: false },
       { text: 'Документ', value: 'program-entry', align: 'center', sortable: false },
       { text: 'Нацiональнiсть', value: 'nationality-list', align: 'center', sortable: false },
-      { text: 'Дата внесення', value: 'date-entry', align: 'center', sortable: false }, // date-entry: 20180316 split to yyyy.mm.dd
+      { text: 'Дата внесення', value: 'dateEntry', align: 'center', sortable: false }, // date-entry: 20180316 split to yyyy.mm.dd
     ],
     personRnboTHead: [
       { text: 'ПIБ', value: 'name_ukr', align: 'start', sortable: false }, 
@@ -221,7 +227,7 @@ export default {
       { text: 'Вiдомi назви', value: 'alsoKnown', align: 'center', sortable: false },
       { text: 'Додаткова iнформацiя', value: 'comments', align: 'center', sortable: false },
       { text: 'Документ', value: 'program-entry', align: 'center', sortable: false },
-      { text: 'Дата внесення', value: 'date-entry', align: 'center', sortable: false },
+      { text: 'Дата внесення', value: 'dateEntry', align: 'center', sortable: false },
     ],
     legalRnboTHead: [
       { text: 'Органiзацiя', value: 'name_ukr', align: 'start', sortable: false }, 
@@ -259,6 +265,7 @@ export default {
   methods: {
     dwn,
     prnt,
+    getDate,
     emptyMessage,
     transliterate,
     setPersonViewName, 

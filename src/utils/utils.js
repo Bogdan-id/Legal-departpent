@@ -64,6 +64,15 @@ function emptyMessage() {
     const str = (date) => `За результатами перевірки, станом на ${date} серед клієнтів відсутні особи, стосовно яких застосовані спеціальні економічні та інші обмежувальні заходи (санкції) відповідно до статті 5 Закону України "Про санкції"/ з переліку осіб, пов’язаних з провадженням терористичної діяльності або стосовно яких застосовано міжнародні санкції`
     return str(date)
 }
+
+function getDate(str) {
+    if (!str || typeof str !== 'string' || str?.length !== 8) return str
+    const year = str.substring(0, 4)
+    const month = str.substring(4, 6)
+    const day = str.substring(6, 8)
+    return `${year}.${month}.${day}`
+}
+
 function setPersonViewName(item) { 
     const p = item.person
     if (!p) return
@@ -99,6 +108,7 @@ export {
     transliterate,
     setPersonViewName, 
     setLegalViewName,
+    getDate,
     YourControlErrCodes,
     founderExceptions,
 }

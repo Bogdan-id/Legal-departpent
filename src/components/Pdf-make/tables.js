@@ -1,4 +1,4 @@
-import { setPersonViewName, setLegalViewName, emptyMessage } from '../../utils/utils'
+import { setPersonViewName, setLegalViewName, emptyMessage, getDate } from '../../utils/utils'
 /* eslint-disable */
 const personTerrorsHeader = [
   { text: 'ПIБ', fontSize: 7, alignment: 'center', margin: [0, 3, 0, 2], bold: true, color: '#313131' },
@@ -55,7 +55,7 @@ function tables(o, params) {
           { text: o.alsoKnown || '---', fontSize: 8, margin: [1, 2, 1, 3] },
           { text: o['program-entry'] || '---', fontSize: 8, margin: [1, 2, 1, 3], alignment: 'center' },
           { text: o['nationality-list'] || '---', fontSize: 8, margin: [1, 2, 1, 3], alignment: 'center' },
-          { text: o['date-entry'] || '---', fontSize: 8, margin: [1, 2, 1, 3], alignment: 'center' },
+          { text: getDate(o['date-entry']) || '---', fontSize: 8, margin: [1, 2, 1, 3], alignment: 'center' },
         ]
       }))
   }
@@ -84,7 +84,7 @@ function tables(o, params) {
           { text: o.comments || '---', fontSize: 8, margin: [1, 2, 1, 3] },
           { text: o.alsoKnown || '---', fontSize: 8, margin: [1, 2, 1, 3] },
           { text: o['program-entry'] || '---', fontSize: 8, margin: [1, 2, 1, 3] },
-          { text: o['date-entry'] || '---', fontSize: 8, margin: [1, 2, 1, 3] },
+          { text: getDate(o['date-entry']) || '---', fontSize: 8, margin: [1, 2, 1, 3] },
         ]
       }))
   }

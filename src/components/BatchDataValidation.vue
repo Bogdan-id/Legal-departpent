@@ -60,7 +60,7 @@
                     :hide-default-footer="true"
                     :hide-default-header="!global[item].validations.terrors.length">
                     <template #item.alsoKnown="{ item }">
-                      {{ item.alsoKnown.length ? item.alsoKnown.map(v => v.text).join() : '' }}
+                      {{ item.alsoKnown.length ? item.alsoKnown.join(', ') : '' }}
                     </template>
                   </v-data-table>
                 </div>

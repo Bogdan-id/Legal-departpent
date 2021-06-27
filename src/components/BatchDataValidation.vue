@@ -22,10 +22,10 @@
           <v-icon>{{ mdiDownload }}</v-icon>
         </v-btn>
       </span>
-      <v-card-title>
-        Результат перевiрки
+      <v-card-title style="font-size: 1.18rem;">
+        Результат перевiрки за {{ new Date().toLocaleDateString('RU') }}
       </v-card-title>
-      <v-card-text class="pt-3">
+      <v-card-text class="pt-4">
         <div v-if="hasRestrictives">
           <v-row v-if="choosedPerson && hasRestrictives">
             <v-col 
@@ -498,6 +498,10 @@ export default {
 .v-data-table.batch-result-table th {
   vertical-align: initial!important;
   color: white!important;
+  font-size: 0.72rem!important;
+}
+.v-data-table.batch-result-table td {
+  font-size: 0.85rem!important;
 }
 .row-border {
   border-bottom: 1px solid gainsboro; 

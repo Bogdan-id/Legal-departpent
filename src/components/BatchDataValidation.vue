@@ -220,6 +220,7 @@ export default {
       { text: 'Дата завершення дії обмежень', value: 'restriction_end_date', align: 'center', sortable: false }, 
       { text: 'Номер указу', value: 'ukaz_id', align: 'center', sortable: false },
       { text: 'Дата указу', value: 'ukaz_date', align: 'end', sortable: false },
+      { text: 'Додаткова iнформацiя', value: 'additional', align: 'center', sortable: false },
     ],
     // date-entry: 20180316 split to yyyy.mm.dd
     legalTerrorsTHead: [ 

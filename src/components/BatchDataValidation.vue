@@ -275,7 +275,6 @@ export default {
       this.loading = true
       this.runController()
         .then(() => {
-          console.log(this.global)
           this.loading = false
           this.dialog = true
         })
@@ -404,7 +403,7 @@ export default {
           this.loading = false
           throw error
         }
-        if (inn && !isNaN(+inn) && inn.length === 10) {
+        if (inn && !isNaN(+inn) && inn.length >= 10) {
           obj.inn = parseInt(inn)
         }
         return obj

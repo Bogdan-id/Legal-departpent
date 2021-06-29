@@ -15,6 +15,7 @@ const personRnboHeader = [
   { text: 'Дата завершення дії обмежень', fontSize: 7, alignment: 'center', margin: [0, 3, 0, 2], bold: true, color: '#313131' },
   { text: 'Номер указу', fontSize: 7, alignment: 'center', margin: [0, 3, 0, 2], bold: true, color: '#313131' },
   { text: 'Дата указу', fontSize: 7, alignment: 'center', margin: [0, 3, 0, 2], bold: true, color: '#313131' },
+  { text: 'Додаткова iнформацiя', fontSize: 7, alignment: 'center', margin: [0, 3, 0, 2], bold: true, color: '#313131' },
 ]
 
 const legalTerrorsHeader = [
@@ -71,6 +72,7 @@ function tables(o, params) {
           { text: o.restriction_end_date || '---', fontSize: 8, margin: [1, 2, 1, 3], alignment: 'center' },
           { text: o.ukaz_id || '---', fontSize: 8, margin: [1, 2, 1, 3], alignment: 'center' },
           { text: o.ukaz_date || '---', fontSize: 8, margin: [1, 2, 1, 3], alignment: 'center' },
+          { text: o.additional || '---', fontSize: 8, margin: [1, 2, 1, 3], alignment: 'center' },
         ]
       }))
   }
@@ -169,7 +171,7 @@ function tables(o, params) {
           table: {
             headerRows: 1,
             style: { fontSize: 6 },
-            widths: [ '16.6%', '41.5%', '11.7%', '10.7%', '10.7%', '10.7%' ],
+            widths: [ '16.6%', '37.5%', '8.76%', '8.76%', '8.76%', '8.76%', '12.76%' ],
             body: 
             [
               JSON.parse(JSON.stringify(personRnboHeader)),

@@ -393,6 +393,8 @@ const legal =  {
         .replace('TOV', '')
         .replace('LLC', '')
         .replace('TOV', '')
+        // eslint-disable-next-line
+        .replace(/\./g, '\.')
     },
     /** 
      * @param {Cancel} cancel - Axios cancel object */
@@ -433,7 +435,7 @@ const legal =  {
           
           // casting legal.name to string
           let founderEnName, founderUaName, name
-          if (legal && typeof legal.name === "string") {
+          if (legal && typeof legal.name === 'string') {
             name = this.getLegalName(legal.name)
             /** @type {Founder} */
             // @ts-ignore

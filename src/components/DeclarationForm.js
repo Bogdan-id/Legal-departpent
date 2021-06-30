@@ -394,7 +394,7 @@ const legal =  {
         .replace('LLC', '')
         .replace('TOV', '')
         // eslint-disable-next-line
-        .replace(/\./g, '\.')
+        .replace(/\./g, '\\.')
     },
     /** 
      * @param {Cancel} cancel - Axios cancel object */

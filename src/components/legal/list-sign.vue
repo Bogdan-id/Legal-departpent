@@ -35,7 +35,7 @@
           </div> 
           <div>
             <span class="info-label">Тiло запиту:&nbsp;&nbsp;</span> 
-            <span class="info-data">{{ JSON.parse(config.data) }}</span>
+            <span class="info-data">{{ config.data ? JSON.parse(config.data) : config.url }}</span>
           </div> 
           <div>
             <span class="info-label">Метод:&nbsp;&nbsp;</span> 

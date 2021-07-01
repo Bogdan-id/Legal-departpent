@@ -454,6 +454,72 @@
             </v-card-text>
           </v-card>
         </v-scroll-x-transition>
+        <!-- NAZK declarations -->
+        <v-btn @click="makeActive('EDNAZK')" 
+          class="d-block white--text section-btn"
+          :color="btnActv('EDNAZK') ? 'grey darken-1' : 'grey darken-3'">
+          Електронні декларації НАЗК&nbsp;-&nbsp;[
+          <span :class="{'btn-count': nazkDeclarationList.length}">
+            {{ nazkDeclarationList.length }}
+          </span>]
+          <v-icon 
+            :class="btnActv('EDNAZK') ? 'active' : ''" 
+            color="white">
+            {{ mdiMenuDown }}
+          </v-icon>
+          <v-btn @click="$refs.declLink.click()" icon>
+            <v-icon color="white" small>
+              {{ mdiLinkVariant }}
+            </v-icon>
+            <a 
+              ref="declLink" 
+              target="_blank" 
+              style="display: none" 
+              href="https://public.nazk.gov.ua/public_api">
+            </a>
+          </v-btn>
+        </v-btn>
+        <v-scroll-x-transition hide-on-leave>
+          <v-card v-show="btnActv('EDNAZK')" class="mb-2 item-card">
+            <v-card-text class="person-info" v-show="nazkDeclarationList.length">
+              <ul>
+                <li 
+                  class="entity-list"
+                  style="padding-bottom: 15px;"
+                  v-for="(item, key) in nazkDeclarationList"
+                  :key="key">
+                  <p>
+                    <span class="info-label">ПIБ: </span> 
+                    <span class="info-text">{{ item.data.step_1.data.lastname + " " + item.data.step_1.data.firstname + " " + item.data.step_1.data.middlename }}</span>
+                  </p>
+                  <p v-show="item.declaration_year">
+                    <span class="info-label">Рiк декларації: </span> 
+                    <span class="info-text">{{ item.declaration_year }}</span>
+                  </p>
+                  <p v-show="item.data.step_1.data.workPost">
+                    <span class="info-label">Посада: </span> 
+                    <span class="info-text">{{ item.data.step_1.data.workPost }}</span>
+                  </p>
+                  <p v-show="item.data.step_1.data.workPlace">
+                    <span class="info-label">Мiсце роботи: </span> 
+                    <span class="info-text">{{ item.data.step_1.data.workPlace }}</span>
+                  </p>
+                  <p v-show="item.data.step_1.data.postType">
+                    <span class="info-label">Тип посади: </span> 
+                    <span class="info-text">{{ item.data.step_1.data.postType }}</span>
+                  </p>
+                  <p v-show="item.data.step_1.data.public_person">
+                    <span class="info-label">Публiчна особа: </span> 
+                    <span class="info-text">{{ item.data.step_1.data.public_person }}</span>
+                  </p>
+                </li>
+              </ul>
+            </v-card-text>
+            <v-card-text v-show="!nazkDeclarationList.length">
+              Данi для вiдображення вiдсутнi
+            </v-card-text>
+          </v-card>
+        </v-scroll-x-transition>
         <!-- RNBO - sanctions -->
         <v-btn @click="makeActive('RNBO')" 
           class="d-block white--text section-btn"
@@ -947,6 +1013,7 @@ export default {
     yourControlRnboList: { type: Array },
     yourControlDsfmuList: { type: Array },
     yourControlSanctionList: { type: Array },
+    nazkDeclarationList: { type: Array },
 
     australiaSanctionList: { type: Array },
     canadaSanctionList: { type: Array },

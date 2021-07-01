@@ -87,6 +87,7 @@ const legal =  {
     /* Person items */
     edrListPerson: [],
     eDeclarationList: [],
+    nazkDeclarationList: [],
     rnboList: [],
     unSanctionList: [],
     unTerrorList: [],
@@ -144,6 +145,7 @@ const legal =  {
     clearPersonData() {
       this.edrListPerson.splice(0)
       this.eDeclarationList.splice(0)
+      this.nazkDeclarationList.splice(0)
       this.rnboList.splice(0)
       this.unSanctionList.splice(0)
       this.unTerrorList.splice(0)
@@ -242,6 +244,12 @@ const legal =  {
           .post(url, object).then(res => res)
       }
       return getDeclarations(object).then(res => checkPublicity(res)).catch(err => this.getRejectedKey(err))
+    },
+    checkNazkDeclarations(person) {
+      const { lastName, firstName, patronymic } = person
+      const url = this.baseUrl + `/get-nazk-declarations?lastName=${lastName}&firstName=${firstName}&patronymic=${patronymic}`
+      return this.$axios
+        .get(url).then(res => res).catch(err => this.getRejectedKey(err))
     },
     /** 
      * @function checkRnboPersons - Post capitalized person object
@@ -594,6 +602,8 @@ const legal =  {
       }
 
       const requests = [
+        this.checkNazkDeclarations(person)
+          .then(res => this.nazkDeclarationList.push(...res.data?.data)),
         this.checkEDeclarations(person)
           .then(res => this.eDeclarationList.push(...res.data.results.object_list)),
         this.checkRnboPersons(person)
@@ -642,6 +652,7 @@ const legal =  {
       const innData = [
         this.edrListPerson,
         this.eDeclarationList,
+        this.nazkDeclarationList,
         this.rnboList,
         this.unTerrorList,
         this.usSanctionList,
@@ -674,6 +685,8 @@ const legal =  {
       const transliteratedPerson = this.getPersonInitials(`${person.lastName} ${person.firstName} ${person.patronymic}`, {transliterate: true})
 
       const requests = [
+        this.checkNazkDeclarations(person)
+          .then(res => this.nazkDeclarationList.push(...res.data?.data)),
         this.checkEDeclarations(person)
           .then(res => this.eDeclarationList.push(...res.data.results.object_list)),
         this.checkRnboPersons(person)
@@ -783,7 +796,9 @@ const legal =  {
       })
         .then(res => this.getResult({resultUrl: res.data.resultUrl, apiKey: process.env.VUE_APP_YOUR_SCORE_API_KEY})
         .then(res => this.assignObject(mapedObject, {YourControlDSFMU: res})))
-
+      
+      this.checkNazkDeclarations(capitalizedPersonObj)
+        .then(res => this.assignObject(mapedObject, {NAZKdeclarations: res})),
       this.checkEDeclarations(capitalizedPersonObj)
         .then(res => this.assignObject(mapedObject, {EDeclarations: res}))
       this.checkRnboPersons(capitalizedPersonObj)
@@ -892,7 +907,7 @@ const legal =  {
     },
     setBaseUrl() {
       this.baseUrl = process.env.NODE_ENV === "development" 
-        ? 'http://94.131.243.7:4000' // http://127.0.0.1:4000
+        ? 'http://127.0.0.1:4000' // http://127.0.0.1:4000
         : 'http://94.131.243.7:4000'
     }
   },

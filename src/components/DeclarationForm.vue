@@ -338,6 +338,7 @@
       :australiaSanctionList="australiaSanctionList"
       :unTerrorList="unTerrorList"
       :esSanctionList="esSanctionList"
+      :nazkDeclarationList="nazkDeclarationList"
       :usSanctionList="usSanctionList"
       :yourControlRnboList="yourControlRnboList"
       :yourControlDsfmuList="yourControlDsfmuList"
@@ -350,7 +351,6 @@
 import { legal } from "./DeclarationForm.js" 
 export default legal
 </script>
-
 <style>
 .v-data-table.person-table > .v-data-table__wrapper > table > tbody > tr:last-child {
   display: none!important;

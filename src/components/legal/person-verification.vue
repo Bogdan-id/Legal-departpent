@@ -121,7 +121,7 @@
           @click="toggleDescription(NAZKdeclarationsShowedList, key)"
           :class="{active: NAZKdeclarationsShowedList.includes(key)}"
           class="verification-text"
-          v-for="(item, key) in person.NAZKdeclarations.data"
+          v-for="(item, key) in person.NAZKdeclarations.data.data"
           :key="key">
           <span>
             {{ item.data.step_1.data.lastname + " " + item.data.step_1.data.firstname + " " + item.data.step_1.data.middlename }}
@@ -130,11 +130,11 @@
           <div 
             v-if="NAZKdeclarationsShowedList.includes(key)" 
             @click.prevent="toggleDescription(NAZKdeclarationsShowedList, key)">
-              <span>Рiк декларації: <span class="info-text">{{ item.declaration_year }}</span></span> 
-              <span>Посада: <span class="info-text">{{ item.data.step_1.data.workPost }}</span></span> 
-              <span>Мiсце роботи: <span class="info-text">{{ item.data.step_1.data.workPlace }}</span></span> 
-              <span>Тип посади: <span class="info-text">{{ item.data.step_1.data.postType }}</span></span> 
-              <span>Публiчна особа: <span class="info-text">{{ item.data.step_1.data.public_person }}</span></span> 
+            <span>Рiк декларації: <span class="info-text">{{ item.declaration_year }}</span></span> 
+            <span>Посада: <span class="info-text">{{ item.data.step_1.data.workPost }}</span></span> 
+            <span>Мiсце роботи: <span class="info-text">{{ item.data.step_1.data.workPlace }}</span></span> 
+            <span>Тип посади: <span class="info-text">{{ item.data.step_1.data.postType }}</span></span> 
+            <span>Публiчна особа: <span class="info-text">{{ item.data.step_1.data.public_person }}</span></span> 
             <!-- <span>Посилання: <a @click="openLink(item.infocard.url)" class="info-text">{{ item.infocard.url }}</a></span> -->
           </div>
         </li>

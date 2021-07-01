@@ -255,6 +255,10 @@ const legal =  {
      * @function checkRnboPersons - Post capitalized person object
      * @param {{lastName: string, firstName: string, patronymic: string}} object */
     checkRnboPersons(object) {
+      if (this.choosedLegal) {
+        // @ts-ignore
+        object.params = { fullMatch: true}
+      }
       const url = this.baseUrl + '/get-person-sanctions'
       return this.$axios
         .post(url, object).then(res => res).catch(err => this.getRejectedKey(err))

@@ -366,7 +366,6 @@ export default {
     legal: { type: Object },
   },
   data: () => ({
-    showDeclarations: false,
     showESLegalSanctions: false,
     showRNBOLegalSanctions: false,
     showUNLegalSanctions: false,

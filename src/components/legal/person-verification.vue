@@ -124,13 +124,12 @@
           v-for="(item, key) in person.NAZKdeclarations.data"
           :key="key">
           <span>
-            {{ item.infocard.last_name + " " + item.infocard.first_name + " " + item.infocard.patronymic }}
+            {{ item.data.step_1.data.lastname + " " + item.data.step_1.data.firstname + " " + item.data.step_1.data.middlename }}
             &nbsp;[{{ NAZKdeclarationsShowedList.includes(key) ? "-" : "+" }}]
           </span>
           <div 
             v-if="NAZKdeclarationsShowedList.includes(key)" 
             @click.prevent="toggleDescription(NAZKdeclarationsShowedList, key)">
-              <span>ПIБ: <span class="info-text">{{ item.data.step_1.data.lastname + " " + item.data.step_1.data.firstname + " " + item.data.step_1.data.middlename }}</span></span>
               <span>Рiк декларації: <span class="info-text">{{ item.declaration_year }}</span></span> 
               <span>Посада: <span class="info-text">{{ item.data.step_1.data.workPost }}</span></span> 
               <span>Мiсце роботи: <span class="info-text">{{ item.data.step_1.data.workPlace }}</span></span> 

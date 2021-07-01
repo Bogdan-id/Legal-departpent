@@ -112,7 +112,7 @@
         :data="person.NAZKdeclarations.data.data"
         :state="showNAZKdeclarations"
         :config="person.NAZKdeclarations.config"
-        :source="'https://declarations.com.ua/'"
+        :source="'https://public.nazk.gov.ua/public_api'"
       />
       <ul 
         v-show="showNAZKdeclarations"

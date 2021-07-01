@@ -138,6 +138,9 @@ const legal =  {
     yourScoreDSFMU: false, 
     yourScoreRNBO: false,
     yourScoreForeignLegalSanctions: false,
+    exceptions: [
+      'КІНЦЕВИЙ БЕНЕФІЦІАРНИЙ ВЛАСНИК (КОНТРОЛЕР) - ВІДСУТНІЙ'
+    ],
   }),
   methods: {
     transliterate,
@@ -479,10 +482,20 @@ const legal =  {
           const object = legal || mapedObject
           // @ts-ignore
           this.checkLegal(object, requisites)
+
+          function trimExceptedStr(founder) {
+            this.exceptions.forEach(exc => {
+              const regex = new RegExp(`${exc}`, 'gi')
+              founder.name = founder.name.replace(regex, '')
+            })
+            return founder
+          }
           
           if (! legal || ! legal.code) return
-          const legalFounders = legal?.founders?.filter(founder => founder.name.includes('"'))
-          const personFounders = legal?.founders?.filter(founder => !founder.name.includes('"'))
+          const legalFounders = legal?.founders
+            ?.filter(founder => founder.name.includes('"')).map(trimExceptedStr)
+          const personFounders = legal?.founders
+            ?.filter(founder => !founder.name.includes('"')).map(trimExceptedStr)
 
           if (legalFounders?.length) {
             legalFounders.map(founder => {
@@ -552,7 +565,7 @@ const legal =  {
 
         this.loading = false
         this.legalDialog = true
-        console.log(this.globalObject)
+        console.log('Global', this.globalObject)
       } catch (err) {
         this.loading = false
         this.$snotify.simple(err.Error || err)

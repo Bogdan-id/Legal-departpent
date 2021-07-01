@@ -109,7 +109,7 @@
       class="list-item">
       <ListSigns 
         title="НАЗК електронні декларації"
-        :data="person.NAZKdeclarations.data"
+        :data="person.NAZKdeclarations.data.data"
         :state="showNAZKdeclarations"
         :config="person.NAZKdeclarations.config"
         :source="'https://declarations.com.ua/'"

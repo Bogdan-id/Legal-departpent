@@ -208,19 +208,20 @@ const legal =  {
      * @function checkEDeclarations - Post capitalized person object
      * @param {{lastName: string, firstName: string, patronymic: string}} object */
     checkEDeclarations(object) { 
+      console.log('object', object)
       /** @param {AxiosResponse} res */
       const checkPublicity = async (res) => {
         const list = res.data?.results?.object_list
         if (! list?.length) return res
 
-        const requests = list.map(async object => {
-          const isPep = this.isPep(object.infocard.position) ? 'Так' : 'Нi'
-          object.infocard.isPep = isPep
-          const family = object?.related_entities?.people?.family
+        const requests = list.map(async o => {
+          const isPep = this.isPep(o.infocard.position) ? 'Так' : 'Нi'
+          o.infocard.isPep = isPep
+          const family = o?.related_entities?.people?.family
 
           if (family.length) {
             const nested = family.map(async p => {
-              this.$set(object.infocard, 'family', [])
+              this.$set(o.infocard, 'family', [])
               if (p.trim() === "") return
               const initials = this.getPersonInitials(p)
 
@@ -229,7 +230,7 @@ const legal =  {
                 if (nestedDeclar.length) {
                   nestedDeclar.forEach(obj => obj.infocard.isPep = this.isPep(obj.infocard.position))
                   nestedDeclar = nestedDeclar.filter(o => o.infocard.isPep)
-                  object.infocard.family.push(...nestedDeclar.map(o => {
+                  o.infocard.family.push(...nestedDeclar.map(o => {
                     delete o.unified_source
                     return o
                   }))
@@ -244,6 +245,7 @@ const legal =  {
       }
 
       const getDeclarations = (o) => {
+        console.log('o', o)
         const url = this.baseUrl + '/get-declarations'
         return this.$axios
           .post(url, o).then(res => res)

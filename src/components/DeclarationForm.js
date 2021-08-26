@@ -485,7 +485,7 @@ const legal =  {
           // @ts-ignore
           this.checkLegal(object, requisites)
 
-          function trimExceptedStr(founder) {
+          const trimExceptedStr = (founder) => {
             this.exceptions.forEach(exc => {
               const regex = new RegExp(`${exc}`, 'gi')
               founder.name = founder.name.replace(regex, '')

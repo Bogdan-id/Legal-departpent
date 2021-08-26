@@ -6,7 +6,7 @@
       :close-on-content-click="false">
       <template v-slot:activator="{ on, attrs }">
         <a style="position: relative" icon>
-          {{title.trim()}} {{(data && data.length ? data.length : "") || true ? getCategoryName(data) : "[" + data && data.length ? data.length : 0 + "]"}}
+          {{ title.trim() }} {{ (data && data.length ? data.length : "") || true ? getCategoryName(data) : "[" + data && data.length ? data.length : 0 + "]" }}
           <v-icon 
             style="vertical-align: top;"
             v-bind="attrs"

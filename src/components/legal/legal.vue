@@ -99,7 +99,6 @@
     </ul>
   </div>
 </template>
-
 <script lang="ts">
 import PersonVerification from './person-verification.vue'
 import LegalVerification from './legal-verification.vue'

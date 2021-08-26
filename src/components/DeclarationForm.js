@@ -246,7 +246,7 @@ const legal =  {
             return await Promise.all(nested)
           } else return o
         })
-        return await Promise.all(requests).then(() => res)
+        return await Promise.all(requests).then(() => {console.log('res', res); return res;})
       }
       return getDeclarations(object).then(res => checkPublicity(res)).catch(err => this.getRejectedKey(err))
     },

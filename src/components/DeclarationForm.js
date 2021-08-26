@@ -209,6 +209,12 @@ const legal =  {
      * @param {{lastName: string, firstName: string, patronymic: string}} object */
     checkEDeclarations(object) { 
       console.log('object', object)
+      const getDeclarations = (o) => {
+        console.log('o', o)
+        const url = this.baseUrl + '/get-declarations'
+        return this.$axios
+          .post(url, o).then(res => res)
+      }
       /** @param {AxiosResponse} res */
       const checkPublicity = async (res) => {
         const list = res.data?.results?.object_list
@@ -240,15 +246,7 @@ const legal =  {
             return await Promise.all(nested)
           }
         })
-
         return await Promise.all(requests).then(() => res)
-      }
-
-      const getDeclarations = (o) => {
-        console.log('o', o)
-        const url = this.baseUrl + '/get-declarations'
-        return this.$axios
-          .post(url, o).then(res => res)
       }
       return getDeclarations(object).then(res => checkPublicity(res)).catch(err => this.getRejectedKey(err))
     },

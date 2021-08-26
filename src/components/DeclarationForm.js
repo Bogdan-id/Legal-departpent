@@ -578,6 +578,7 @@ const legal =  {
     /** @param {string | number} inn */
     // eslint-disable-next-line
     async mapGlobalPersonInn(inn) {
+      console.log('mapGlobalPersonInn')
       this.clearPersonData()
       this.loading = true
 
@@ -672,6 +673,7 @@ const legal =  {
         })
     }, 
     checkPersonResult() {
+      console.log('checkPersonResult')
       const innData = [
         this.edrListPerson,
         this.eDeclarationList,
@@ -798,6 +800,7 @@ const legal =  {
      * @param {string} name
      */
     checkLegalPerson(mapedObject, name) {
+      console.log('checkLegalPerson')
       const capitalizedPersonObj = this.getPersonInitials(name, {capitalize: true})
       const transliteratedPersonObj = this.getPersonInitials(name, {transliterate: true})
       // const personObj = this.getPersonInitials(name)

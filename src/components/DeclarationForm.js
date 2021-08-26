@@ -225,7 +225,7 @@ const legal =  {
           if (family.length) {
             const nested = family.map(async p => {
               this.$set(o.infocard, 'family', [])
-              if (p.trim() === "") return
+              if (p.trim() === "") return p
               const initials = this.getPersonInitials(p)
 
               return getDeclarations(initials).then(res => {
@@ -237,7 +237,9 @@ const legal =  {
                     delete o.unified_source
                     return o
                   }))
+                  return res
                 }
+                return res
               })
             })
             const result = await Promise.all(nested).then(res => res)

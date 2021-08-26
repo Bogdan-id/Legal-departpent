@@ -248,7 +248,7 @@ const legal =  {
         })
         return await Promise.all(requests).then(() => {console.log('res', res); return res;})
       }
-      return getDeclarations(object).then(res => checkPublicity(res)).catch(err => this.getRejectedKey(err))
+      return getDeclarations(object).then(res => checkPublicity(res).then(checkPublicity => {console.log('checkPublicity', checkPublicity); return checkPublicity})).catch(err => this.getRejectedKey(err))
     },
     checkNazkDeclarations(person) {
       const { lastName, firstName, patronymic } = person

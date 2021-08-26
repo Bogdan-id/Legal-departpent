@@ -243,10 +243,10 @@ const legal =  {
         return await Promise.all(requests).then(() => res)
       }
 
-      const getDeclarations = (object) => {
+      const getDeclarations = (o) => {
         const url = this.baseUrl + '/get-declarations'
         return this.$axios
-          .post(url, object).then(res => res)
+          .post(url, o).then(res => res)
       }
       return getDeclarations(object).then(res => checkPublicity(res)).catch(err => this.getRejectedKey(err))
     },

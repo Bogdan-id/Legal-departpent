@@ -209,11 +209,11 @@ const legal =  {
      * @param {{lastName: string, firstName: string, patronymic: string}} object */
     checkEDeclarations(object) { 
       console.log('object', object)
+
       const getDeclarations = (o) => {
         console.log('o', o)
         const url = this.baseUrl + '/get-declarations'
-        return this.$axios
-          .post(url, o).then(res => res)
+        return this.$axios.post(url, o).then(res => res)
       }
       /** @param {AxiosResponse} res */
       const checkPublicity = async (res) => {
@@ -244,7 +244,7 @@ const legal =  {
               })
             })
             return await Promise.all(nested)
-          }
+          } else return o
         })
         return await Promise.all(requests).then(() => res)
       }
@@ -798,7 +798,7 @@ const legal =  {
      * @param {string} name
      */
     checkLegalPerson(mapedObject, name) {
-      console.log('checkLegalPerson')
+      console.log('checkLegalPerson', name)
       const capitalizedPersonObj = this.getPersonInitials(name, {capitalize: true})
       const transliteratedPersonObj = this.getPersonInitials(name, {transliterate: true})
       // const personObj = this.getPersonInitials(name)

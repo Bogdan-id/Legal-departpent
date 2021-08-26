@@ -240,7 +240,7 @@ const legal =  {
                 }
               })
             })
-            const result = await Promise.all(nested)
+            const result = await Promise.all(nested).then(res => res)
             return result
           } else return o
         })

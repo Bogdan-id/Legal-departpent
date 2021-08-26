@@ -139,7 +139,9 @@ const legal =  {
     yourScoreRNBO: false,
     yourScoreForeignLegalSanctions: false,
     exceptions: [
-      'КІНЦЕВИЙ БЕНЕФІЦІАРНИЙ ВЛАСНИК (КОНТРОЛЕР) - ВІДСУТНІЙ'
+      'КІНЦЕВИЙ БЕНЕФІЦІАРНИЙ ВЛАСНИК (КОНТРОЛЕР) - ВІДСУТНІЙ',
+      'КІНЦЕВИЙ БЕНЕФІЦІАРНИЙ ВЛАСНИК (КОНТРОЛЕР)',
+      'КІНЦЕВИЙ БЕНЕФІЦІАРНИЙ ВЛАСНИК',
     ],
   }),
   methods: {
@@ -504,14 +506,14 @@ const legal =  {
             })
           }
           if (personFounders?.length) {
-            personFounders.map(founder => {
-              this.checkLegalPerson(founder, founder.name)
-            })
+            personFounders
+              .filter(founder => this.getPersonInitials(founder.name))
+              .map(founder => this.checkLegalPerson(founder, founder.name))
           }
           if (legal.signers?.length) {
-            legal.signers.map(signer => {
-              this.checkLegalPerson(signer, signer.name)
-            })
+            legal.signers
+              .filter(signer => this.getPersonInitials(signer.name))
+              .map(signer => this.checkLegalPerson(signer, signer.name))
           }
         })
         .catch(err => {
@@ -605,6 +607,8 @@ const legal =  {
 
       this.edrListPerson.splice(0)
       this.edrListPerson.push(personData)
+      // @ts-ignore
+      if (!this.getPersonInitials(personData.data.name)) return
       // @ts-ignore
       const {lastName, firstName, patronymic} = this.getPersonInitials(personData.data.name)
       const person = {lastName: lastName, firstName: firstName, patronymic: patronymic}
@@ -701,6 +705,8 @@ const legal =  {
       }
       const transliteratedPerson = this.getPersonInitials(`${person.lastName} ${person.firstName} ${person.patronymic}`, {transliterate: true})
 
+      if (!transliteratedPerson) return
+
       const requests = [
         this.checkNazkDeclarations(person)
           .then(res => this.nazkDeclarationList.push(...res.data?.data)),
@@ -763,9 +769,7 @@ const legal =  {
       }
       
       const [ lastName, firstName, patronymic ] = person.split(' ')
-      if (!lastName || !firstName || lastName.length <= 1 || firstName.length <= 1) {
-        throw new Error('Initials not valid: ' + `${lastName} ${firstName} ${patronymic}`)
-      }
+      if (!lastName || !firstName || lastName.length <= 1 || firstName.length <= 1) return
 
       let personObject = {
         firstName: firstName,

@@ -144,8 +144,7 @@ function tables(o, params) {
             headerRows: 1,
             style: { fontSize: 6 },
             widths: [ '16.6%', '41.5%', '11.7%', '10.7%', '10.7%', '10.7%' ],
-            body: 
-            [
+            body: [
               JSON.parse(JSON.stringify(personTerrorsHeader)),
               ...person.map(v => v.body),
             ],

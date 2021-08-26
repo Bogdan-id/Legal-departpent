@@ -210,7 +210,7 @@ const legal =  {
     checkEDeclarations(object) { 
       const getDeclarations = (o) => {
         const url = this.baseUrl + '/get-declarations'
-        return this.$axios.post(url, o).then(res => res)
+        return this.$axios.post(url, o).then(res => res).catch(err => this.getRejectedKey(err))
       }
       /** @param {AxiosResponse} res */
       const checkPublicity = async (res) => {
@@ -242,7 +242,7 @@ const legal =  {
                 return res
               })
             })
-            const result = await Promise.all(nested).then(res => res)
+            const result = await Promise.all(nested).then(o => o)
             return result
           } else return o
         })

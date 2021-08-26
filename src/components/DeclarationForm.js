@@ -208,7 +208,10 @@ const legal =  {
      * @function checkEDeclarations - Post capitalized person object
      * @param {{lastName: string, firstName: string, patronymic: string}} object */
     checkEDeclarations(object) { 
+      console.log('object', object)
+
       const getDeclarations = (o) => {
+        console.log('o', o)
         const url = this.baseUrl + '/get-declarations'
         return this.$axios.post(url, o).then(res => res)
       }
@@ -243,9 +246,9 @@ const legal =  {
             return await Promise.all(nested)
           } else return o
         })
-        return await Promise.all(requests).then(() => res)
+        return await Promise.all(requests).then(() => {console.log('res', res); return res;})
       }
-      return getDeclarations(object).then(res => checkPublicity(res).then(cp => cp)).catch(err => this.getRejectedKey(err))
+      return getDeclarations(object).then(res => checkPublicity(res).then(checkPublicity => {console.log('checkPublicity', checkPublicity); return checkPublicity})).catch(err => this.getRejectedKey(err))
     },
     checkNazkDeclarations(person) {
       const { lastName, firstName, patronymic } = person
@@ -573,6 +576,7 @@ const legal =  {
     /** @param {string | number} inn */
     // eslint-disable-next-line
     async mapGlobalPersonInn(inn) {
+      console.log('mapGlobalPersonInn')
       this.clearPersonData()
       this.loading = true
 
@@ -667,6 +671,7 @@ const legal =  {
         })
     }, 
     checkPersonResult() {
+      console.log('checkPersonResult')
       const innData = [
         this.edrListPerson,
         this.eDeclarationList,
@@ -793,6 +798,7 @@ const legal =  {
      * @param {string} name
      */
     checkLegalPerson(mapedObject, name) {
+      console.log('checkLegalPerson', name)
       const capitalizedPersonObj = this.getPersonInitials(name, {capitalize: true})
       const transliteratedPersonObj = this.getPersonInitials(name, {transliterate: true})
       // const personObj = this.getPersonInitials(name)

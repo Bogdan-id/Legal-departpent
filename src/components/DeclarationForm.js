@@ -10,6 +10,7 @@ import {
   YourControlSanctions,
 } from '../types'
 /* eslint-enable no-unused-vars */
+import Vue from 'vue'
 
 import { 
   mdiClose, 
@@ -540,6 +541,10 @@ const legal =  {
           nameEn: this.transliterate(companyName), 
           nameUa: companyName,
         }
+        Vue.set(mapedObject, 'name', {})
+        // @ts-ignore
+        Vue.set(mapedObject.name, 'shortName', companyName)
+        Vue.set(mapedObject, 'code', companyName)
         // @ts-ignore
         data = this.checkLegal(mapedObject, requisites)
           .then(res => {

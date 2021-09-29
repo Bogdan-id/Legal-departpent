@@ -437,6 +437,7 @@ const legal =  {
     getEdrData(mapedObject, code, companyName) {
       this.loading = true
       const yourControlEdrLegal = { edrpou: code, apiKey: process.env.VUE_APP_YOUR_SCORE_API_KEY, inn: null }  
+      const resultError = 'За вашим запитом нiчого не знайдено'
       let data
       if (code) {
         data = this.getEdr(yourControlEdrLegal)
@@ -560,14 +561,14 @@ const legal =  {
               ...(o?.CanadaLegalSanctions?.data || []), 
               ...(o?.AustraliaLegalSanctions?.data || [])
             ].length
-            ) throw new Error('За вашим запитом нiчого не знайдено')
+            ) throw new Error(resultError)
             this.loading = false
             console.log('PROMISE ALL')
             return res
           })
           .catch(err => {
             console.log(err)
-            this.$snotify.simple(err)
+            err.message !== resultError &&  this.$snotify.simple(err)
             throw err
           })
       }

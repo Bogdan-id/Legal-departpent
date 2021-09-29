@@ -518,6 +518,7 @@ const legal =  {
 
           return Promise.all([...foundersReqests, ...personFoundersRequests, ...signersRequests])
             .then(res => {
+              console.log('PROMISE ALL')
               this.loading = false
               return res
             })
@@ -562,10 +563,8 @@ const legal =  {
     /** @param {string} code */
     async mapGlobalLegal(code) {
       try {
-        this.loading = true
         const data = await this.getEdrData(this.globalObject, code)
           .then(res => {
-            this.loading = false
             this.legalDialog = true
             console.log('Global', this.globalObject)
             return res
@@ -989,6 +988,9 @@ const legal =  {
     },
   }, 
   watch: {
+    loading(v) {
+      console.log('loading: ', v)
+    },
     personDialog(val) {
       if(!val) {
         this.ukVersion = true

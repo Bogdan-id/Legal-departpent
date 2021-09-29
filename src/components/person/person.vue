@@ -442,7 +442,7 @@
                           </v-btn>
                         </div>
                         Сiм`я:
-                        <pre>{{ JSON.stringify(item.infocard.family, null, 2) }}</pre>
+                        <pre>{{ stringify(item.infocard.family, null, 2) }}</pre>
                       </v-card-text>
                     </v-card>
                   </v-menu>
@@ -985,6 +985,7 @@
 </template>
 
 <script>
+import { stringify } from 'flatted'
 import tableHeaders from './table-headers'
 import { 
   mdiMenuDown, 

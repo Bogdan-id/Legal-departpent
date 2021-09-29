@@ -36,6 +36,7 @@ import PersonInfo from './person/person.vue'
 import { validationMixin } from 'vuelidate'
 import { minLength, required } from 'vuelidate/lib/validators'
 import { YourControlErrCodes } from '../utils/utils'
+import { resolve } from 'core-js/fn/promise'
 
 const legal =  {
   mixins: [validationMixin],
@@ -438,9 +439,8 @@ const legal =  {
       this.loading = true
       const yourControlEdrLegal = { edrpou: code, apiKey: process.env.VUE_APP_YOUR_SCORE_API_KEY, inn: null }  
       const resultError = 'За вашим запитом нiчого не знайдено'
-      let data
       if (code) {
-        data = this.getEdr(yourControlEdrLegal)
+        return this.getEdr(yourControlEdrLegal)
           .then(res => {
             if (res?.data?.status === "Update in progress") {
               this.attemptsToGetNewEdr ++
@@ -547,7 +547,7 @@ const legal =  {
         Vue.set(mapedObject.name, 'shortName', companyName)
         Vue.set(mapedObject, 'code', '00000000')
         // @ts-ignore
-        data = this.checkLegal(mapedObject, requisites)
+        return this.checkLegal(mapedObject, requisites)
           .then(res => {
             let o = this.globalObject
             // @ts-ignore
@@ -564,7 +564,7 @@ const legal =  {
             ) throw new Error(resultError)
             this.loading = false
             console.log('PROMISE ALL')
-            return res
+            return new Promise(resolve => { setTimeout(() => resolve(res), 0) })
           })
           .catch(err => {
             console.log(err)

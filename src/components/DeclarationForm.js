@@ -550,7 +550,7 @@ const legal =  {
           .then(res => {
             let o = this.globalObject
             // @ts-ignore
-            ![
+            if (![
               ...(o?.ESLegalSanctions?.data || []), 
               ...(o?.USLegalSanctions?.data || []), 
               ...(o?.UNLegalTerrors?.data || []), 
@@ -559,7 +559,8 @@ const legal =  {
               ...(o?.YourControlSanctions?.data || []), 
               ...(o?.CanadaLegalSanctions?.data || []), 
               ...(o?.AustraliaLegalSanctions?.data || [])
-            ].length && Promise.reject('За вашим запитом нiчого не знайдено')
+            ].length
+            ) throw new Error('За вашим запитом нiчого не знайдено')
             this.loading = false
             console.log('PROMISE ALL')
             return res

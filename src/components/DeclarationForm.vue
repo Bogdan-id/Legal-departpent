@@ -3,6 +3,7 @@
   <v-row class="api-form text-center justify-center">
     <v-dialog v-model="legalDialog">
       <LegalTree 
+        v-show="!loading"
         :legal="globalObject"
         :legalDialog.sync="legalDialog">
       </LegalTree>

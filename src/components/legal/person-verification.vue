@@ -91,7 +91,7 @@
                         </v-btn>
                       </div>
                       Сiм`я:
-                      <pre>{{ JSON.stringify(item.infocard.family, null, 2) }}</pre>
+                      <pre>{{ stringify(item.infocard.family, null, 2) }}</pre>
                     </v-card-text>
                   </v-card>
                 </v-menu>
@@ -571,7 +571,7 @@ import {
   getCategoryName } from "./helper"
 
 import ListSigns from "./list-sign.vue"
-
+import { stringify } from 'flatted'
 export default {
   components: { ListSigns, FounderInfo },
   props: {person: Object},
@@ -609,6 +609,7 @@ export default {
     ],
   }),
   methods: {
+    stringify,
     toggleYourControlDSFMU() {this.showYourControlDSFMU = !this.showYourControlDSFMU},
     toggleYourControlRNBO() {this.showYourControl = !this.showYourControl},
     toggleSignerInfo() {this.showSignerInfo = !this.showSignerInfo},

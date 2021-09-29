@@ -1050,6 +1050,7 @@ export default {
     innerState: false,
   }),
   methods: {
+    stringify,
     makeActive(section) {
       if (section === this.currSection) {
         this.currSection = null

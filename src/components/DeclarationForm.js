@@ -540,8 +540,8 @@ const legal =  {
           nameEn: this.transliterate(companyName), 
           nameUa: companyName,
         }
-
-        data = this.checkLegal(null, requisites)
+        // @ts-ignore
+        data = this.checkLegal(mapedObject, requisites)
           .then(res => {
             this.loading = false
             console.log('PROMISE ALL')

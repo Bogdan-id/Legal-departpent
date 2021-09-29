@@ -548,6 +548,18 @@ const legal =  {
         // @ts-ignore
         data = this.checkLegal(mapedObject, requisites)
           .then(res => {
+            let o = this.globalObject
+            // @ts-ignore
+            ![
+              ...o.ESLegalSanctions, 
+              ...o.USLegalSanctions, 
+              ...o.UNLegalTerrors, 
+              ...o.UNLegalSanctions, 
+              ...o.RNBOLegals, 
+              ...o.YourControlSanctions, 
+              ...o.CanadaLegalSanctions, 
+              ...o.AustraliaLegalSanctions
+            ].length && Promise.reject('За вашим запитом нiчого не знайдено')
             this.loading = false
             console.log('PROMISE ALL')
             return res

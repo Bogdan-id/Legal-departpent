@@ -518,8 +518,8 @@ const legal =  {
 
           return Promise.all([...foundersReqests, ...personFoundersRequests, ...signersRequests])
             .then(res => {
-              console.log('PROMISE ALL')
               this.loading = false
+              console.log('PROMISE ALL')
               return res
             })
         })
@@ -807,64 +807,68 @@ const legal =  {
       const transliteratedPersonObj = this.getPersonInitials(name, {transliterate: true})
       // const personObj = this.getPersonInitials(name)
 
-      this.yourScoreRNBO && this.getRnboResultUrl({
+      return Promise.all([
+        this.yourScoreRNBO && this.getRnboResultUrl({
+            lastName: capitalizedPersonObj.lastName, 
+            firstName: capitalizedPersonObj.firstName, 
+            middleName: capitalizedPersonObj.patronymic, 
+            apiKey: process.env.VUE_APP_YOUR_SCORE_API_KEY
+          })
+          .then(res => this.getResult({resultUrl: res.data.resultUrl, apiKey: process.env.VUE_APP_YOUR_SCORE_API_KEY}))
+          .then(res => this.assignObject(mapedObject, {YourControlRNBO: res})),
+
+        this.yourScoreDSFMU && this.getDsfmuResultUrl({
           lastName: capitalizedPersonObj.lastName, 
           firstName: capitalizedPersonObj.firstName, 
           middleName: capitalizedPersonObj.patronymic, 
           apiKey: process.env.VUE_APP_YOUR_SCORE_API_KEY
         })
-        .then(res => this.getResult({resultUrl: res.data.resultUrl, apiKey: process.env.VUE_APP_YOUR_SCORE_API_KEY}))
-        .then(res => this.assignObject(mapedObject, {YourControlRNBO: res}))
-      
-      this.yourScoreDSFMU && this.getDsfmuResultUrl({
-        lastName: capitalizedPersonObj.lastName, 
-        firstName: capitalizedPersonObj.firstName, 
-        middleName: capitalizedPersonObj.patronymic, 
-        apiKey: process.env.VUE_APP_YOUR_SCORE_API_KEY
-      })
-        .then(res => this.getResult({resultUrl: res.data.resultUrl, apiKey: process.env.VUE_APP_YOUR_SCORE_API_KEY})
-        .then(res => this.assignObject(mapedObject, {YourControlDSFMU: res})))
-      
-      this.checkNazkDeclarations(capitalizedPersonObj)
-        .then(res => this.assignObject(mapedObject, {NAZKdeclarations: res})),
-      this.checkEDeclarations(capitalizedPersonObj)
-        .then(res => {this.assignObject(mapedObject, {EDeclarations: res}); console.log('EDeclarations', res)})
-      this.checkRnboPersons(capitalizedPersonObj)
-        .then(res => this.assignObject(mapedObject, {RNBOSanctions: res}))
-      this.checkUnPersSanctions(transliteratedPersonObj) 
-        .then(res => this.assignObject(mapedObject, {UNPersonSanctions: res}))
-      this.checkUsPersonSunctions(transliteratedPersonObj) 
-        .then(res => this.assignObject(mapedObject, {USPersonSanctions: res}))
-      this.checkEsPersonSunctions(transliteratedPersonObj)
-        .then(res => this.assignObject(mapedObject, {ESPersonSanctions: res}))
-      this.checkUnTerrors(transliteratedPersonObj) 
-        .then(res => this.assignObject(mapedObject, {UNTerrorPersonSanctions: res}))
-      this.checkAustraliaPersonSanctions(transliteratedPersonObj) 
-        .then(res => this.assignObject(mapedObject, {AustraliaPersonSanctions: res}))
-      this.checkCanadaPersonSanctions(transliteratedPersonObj)
-        .then(res => this.assignObject(mapedObject, {CanadaPersonSanctions: res}))
+          .then(res => this.getResult({resultUrl: res.data.resultUrl, apiKey: process.env.VUE_APP_YOUR_SCORE_API_KEY})
+          .then(res => this.assignObject(mapedObject, {YourControlDSFMU: res}))),
+        
+        this.checkNazkDeclarations(capitalizedPersonObj)
+          .then(res => this.assignObject(mapedObject, {NAZKdeclarations: res})),
+        this.checkEDeclarations(capitalizedPersonObj)
+          .then(res => {this.assignObject(mapedObject, {EDeclarations: res}); console.log('EDeclarations', res)}),
+        this.checkRnboPersons(capitalizedPersonObj)
+          .then(res => this.assignObject(mapedObject, {RNBOSanctions: res})),
+        this.checkUnPersSanctions(transliteratedPersonObj) 
+          .then(res => this.assignObject(mapedObject, {UNPersonSanctions: res})),
+        this.checkUsPersonSunctions(transliteratedPersonObj) 
+          .then(res => this.assignObject(mapedObject, {USPersonSanctions: res})),
+        this.checkEsPersonSunctions(transliteratedPersonObj)
+          .then(res => this.assignObject(mapedObject, {ESPersonSanctions: res})),
+        this.checkUnTerrors(transliteratedPersonObj) 
+          .then(res => this.assignObject(mapedObject, {UNTerrorPersonSanctions: res})),
+        this.checkAustraliaPersonSanctions(transliteratedPersonObj) 
+          .then(res => this.assignObject(mapedObject, {AustraliaPersonSanctions: res})),
+        this.checkCanadaPersonSanctions(transliteratedPersonObj)
+          .then(res => this.assignObject(mapedObject, {CanadaPersonSanctions: res}))
+      ])
     },
     /**
      * @param {Founder} founder
      * @param {string} founderName */
     checkLegalFounder (founder, founderName) {
-      this.mapEdrLegal(founder, founder.code)
-      this.checkEsLegalSanctions({edrpou: founder.code, companyName: this.transliterate(founderName)})
-        .then(res => this.assignObject(founder, {ESLegalSanctions: res}))
-      this.checkUsLegalSanctions({companyName: this.transliterate(founderName)})
-        .then(res => this.assignObject(founder, {USLegalSanctions: res}))
-      this.checkUnLegalTerrors({companyName: this.transliterate(founderName)})
-        .then(res => this.assignObject(founder, {UNLegalTerrors: res}))
-      this.checkUnLegalSanctions({companyName: this.transliterate(founderName)})
-        .then(res => this.assignObject(founder, {UNLegalSanctions: res}))
-      this.checkRnboLegals({edrpou: founder.code, companyName: founderName})
-        .then(res => this.assignObject(founder, {RNBOLegals: res}))
-      this.yourScoreForeignLegalSanctions && this.checkYourControlSanctions({edrpou: founder.code, apiKey: process.env.VUE_APP_YOUR_SCORE_API_KEY})
-        .then(res => this.assignObject(founder, {YourControlSanctions: res}))
-      this.checkCanadaLegalSanctions({edrpou: founder.code, companyName: this.transliterate(founderName)}) 
-        .then(res => this.assignObject(founder, {CanadaLegalSanctions: res}))
-      this.checkAustraliaLegalSanctions({edrpou: founder.code, companyName: this.transliterate(founderName)})
-        .then(res => this.assignObject(founder, {AustraliaLegalSanctions: res}))
+      return Promise.all([
+        this.mapEdrLegal(founder, founder.code),
+        this.checkEsLegalSanctions({edrpou: founder.code, companyName: this.transliterate(founderName)})
+          .then(res => this.assignObject(founder, {ESLegalSanctions: res})),
+        this.checkUsLegalSanctions({companyName: this.transliterate(founderName)})
+          .then(res => this.assignObject(founder, {USLegalSanctions: res})),
+        this.checkUnLegalTerrors({companyName: this.transliterate(founderName)})
+          .then(res => this.assignObject(founder, {UNLegalTerrors: res})),
+        this.checkUnLegalSanctions({companyName: this.transliterate(founderName)})
+          .then(res => this.assignObject(founder, {UNLegalSanctions: res})),
+        this.checkRnboLegals({edrpou: founder.code, companyName: founderName})
+          .then(res => this.assignObject(founder, {RNBOLegals: res})),
+        this.yourScoreForeignLegalSanctions && this.checkYourControlSanctions({edrpou: founder.code, apiKey: process.env.VUE_APP_YOUR_SCORE_API_KEY})
+          .then(res => this.assignObject(founder, {YourControlSanctions: res})),
+        this.checkCanadaLegalSanctions({edrpou: founder.code, companyName: this.transliterate(founderName)}) 
+          .then(res => this.assignObject(founder, {CanadaLegalSanctions: res})),
+        this.checkAustraliaLegalSanctions({edrpou: founder.code, companyName: this.transliterate(founderName)})
+          .then(res => this.assignObject(founder, {AustraliaLegalSanctions: res}))
+      ])
     },
     /**
      * @param {EdrLegal} legal

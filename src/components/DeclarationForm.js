@@ -571,8 +571,6 @@ const legal =  {
             throw err
           })
       }
-
-      return data
     },
     /**
      * @template T

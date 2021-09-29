@@ -541,11 +541,17 @@ const legal =  {
           nameUa: companyName,
         }
 
-        data = this.checkLegal(null, requisites).then(res => {
-          this.loading = false
-          console.log('PROMISE ALL')
-          return res
-        })
+        data = this.checkLegal(null, requisites)
+          .then(res => {
+            this.loading = false
+            console.log('PROMISE ALL')
+            return res
+          })
+          .catch(err => {
+            console.log(err)
+            this.$snotify.simple(err)
+            throw err
+          })
       }
 
       return data

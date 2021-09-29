@@ -44,7 +44,7 @@ const legal =  {
   },
   name: 'DeclarationForm',
   validations() {
-    const legalEdrpou = this.choosedLegal 
+    const legalEdrpou = this.choosedLegal && this.choosedEdrpou
       ? {
           edrpou: {
             required,
@@ -52,6 +52,10 @@ const legal =  {
           },
         } 
       : {}
+    
+    const companyName = this.choosedLegal && this.choosedCompanyName
+        ? { companyName: { required } } : {}
+
     const personInn = this.personInn 
       ? {
           inn: {
@@ -71,6 +75,7 @@ const legal =  {
       ...legalEdrpou,
       ...personInitials,
       ...personInn,
+      ...companyName,
     }
   },
   data: () => ({
@@ -98,6 +103,7 @@ const legal =  {
     canadaSanctionList: [],
     /* Data */
     searchVariant: null,
+    legalSearchVariant: null,
     searchType: null,
     /* Booleans */
     loading: false,
@@ -427,106 +433,120 @@ const legal =  {
     /**
      * @param {EdrLegal | Founder | {}} mapedObject
      * @param {string | number } code - EDRPOU code */
-    getEdrData(mapedObject, code) {
+    getEdrData(mapedObject, code, companyName) {
       this.loading = true
-      const yourControlEdrLegal = {edrpou: code, apiKey: process.env.VUE_APP_YOUR_SCORE_API_KEY, inn: null}  
-      const data = this.getEdr(yourControlEdrLegal)
-        .then(res => {
-          if (res?.data?.status === "Update in progress") {
-            this.attemptsToGetNewEdr ++
-            return new Promise(resolve => {
-              setTimeout(() => resolve(this.getEdrData(mapedObject, code)), this.yourControlTimeOut)
-            })
-          }
-          // @ts-ignore
-          if (res?.data?.code === 'InvalidParameters') {
-            return res
-          }
-          /** @type {EdrLegal} */
-          let legal, legalEnName, legalUaName
-          if (res?.data) {
-            legal = this.assignObject(mapedObject, JSON.parse(JSON.stringify(res.data)))
-            legalEnName = this.getLegalName(legal?.nameInEnglish?.shortName)
-            legalUaName = this.getLegalName(legal?.name?.shortName)
-          }
-          
-          // casting legal.name to string
-          let founderEnName, founderUaName, name
-          if (legal && typeof legal.name === 'string') {
-            name = this.getLegalName(legal.name)
-            /** @type {Founder} */
+      const yourControlEdrLegal = { edrpou: code, apiKey: process.env.VUE_APP_YOUR_SCORE_API_KEY, inn: null }  
+      let data
+      if (code) {
+        data = this.getEdr(yourControlEdrLegal)
+          .then(res => {
+            if (res?.data?.status === "Update in progress") {
+              this.attemptsToGetNewEdr ++
+              return new Promise(resolve => {
+                setTimeout(() => resolve(this.getEdrData(mapedObject, code)), this.yourControlTimeOut)
+              })
+            }
             // @ts-ignore
-            founderEnName = this.transliterate(name)
-            // @ts-ignore
-            founderUaName = name
-            // @ts-ignore
-          } else if (typeof mapedObject.name === "string") {
-            // @ts-ignore
-            name = this.getLegalName(mapedObject.name)
-            // @ts-ignore
-            founderEnName = this.transliterate(name)
-            // @ts-ignore
-            founderUaName = name
-            // @ts-ignore
-          } else if (typeof mapedObject.name === "object") {
-            // @ts-ignore
-            name = this.getLegalName(mapedObject.name.shortName)
-            // @ts-ignore
-            founderEnName = this.transliterate(name)
-            // @ts-ignore
-            founderUaName = name
-          }
-
-          const requisites = {
-            nameEn: legalEnName || founderEnName, 
-            nameUa: legalUaName || founderUaName
-          }
-          const object = legal || mapedObject
-          // @ts-ignore
-          this.checkLegal(object, requisites)
-
-          const trimExceptedStr = (founder) => {
-            this.exceptions.forEach(exc => {
-              const regex = new RegExp(`${exc}`, 'gi')
-              founder.name = founder.name.replace(regex, '')
-            })
-            return founder
-          }
-          
-          if (! legal || ! legal.code) {
-            this.loading = false
-            return Promise.resolve()
-          }
-          const legalFounders = legal?.founders
-            ?.filter(founder => founder.name.includes('"')).map(trimExceptedStr) || []
-          const personFounders = legal?.founders
-            ?.filter(founder => !founder.name.includes('"')).map(trimExceptedStr) || []
-
-          
-          let foundersReqests = legalFounders.map(founder => {
-            const founderName = this.getLegalName(founder.name)
-            return this.checkLegalFounder(founder, founderName)
-          })
-          
-          let personFoundersRequests = personFounders
-            .filter(founder => this.getPersonInitials(founder.name))
-            .map(founder => this.checkLegalPerson(founder, founder.name))
-          
-          let signersRequests = (legal.signers || [])
-            .filter(signer => this.getPersonInitials(signer.name))
-            .map(signer => this.checkLegalPerson(signer, signer.name))
-
-          return Promise.all([...foundersReqests, ...personFoundersRequests, ...signersRequests])
-            .then(res => {
-              this.loading = false
-              console.log('PROMISE ALL')
+            if (res?.data?.code === 'InvalidParameters') {
               return res
+            }
+            /** @type {EdrLegal} */
+            let legal, legalEnName, legalUaName
+            if (res?.data) {
+              legal = this.assignObject(mapedObject, JSON.parse(JSON.stringify(res.data)))
+              legalEnName = this.getLegalName(legal?.nameInEnglish?.shortName)
+              legalUaName = this.getLegalName(legal?.name?.shortName)
+            }
+            
+            // casting legal.name to string
+            let founderEnName, founderUaName, name
+            if (legal && typeof legal.name === 'string') {
+              name = this.getLegalName(legal.name)
+              /** @type {Founder} */
+              // @ts-ignore
+              founderEnName = this.transliterate(name)
+              // @ts-ignore
+              founderUaName = name
+              // @ts-ignore
+            } else if (typeof mapedObject.name === "string") {
+              // @ts-ignore
+              name = this.getLegalName(mapedObject.name)
+              // @ts-ignore
+              founderEnName = this.transliterate(name)
+              // @ts-ignore
+              founderUaName = name
+              // @ts-ignore
+            } else if (typeof mapedObject.name === "object") {
+              // @ts-ignore
+              name = this.getLegalName(mapedObject.name.shortName)
+              // @ts-ignore
+              founderEnName = this.transliterate(name)
+              // @ts-ignore
+              founderUaName = name
+            }
+
+            const requisites = {
+              nameEn: legalEnName || founderEnName, 
+              nameUa: legalUaName || founderUaName
+            }
+            const object = legal || mapedObject
+            // @ts-ignore
+            this.checkLegal(object, requisites)
+
+            const trimExceptedStr = (founder) => {
+              this.exceptions.forEach(exc => {
+                const regex = new RegExp(`${exc}`, 'gi')
+                founder.name = founder.name.replace(regex, '')
+              })
+              return founder
+            }
+            
+            if (! legal || ! legal.code) {
+              this.loading = false
+              return Promise.resolve()
+            }
+            const legalFounders = legal?.founders
+              ?.filter(founder => founder.name.includes('"')).map(trimExceptedStr) || []
+            const personFounders = legal?.founders
+              ?.filter(founder => !founder.name.includes('"')).map(trimExceptedStr) || []
+
+            
+            let foundersReqests = legalFounders.map(founder => {
+              const founderName = this.getLegalName(founder.name)
+              return this.checkLegalFounder(founder, founderName)
             })
+            
+            let personFoundersRequests = personFounders
+              .filter(founder => this.getPersonInitials(founder.name))
+              .map(founder => this.checkLegalPerson(founder, founder.name))
+            
+            let signersRequests = (legal.signers || [])
+              .filter(signer => this.getPersonInitials(signer.name))
+              .map(signer => this.checkLegalPerson(signer, signer.name))
+
+            return Promise.all([...foundersReqests, ...personFoundersRequests, ...signersRequests])
+              .then(res => {
+                this.loading = false
+                console.log('PROMISE ALL')
+                return res
+              })
+          })
+          .catch(err => {
+            this.$snotify.simple(err.Error || err)
+            throw err
+          })
+      } else if (companyName) {
+        const requisites = {
+          nameEn: this.transliterate(companyName), 
+          nameUa: companyName,
+        }
+
+        data = this.checkLegal(null, requisites).then(res => {
+          this.loading = false
+          console.log('PROMISE ALL')
+          return res
         })
-        .catch(err => {
-          this.$snotify.simple(err.Error || err)
-          throw err
-        })
+      }
 
       return data
     },
@@ -551,7 +571,7 @@ const legal =  {
       this.globalObject = {}
 
       switch (true) {
-        case this.choosedLegal: return this.mapGlobalLegal(this.edrpou)
+        case this.choosedLegal: return this.mapGlobalLegal(this.edrpou, this.companyName)
         case this.choosedPerson && this.personInn: return this.mapGlobalPersonInn(this.inn)
         case this.choosedPerson && this.personInitials: return this.mapGlobalPersonInitials({
           lastName: this.lastName,
@@ -561,9 +581,9 @@ const legal =  {
       }
     },
     /** @param {string} code */
-    async mapGlobalLegal(code) {
+    async mapGlobalLegal(code, companyName) {
       try {
-        const data = await this.getEdrData(this.globalObject, code)
+        const data = await this.getEdrData(this.globalObject, code, companyName)
           .then(res => {
             this.legalDialog = true
             console.log('Global', this.globalObject)
@@ -876,22 +896,24 @@ const legal =  {
      * @param {string} requisites.nameUa
      * @param {string} requisites.nameEn */
     checkLegal (legal, requisites) {
-      this.checkEsLegalSanctions({edrpou: legal.code, companyName: requisites.nameEn})
-        .then(res => this.assignObject(legal, {ESLegalSanctions: res}))
-      this.checkUsLegalSanctions({companyName: requisites.nameEn})
-        .then(res => this.assignObject(legal, {USLegalSanctions: res}))
-      this.checkUnLegalTerrors({companyName: requisites.nameEn})
-        .then(res => this.assignObject(legal, {UNLegalTerrors: res}))
-      this.checkUnLegalSanctions({companyName: requisites.nameEn})
-        .then(res => this.assignObject(legal, {UNLegalSanctions: res}))
-      this.checkRnboLegals({edrpou: legal.code, companyName: requisites.nameUa})
-        .then(res => this.assignObject(legal, {RNBOLegals: res}))
-      this.yourScoreForeignLegalSanctions && this.checkYourControlSanctions({edrpou: legal.code, apiKey: process.env.VUE_APP_YOUR_SCORE_API_KEY})
-        .then(res => this.assignObject(legal, {YourControlSanctions: res}))
-      this.checkCanadaLegalSanctions({edrpou: legal.code, companyName: requisites.nameEn}) 
-        .then(res => this.assignObject(legal, {CanadaLegalSanctions: res}))
-      this.checkAustraliaLegalSanctions({edrpou: legal.code, companyName: requisites.nameEn})
-        .then(res => this.assignObject(legal, {AustraliaLegalSanctions: res}))
+      return Promise.all([
+        this.checkEsLegalSanctions({edrpou: legal?.code, companyName: requisites.nameEn})
+          .then(res => this.assignObject(legal, {ESLegalSanctions: res})),
+        this.checkUsLegalSanctions({companyName: requisites.nameEn})
+          .then(res => this.assignObject(legal, {USLegalSanctions: res})),
+        this.checkUnLegalTerrors({companyName: requisites.nameEn})
+          .then(res => this.assignObject(legal, {UNLegalTerrors: res})),
+        this.checkUnLegalSanctions({companyName: requisites.nameEn})
+          .then(res => this.assignObject(legal, {UNLegalSanctions: res})),
+        this.checkRnboLegals({edrpou: legal?.code, companyName: requisites.nameUa})
+          .then(res => this.assignObject(legal, {RNBOLegals: res})),
+        this.yourScoreForeignLegalSanctions && this.checkYourControlSanctions({edrpou: legal?.code, apiKey: process.env.VUE_APP_YOUR_SCORE_API_KEY})
+          .then(res => this.assignObject(legal, {YourControlSanctions: res})),
+        this.checkCanadaLegalSanctions({edrpou: legal?.code, companyName: requisites.nameEn}) 
+          .then(res => this.assignObject(legal, {CanadaLegalSanctions: res})),
+        this.checkAustraliaLegalSanctions({edrpou: legal?.code, companyName: requisites.nameEn})
+          .then(res => this.assignObject(legal, {AustraliaLegalSanctions: res}))
+      ])
     },
     assignObject (source, asignObject) {
       Object.entries(asignObject).forEach(entry => this.$set(source, entry[0], entry[1]))
@@ -932,7 +954,7 @@ const legal =  {
     },
     listenPressKey(e) {
       if (e.keyCode === 13) {
-        this.mapGlobalLegal(this.edrpou)
+        this.mapGlobalLegal(this.edrpou, this.companyName)
       } else if (e.keyCode === 27) {
         this.personDialog = false
       }
@@ -953,7 +975,13 @@ const legal =  {
     },
     choosedLegal() {
       return this.searchVariant === 2
-    }, 
+    },
+    choosedEdrpou() {
+      return this.legalSearchVariant === 1
+    },
+    choosedCompanyName() {
+      return this.legalSearchVariant === 2
+    },
     personInitials() {
       return this.searchType === "searchByInitials"
     },
@@ -964,6 +992,10 @@ const legal =  {
       return this.searchType === "searchByEdrpou"
     },
     // validations
+    companyNameErr() {
+      if (! this.$v.companyName.$error) return
+      else return this.commonErr
+    },
     edrpouErr() { 
       const errors = []
       if (!this.$v.edrpou.$error) return errors

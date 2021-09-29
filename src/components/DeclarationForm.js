@@ -538,13 +538,13 @@ const legal =  {
           })
       } else if (companyName) {
         const requisites = {
-          nameEn: this.transliterate(companyName), 
-          nameUa: companyName,
+          nameEn: this.transliterate(companyName).toUpperCase(), 
+          nameUa: companyName.toUpperCase(),
         }
         Vue.set(mapedObject, 'name', {})
         // @ts-ignore
         Vue.set(mapedObject.name, 'shortName', companyName)
-        Vue.set(mapedObject, 'code', companyName)
+        Vue.set(mapedObject, 'code', '00000000')
         // @ts-ignore
         data = this.checkLegal(mapedObject, requisites)
           .then(res => {

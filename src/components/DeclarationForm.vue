@@ -298,8 +298,28 @@
               </div>
             </div>
           </v-fade-transition>
-          <v-fade-transition hide-on-leave>
+          <v-fade-transition>
             <div v-if="choosedLegal">
+              <v-radio-group 
+                dense 
+                single-line
+                v-model="legalSearchVariant"
+                hide-details>
+                <v-radio
+                  :value="1"
+                  color="grey darken-2"
+                  label="ЕДРПОУ">
+                </v-radio>
+                <v-radio
+                  :value="2"
+                  color="grey darken-2"
+                  label="Назва компанії">
+                </v-radio>
+              </v-radio-group>
+            </div>
+          </v-fade-transition>
+          <v-fade-transition hide-on-leave> 
+            <div v-if="choosedLegal && choosedEdrpou">
               <v-text-field
                 v-model="edrpou"
                 :error-messages="edrpouErr"
@@ -307,6 +327,15 @@
                 @input="trimExceededLength('edrpou', 8, (value) => value.replace(/[^\d.]/g, ''))"
                 :label="'ЄДРПОУ'"
                 id="edrpou"
+                color="black">
+              </v-text-field>
+            </div>
+            <div v-if="choosedLegal && choosedCompanyName">
+              <v-text-field
+                v-model="companyName"
+                :error-messages="companyNameErr"
+                @blur="$v.companyName.$touch()"
+                label="Назва компанії"
                 color="black">
               </v-text-field>
             </div>

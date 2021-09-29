@@ -409,5 +409,8 @@ export default {
     getText,
     getOwnerType,
   },
+  mounted() {
+    console.log('leagal', this.legal)
+  },
 }
 </script>

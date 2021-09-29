@@ -1,5 +1,6 @@
 <template>
 <v-card 
+  v-if="legal.code"
   :min-width="750"
   style="background: ghostwhite">
   <v-card-text 

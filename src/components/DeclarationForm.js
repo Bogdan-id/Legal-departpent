@@ -23,13 +23,11 @@ import {
 } from '@mdi/js' 
 
 import { trimExceededLength, isPep } from '../utils/helper'
-
 import { transliterate } from '../utils/utils'
 import { transliteRule } from './translite'
 /* eslint-disable no-unused-vars */
 import { AxiosResponse, AxiosError, Cancel } from 'axios'
 /* eslint-enable no-unused-vars */
-
 // @ts-ignore
 import LegalTree from './legal/tree.vue'
 // @ts-ignore
@@ -430,6 +428,7 @@ const legal =  {
      * @param {EdrLegal | Founder | {}} mapedObject
      * @param {string | number } code - EDRPOU code */
     getEdrData(mapedObject, code) {
+      this.loading = true
       const yourControlEdrLegal = {edrpou: code, apiKey: process.env.VUE_APP_YOUR_SCORE_API_KEY, inn: null}  
       const data = this.getEdr(yourControlEdrLegal)
         .then(res => {
@@ -494,28 +493,34 @@ const legal =  {
             return founder
           }
           
-          if (! legal || ! legal.code) return
+          if (! legal || ! legal.code) {
+            this.loading = false
+            return Promise.resolve()
+          }
           const legalFounders = legal?.founders
-            ?.filter(founder => founder.name.includes('"')).map(trimExceptedStr)
+            ?.filter(founder => founder.name.includes('"')).map(trimExceptedStr) || []
           const personFounders = legal?.founders
-            ?.filter(founder => !founder.name.includes('"')).map(trimExceptedStr)
+            ?.filter(founder => !founder.name.includes('"')).map(trimExceptedStr) || []
 
-          if (legalFounders?.length) {
-            legalFounders.map(founder => {
-              const founderName = this.getLegalName(founder.name)
-              this.checkLegalFounder(founder, founderName)
+          
+          let foundersReqests = legalFounders.map(founder => {
+            const founderName = this.getLegalName(founder.name)
+            return this.checkLegalFounder(founder, founderName)
+          })
+          
+          let personFoundersRequests = personFounders
+            .filter(founder => this.getPersonInitials(founder.name))
+            .map(founder => this.checkLegalPerson(founder, founder.name))
+          
+          let signersRequests = (legal.signers || [])
+            .filter(signer => this.getPersonInitials(signer.name))
+            .map(signer => this.checkLegalPerson(signer, signer.name))
+
+          return Promise.all([...foundersReqests, ...personFoundersRequests, ...signersRequests])
+            .then(res => {
+              this.loading = false
+              return res
             })
-          }
-          if (personFounders?.length) {
-            personFounders
-              .filter(founder => this.getPersonInitials(founder.name))
-              .map(founder => this.checkLegalPerson(founder, founder.name))
-          }
-          if (legal.signers?.length) {
-            legal.signers
-              .filter(signer => this.getPersonInitials(signer.name))
-              .map(signer => this.checkLegalPerson(signer, signer.name))
-          }
         })
         .catch(err => {
           this.$snotify.simple(err.Error || err)
@@ -531,7 +536,7 @@ const legal =  {
     async mapEdrLegal(mapedObject, code) {
       try {
         if (code && this.handledEdrpous.includes(code)) return
-        await this.getEdrData(mapedObject, code)
+        return await this.getEdrData(mapedObject, code)
       } catch(err) {
         this.loading = false
         this.$snotify.simple(err.Error || err)
@@ -559,16 +564,18 @@ const legal =  {
       try {
         this.loading = true
         const data = await this.getEdrData(this.globalObject, code)
+          .then(res => {
+            this.loading = false
+            this.legalDialog = true
+            console.log('Global', this.globalObject)
+            return res
+          })
 
         if (data?.data?.code === 'InvalidParameters') {
           this.$snotify.simple('Недiйсний код ЭДРПОУ')
           this.loading = false
           return
         }
-
-        this.loading = false
-        this.legalDialog = true
-        console.log('Global', this.globalObject)
       } catch (err) {
         this.loading = false
         this.$snotify.simple(err.Error || err)

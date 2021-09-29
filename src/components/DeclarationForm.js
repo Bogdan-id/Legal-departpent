@@ -36,7 +36,6 @@ import PersonInfo from './person/person.vue'
 import { validationMixin } from 'vuelidate'
 import { minLength, required } from 'vuelidate/lib/validators'
 import { YourControlErrCodes } from '../utils/utils'
-import { resolve } from 'core-js/fn/promise'
 
 const legal =  {
   mixins: [validationMixin],

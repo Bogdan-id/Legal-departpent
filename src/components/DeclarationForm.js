@@ -551,14 +551,14 @@ const legal =  {
             let o = this.globalObject
             // @ts-ignore
             ![
-              ...o.ESLegalSanctions, 
-              ...o.USLegalSanctions, 
-              ...o.UNLegalTerrors, 
-              ...o.UNLegalSanctions, 
-              ...o.RNBOLegals, 
-              ...o.YourControlSanctions, 
-              ...o.CanadaLegalSanctions, 
-              ...o.AustraliaLegalSanctions
+              ...(o?.ESLegalSanctions?.data || []), 
+              ...(o?.USLegalSanctions?.data || []), 
+              ...(o?.UNLegalTerrors?.data || []), 
+              ...(o?.UNLegalSanctions?.data || []), 
+              ...(o?.RNBOLegals?.data || []), 
+              ...(o?.YourControlSanctions?.data || []), 
+              ...(o?.CanadaLegalSanctions?.data || []), 
+              ...(o?.AustraliaLegalSanctions?.data || [])
             ].length && Promise.reject('За вашим запитом нiчого не знайдено')
             this.loading = false
             console.log('PROMISE ALL')

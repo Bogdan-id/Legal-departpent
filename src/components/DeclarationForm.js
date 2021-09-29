@@ -528,7 +528,6 @@ const legal =  {
             return Promise.all([...foundersReqests, ...personFoundersRequests, ...signersRequests])
               .then(res => {
                 this.loading = false
-                console.log('PROMISE ALL')
                 return res
               })
           })
@@ -562,7 +561,6 @@ const legal =  {
             ].length
             ) throw new Error(resultError)
             this.loading = false
-            console.log('PROMISE ALL')
             return new Promise(resolve => { setTimeout(() => resolve(res), 0) })
           })
           .catch(err => {
@@ -607,7 +605,7 @@ const legal =  {
       try {
         const data = await this.getEdrData(this.globalObject, code, companyName)
           .then(res => {
-            this.legalDialog = true
+            setTimeout(() => this.legalDialog = true, 0)
             console.log('Global', this.globalObject)
             return res
           })

@@ -37,6 +37,16 @@ import { validationMixin } from 'vuelidate'
 import { minLength, required } from 'vuelidate/lib/validators'
 import { YourControlErrCodes } from '../utils/utils'
 
+// @ts-ignore
+window.String.prototype.replaceUnused = function() {
+  return this
+    .replace(/TOV/g, '')
+    .replace(/LLC/g, '')
+    .replace(/TOV/g, '')
+    .replace(/ТОВ/g, '')
+    .replace(/,/g, '')
+}
+
 const legal =  {
   mixins: [validationMixin],
   components: {
@@ -456,23 +466,25 @@ const legal =  {
             let legal, legalEnName, legalUaName
             if (res?.data) {
               legal = this.assignObject(mapedObject, JSON.parse(JSON.stringify(res.data)))
-              legalEnName = this.getLegalName(legal?.nameInEnglish?.shortName)
-              legalUaName = this.getLegalName(legal?.name?.shortName)
+              // @ts-ignore
+              legalEnName = this.getLegalName(legal?.nameInEnglish?.shortName).replaceUnused()
+              // @ts-ignore
+              legalUaName = this.getLegalName(legal?.name?.shortName).replaceUnused()
             }
             
             // casting legal.name to string
             let founderEnName, founderUaName, name
             if (legal && typeof legal.name === 'string') {
-              name = this.getLegalName(legal.name)
-              /** @type {Founder} */
               // @ts-ignore
+              name = this.getLegalName(legal.name).replaceUnused()
+              /** @type {Founder} */
               founderEnName = this.transliterate(name)
               // @ts-ignore
               founderUaName = name
               // @ts-ignore
             } else if (typeof mapedObject.name === "string") {
               // @ts-ignore
-              name = this.getLegalName(mapedObject.name)
+              name = this.getLegalName(mapedObject.name).replaceUnused()
               // @ts-ignore
               founderEnName = this.transliterate(name)
               // @ts-ignore
@@ -480,7 +492,7 @@ const legal =  {
               // @ts-ignore
             } else if (typeof mapedObject.name === "object") {
               // @ts-ignore
-              name = this.getLegalName(mapedObject.name.shortName)
+              name = this.getLegalName(mapedObject.name.shortName).replaceUnused()
               // @ts-ignore
               founderEnName = this.transliterate(name)
               // @ts-ignore
@@ -514,7 +526,8 @@ const legal =  {
 
             
             let foundersReqests = legalFounders.map(founder => {
-              const founderName = this.getLegalName(founder.name)
+              // @ts-ignore
+              const founderName = this.getLegalName(founder.name).replaceUnused()
               return this.checkLegalFounder(founder, founderName)
             })
             
@@ -538,8 +551,9 @@ const legal =  {
           })
       } else if (companyName) {
         const requisites = {
-          nameEn: this.transliterate(companyName).toUpperCase(), 
-          nameUa: companyName.toUpperCase(),
+          // @ts-ignore
+          nameEn: this.transliterate(companyName).toUpperCase().replaceUnused(), 
+          nameUa: companyName.toUpperCase().replaceUnused(),
         }
         Vue.set(mapedObject, 'name', {})
         // @ts-ignore

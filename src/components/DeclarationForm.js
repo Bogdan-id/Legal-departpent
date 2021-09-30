@@ -413,9 +413,10 @@ const legal =  {
         .reduce(
           (a, b) => a.length > b.length ? a : b
         )
-        .replace('TOV', '')
-        .replace('LLC', '')
-        .replace('TOV', '')
+        .replace(/TOV/g, '')
+        .replace(/LLC/g, '')
+        .replace(/TOV/g, '')
+        .replace(/ТОВ/g, '')
         // eslint-disable-next-line
         .replace(/\./g, '\\.')
     },

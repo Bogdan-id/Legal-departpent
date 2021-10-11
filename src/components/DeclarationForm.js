@@ -415,7 +415,7 @@ const legal =  {
     },
     /** @param {string} str */
     getLegalName(str) {
-      if (! str || typeof str !== "string") return
+      if (! str || typeof str !== "string") return ''
       if (! str.includes('"')) return str
 
       return str.split('"')

@@ -157,6 +157,7 @@ const legal =  {
       'КІНЦЕВИЙ БЕНЕФІЦІАРНИЙ ВЛАСНИК (КОНТРОЛЕР) - ВІДСУТНІЙ',
       'КІНЦЕВИЙ БЕНЕФІЦІАРНИЙ ВЛАСНИК (КОНТРОЛЕР)',
       'КІНЦЕВИЙ БЕНЕФІЦІАРНИЙ ВЛАСНИК',
+      'КОНСОРЦІУМ',
     ],
   }),
   methods: {
@@ -420,9 +421,7 @@ const legal =  {
 
       return str.split('"')
         .filter(v => !v.toUpperCase().includes('ТОВ') && !v.toUpperCase().includes('LLC') && !v.toUpperCase().includes('TOV'))
-        .reduce(
-          (a, b) => a.length > b.length ? a : b
-        )
+        .reduce((a, b) => a.length > b.length && !this.exceptions.includes(a.trim()) ? a : b)
         .replace(/TOV/g, '')
         .replace(/LLC/g, '')
         .replace(/TOV/g, '')

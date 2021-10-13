@@ -9,7 +9,7 @@
     <v-card-title 
       id="company-title"
       class="pt-0 pb-1">
-      {{ legal.name.shortName }}
+      {{ legal.name.fullName || legal.name.shortName }}
     </v-card-title>
     <v-btn 
       @click="$emit('update:legalDialog', false)"

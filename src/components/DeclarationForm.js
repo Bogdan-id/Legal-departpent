@@ -331,7 +331,7 @@ const legal =  {
       const url = this.baseUrl + `/your-control/get-edr`
       return this.$axios
         .post(url, object)
-        .then(res => {console.log('get-edr res', res); return this.checkStatus(res)})
+        .then(res => {console.log('get-edr res', JSON.stringify(res)); return this.checkStatus(res)})
         .catch(err => this.getRejectedKey(err))
     },
     /**

@@ -504,7 +504,7 @@ const legal =  {
             }
             const object = legal || mapedObject
             // @ts-ignore
-            this.checkLegal(object, requisites)
+            // this.checkLegal(object, requisites)
 
             const trimExceptedStr = (founder) => {
               this.exceptions.forEach(exc => {

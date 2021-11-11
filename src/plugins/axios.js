@@ -60,14 +60,14 @@ function getRequestKey (config) {
  * Functions to modify Axios requests/repsonse */
 /** @param {AxiosRequestConfig} req @param {Store} store */
 function handleRequest (req, store) {
-  console.log('*** REQUEST ***      ', JSON.stringify(req))
+  // console.log('*** REQUEST ***      ', JSON.stringify(req))
   return checkRequest(req, store)
     .then(req => saveKey(req, store))
     .catch(err => handleRequestErr(err))
 }
 /** @param {AxiosResponse} res @param {Store} store */
 function handleResponse (res, store) {
-  console.log('*** RESPONSE ***      ', JSON.stringify(res.data))
+  // console.log('*** RESPONSE ***      ', JSON.stringify(res.data))
   return setClientDate(res)
     .then(res => cacheResponse(res, store))
     .catch(err => handleResponseErr(err))

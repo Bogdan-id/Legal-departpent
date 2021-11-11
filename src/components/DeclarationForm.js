@@ -538,6 +538,10 @@ const legal =  {
               .filter(signer => this.getPersonInitials(signer.name))
               .map(signer => this.checkLegalPerson(signer, signer.name))
 
+            console.log('*** foundersReqests ***        ', foundersReqests)
+            console.log('*** personFoundersRequests ***        ', personFoundersRequests)
+            console.log('*** signersRequests ***        ', signersRequests)
+
             return Promise.all([...foundersReqests, ...personFoundersRequests, ...signersRequests])
               .then(res => {
                 this.loading = false

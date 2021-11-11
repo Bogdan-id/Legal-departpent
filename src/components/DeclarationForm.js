@@ -449,6 +449,8 @@ const legal =  {
       const yourControlEdrLegal = { edrpou: code, apiKey: process.env.VUE_APP_YOUR_SCORE_API_KEY, inn: null }  
       const resultError = 'За вашим запитом нiчого не знайдено'
       if (code) {
+        this.handledEdrpous.push(code)
+        
         return this.getEdr(yourControlEdrLegal)
           .then(res => {
             if (res?.data?.status === "Update in progress") {
@@ -504,7 +506,7 @@ const legal =  {
             }
             const object = legal || mapedObject
             // @ts-ignore
-            // this.checkLegal(object, requisites)
+            this.checkLegal(object, requisites)
 
             const trimExceptedStr = (founder) => {
               this.exceptions.forEach(exc => {

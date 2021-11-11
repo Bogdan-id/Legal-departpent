@@ -450,7 +450,7 @@ const legal =  {
       const resultError = 'За вашим запитом нiчого не знайдено'
       if (code) {
         this.handledEdrpous.push(code)
-        
+
         return this.getEdr(yourControlEdrLegal)
           .then(res => {
             if (res?.data?.status === "Update in progress") {
@@ -539,10 +539,6 @@ const legal =  {
             let signersRequests = (legal.signers || [])
               .filter(signer => this.getPersonInitials(signer.name))
               .map(signer => this.checkLegalPerson(signer, signer.name))
-
-            console.log('*** foundersReqests ***        ', foundersReqests)
-            console.log('*** personFoundersRequests ***        ', personFoundersRequests)
-            console.log('*** signersRequests ***        ', signersRequests)
 
             return Promise.all([...foundersReqests, ...personFoundersRequests, ...signersRequests])
               .then(res => {

@@ -687,7 +687,10 @@ const legal =  {
 
       const requests = [
         this.checkNazkDeclarations(person)
-          .then(res => this.nazkDeclarationList.push(...res.data?.data)),
+          .then(res => {
+            const array = Array.isArray(res.data?.data) ? res.data?.data : []
+            return this.nazkDeclarationList.push(...array)
+          }),
         this.checkEDeclarations(person)
           .then(res => this.eDeclarationList.push(...res.data.results.object_list)),
         this.checkRnboPersons(person)
@@ -772,7 +775,10 @@ const legal =  {
 
       const requests = [
         this.checkNazkDeclarations(person)
-          .then(res => this.nazkDeclarationList.push(...res.data?.data)),
+          .then(res => {
+            const array = Array.isArray(res.data?.data) ? res.data?.data : []
+            return this.nazkDeclarationList.push(...array)
+          }),
         this.checkEDeclarations(person)
           .then(res => this.eDeclarationList.push(...res.data.results.object_list)),
         this.checkRnboPersons(person)

@@ -422,7 +422,7 @@ const legal =  {
       const split = string => {
         const separator = str.includes('«') ? '«' : '"'
         if (separator === '«') {
-          return string.split("«").join("").split("»").join("").split(' ')
+          return string.split("«").join("@").split("»").join("@").split('@')
         }
         return string.split('"')
       }

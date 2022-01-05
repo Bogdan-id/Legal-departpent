@@ -416,10 +416,18 @@ const legal =  {
     },
     /** @param {string} str */
     getLegalName(str) {
-      if (! str || typeof str !== "string") return ''
-      if (! str.includes('"')) return str
+      if (!str || typeof str !== "string") return ''
+      if (!str.includes('"') && !str.includes('«')) return str
 
-      return str.split('"')
+      const split = string => {
+        const separator = str.includes('«') ? '«' : '"'
+        if (separator === '«') {
+          return string.split("«").join("").split("»").join("").split(' ')
+        }
+        return string.split('"')
+      }
+
+      return split(str)
         .filter(v => !v.toUpperCase().includes('ТОВ') && !v.toUpperCase().includes('LLC') && !v.toUpperCase().includes('TOV'))
         .reduce((a, b) => a.length > b.length && !this.exceptions.includes(a.trim()) ? a : b)
         .replace(/TOV/g, '')
@@ -521,9 +529,15 @@ const legal =  {
               return Promise.resolve()
             }
             const legalFounders = legal?.founders
-              ?.filter(founder => founder.name.includes('"')).map(trimExceptedStr) || []
+              ?.filter(founder => {
+                return founder.name.includes('"') || founder.name.includes('«')
+              })
+              .map(trimExceptedStr) || []
             const personFounders = legal?.founders
-              ?.filter(founder => !founder.name.includes('"')).map(trimExceptedStr) || []
+              ?.filter(founder => {
+                return !founder.name.includes('"') && !founder.name.includes('«')
+              })
+              .map(trimExceptedStr) || []
 
             
             let foundersReqests = legalFounders.map(founder => {

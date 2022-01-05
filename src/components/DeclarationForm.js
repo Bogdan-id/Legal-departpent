@@ -520,7 +520,10 @@ const legal =  {
             const trimExceptedStr = (founder) => {
               this.exceptions.forEach(exc => {
                 const regex = new RegExp(`${exc}`, 'gi')
-                founder.name = founder.name.replace(regex, '')
+                founder.name = founder.name
+                  .replace(regex, '')
+                  .replace(/[()]/g, '')
+                  .trim()
               })
               return founder
             }

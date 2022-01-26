@@ -1022,7 +1022,7 @@ const legal =  {
     setBaseUrl() {
       this.baseUrl = process.env.NODE_ENV === "development" 
         ? 'http://127.0.0.1:4000' // http://127.0.0.1:4000
-        : 'http://95.67.18.46:4000'
+        : 'http://95.67.18.44:4000'
     }
   },
   computed: {

@@ -1022,7 +1022,7 @@ const legal =  {
     setBaseUrl() {
       this.baseUrl = process.env.NODE_ENV === "development" 
         ? 'http://127.0.0.1:4000' // http://127.0.0.1:4000
-        : 'https://app.check.bestleasing.com.ua/'
+        : 'https://app.check.bestleasing.com.ua'
     }
   },
   computed: {

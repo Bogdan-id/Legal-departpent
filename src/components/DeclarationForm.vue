@@ -275,10 +275,6 @@
                   label="Iм`я"
                   color="black">
                 </v-text-field>
-                <!-- 
-                  @blur="$v.patronymic.$touch()"
-                  :error-messages="patronymicErr"
-                  -->
                 <v-text-field
                   v-model="patronymic"
                   label="По батьковi"

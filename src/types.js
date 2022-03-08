@@ -33,13 +33,6 @@ import {AxiosResponse} from 'axios'
  */
 
 /** Using typeof */
-/* eslint-disable no-unused-vars */
-const data = {
-  one: 1,
-  two: "two",
-}
-/* eslint-enable no-unused-vars */
-
 /**
  * @typedef {typeof data} MyData
  */

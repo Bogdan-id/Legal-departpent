@@ -1,4 +1,5 @@
 <template>
+  <!-- Person infor component -->
   <div class="person-info">
     <div><span class="info-label">Тип фiз. особи:</span> <span class="info-text">{{ person.contractorType}}</span></div>
     <div><span class="info-label">ФОП:</span> <span class="info-text">{{ person.name }}</span></div>

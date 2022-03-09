@@ -1,4 +1,5 @@
 <template>
+  <!-- PEP table component -->
   <v-fab-transition>
     <v-card v-show="state" elevation="5" class="ml-2 mr-2 mb-3">
       <v-card-text>

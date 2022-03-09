@@ -1,4 +1,5 @@
 <template>
+<!-- Nested circular component -->
 <v-card 
   v-if="legal.code"
   :min-width="750"

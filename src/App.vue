@@ -1,4 +1,5 @@
 <template>
+  <!-- Dom entry component (main) -->
   <v-app>
     <vue-snotify></vue-snotify>
     <router-view></router-view>

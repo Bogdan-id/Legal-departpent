@@ -1,4 +1,5 @@
 <template>
+<!-- Batch data validation component -->
 <v-container fluid>
   <v-dialog 
     v-model="dialog"

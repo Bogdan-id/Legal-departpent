@@ -1,5 +1,7 @@
+/** Type definitions */
+
 /* eslint-disable no-unused-vars */
-import {AxiosResponse} from 'axios'
+import { AxiosResponse } from 'axios'
 /* eslint-enable no-unused-vars */
 
 /** 

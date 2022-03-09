@@ -1,5 +1,5 @@
 <template>
-  <!-- Founder -->
+  <!-- Founder info component -->
   <li 
     v-if="founder.hasOwnProperty('ownershipType')"
     @click.stop="toggleFounderInfo" 

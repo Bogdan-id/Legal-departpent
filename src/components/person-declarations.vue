@@ -1,4 +1,5 @@
 <template>
+  <!-- Person declarations component -->
   <v-simple-table>
     <template #default>
       <thead>
@@ -47,7 +48,6 @@
             }}
           </td>
         </tr>
-        
       </tbody>
     </template>
   </v-simple-table>

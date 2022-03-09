@@ -1,6 +1,7 @@
 'use-strict'
 // @ts-check
 
+// Restrict input value by length
 function trimExceededLength(elId, maxLength, callback) {
   let el = /** @type {HTMLInputElement} */ (document.getElementById(elId))
   let event = new Event('input', {bubbles: true})
@@ -16,7 +17,10 @@ function trimExceededLength(elId, maxLength, callback) {
   }
 }
 
-/** @param {string} post */
+/** 
+ * @function isPep - compare post parameter with array of PEP positions
+ * @param {string} post 
+ * */
 function isPep (post) {
   if (! post) return false
   if (typeof post !== "string") return false

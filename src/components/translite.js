@@ -1,3 +1,4 @@
+/** Translit rules */
 const transliteRule = [
   {ua: "Аа", en: "Aa", position: "", exampleUK: "Алушта Андрій", exampleEN: "Alushta Andrii"},
   {ua: "Бб", en: "Bb", position: "", exampleUK: "Борщагівка Борисенко", exampleEN: "Borshchahivka Borysenko"},

@@ -1,5 +1,7 @@
 <template>
 <!-- 
+  Checked person component
+
   ES: https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A02014D0145-20201001
   RNBO: https://www.president.gov.ua/documents/822019-26290
   Australia: https://www.dfat.gov.au/international-relations/security/sanctions/consolidated-list

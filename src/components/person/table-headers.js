@@ -1,3 +1,5 @@
+/** Table header components */
+
 export default {
   EDRTH: [
     { text: 'Назва', value: 'name.shortName', align: 'start', sortable: false},

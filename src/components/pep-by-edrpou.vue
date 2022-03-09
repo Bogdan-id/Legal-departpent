@@ -1,4 +1,5 @@
 <template>
+<!-- PEP by edrpou - component -->
 <div class="pep-table-wrapper">
   <v-simple-table class="custom-table">
     <template #default>

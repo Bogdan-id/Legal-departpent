@@ -1,3 +1,5 @@
+/** Helper functions */
+
 function toggleDescription (array, key) {
   if (array.includes(key)) {
     const clearedArr = array.filter(k => key !== k)

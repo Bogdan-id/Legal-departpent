@@ -1,4 +1,5 @@
 <template>
+<!-- Company info component -->
   <div>
     <div v-if="company.name && company.shortName"><span class="info-label">Компанiя:</span> <span class="info-text">{{ company.name.shortName }}</span></div>
     <div v-if="company.code"><span class="info-label">ЄДРПОУ:</span> <span class="info-text">{{ company.code }}</span></div>

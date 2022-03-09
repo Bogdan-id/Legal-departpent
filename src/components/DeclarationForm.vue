@@ -1,4 +1,5 @@
 <template>
+<!-- Declaration form component -->
 <v-container fluid>
   <v-row class="api-form text-center justify-center">
     <v-dialog v-model="legalDialog">

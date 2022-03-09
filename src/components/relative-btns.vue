@@ -1,4 +1,5 @@
 <template>
+  <!-- Links with relative persons/legals -->
   <div class="d-flex justify-center flex-wrap">
     <v-btn 
       v-show="relvPersPresent"
